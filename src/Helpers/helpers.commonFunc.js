@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
-const Config = require("../Configs/Config.json");
+const path = require('path');
+const Config = require(path.resolve(__dirname, '../Configs/Config.json'));
+
+// const Config = require("../Configs/Config.json");
 const logger = require('./loggerFunction');
 const sendResponse = (res, error = null, statusCode = 500, success = false, message = "internal server error", data = undefined) => {
     if (error) {
