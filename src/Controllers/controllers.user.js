@@ -10,6 +10,7 @@ const { sendEmail } = require("../Helpers/helpersNotification");
 const loginUserController = async (req, res) => {
     try {
         const { email, password } = req.body;
+        
         // Fetch user by email
         const user = await getUserDetailsByEmailService(email.toLowerCase());
         if (!user) {
