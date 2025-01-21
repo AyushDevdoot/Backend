@@ -2,21 +2,19 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const Config = require('./src/Configs/Config.json'); // Import config.json
+const Config = require('./src/Configs/Config.json'); // Import the simplified config
 const v1Router = require('./src/Routes/v1.routes');
 const app = express();
 
-
-const environment = process.env.NODE_ENV || 'development';
-const currentConfig = Config[environment];
-
+// Use the simplified config
+const mongoUri = Config.MONGODB_URL;
+const port = process.env.PORT || Config.PORT;
 
 app.use(bodyParser.json());
 app.use(cors());
 
-
 mongoose
-  .connect(currentConfig.MONGODB_URL, {
+  .connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -29,7 +27,6 @@ mongoose
 
 app.use('/v1', v1Router);
 
-
-app.listen(currentConfig.PORT, () => {
-  console.log(`Server is running on port ${currentConfig.PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
