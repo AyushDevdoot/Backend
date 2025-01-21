@@ -1,7 +1,4 @@
 const jwt = require('jsonwebtoken');
-const path = require('path');
-const Config = require(path.resolve(__dirname, '../Configs/Config.json'));
-
 // const Config = require("../Configs/Config.json");
 const logger = require('./loggerFunction');
 const sendResponse = (res, error = null, statusCode = 500, success = false, message = "internal server error", data = undefined) => {
@@ -28,7 +25,7 @@ const generateOTP = (length = 6) => {
 
 const generateToken = async (body, key = Config.KEY, expiry = 60 * 60 * 72) => {
     if (key === undefined || key === null) {
-        key = Config.KEY;
+        key = process.env.KEY;
     }
     const accessToken = jwt.sign(
         body,
