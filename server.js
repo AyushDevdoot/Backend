@@ -2,13 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config(); // Import dotenv to load the environment variables
+const Config = require('./src/Configs/Config.json'); // Import the simplified config
 const v1Router = require('./src/Routes/v1.routes');
 const app = express();
 
-// Use the environment variables
-const mongoUri = process.env.MONGODB_URL;
-const port = process.env.PORT || 3000; // Default to 3000 if PORT is not defined in .env
+// Use the simplified config
+const mongoUri = Config.MONGODB_URL;
+const port = process.env.PORT || Config.PORT;
 
 app.use(bodyParser.json());
 app.use(cors());
