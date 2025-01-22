@@ -1,21 +1,22 @@
-require('dotenv').config(); // Load environment variables from .env
 const nodemailer = require('nodemailer');
 
-
-// Create a transporter object using the SMTP configuration
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST, // SMTP server host
-    port: Number(process.env.EMAIL_PORT), // Convert port to a number
-    secure: process.env.EMAIL_PORT == 465, // true for port 465, false for others
+// SMTP configuration
+const smtpConfig = {
+    host: 'mailslurp.mx', // Hardcoded SMTP server host
+    port: 2465, // Hardcoded SMTP server port
+    secure: 2465 === 465, // true for port 465, false for others
     auth: {
-        user: process.env.EMAIL, // Email address from .env
-        pass: process.env.EMAIL_PASSWORD // Email password or app password from .env
+        user: 'd2912909-6898-4981-92a5-b65a438baad4@tempsmtp.com', // Hardcoded email address
+        pass: 'WQfEnl7W1Nt7myfdYsvD5Ur2tbeBCe8m', // Hardcoded email password
     },
     requireTLS: true, // Ensure the connection uses TLS
     connectionTimeout: 10000, // 10 seconds timeout for connection
     greetingTimeout: 5000, // 5 seconds timeout for greeting
-    debug: true
-});
+    debug: true,
+};
+
+// Create a transporter object using the SMTP configuration
+const transporter = nodemailer.createTransport(smtpConfig);
 
 console.log('SMTP Transporter configuration:', transporter.options);
 
@@ -37,7 +38,7 @@ const sendEmail = (email, subject, html) => {
     });
 
     const mailOptions = {
-        from: process.env.EMAIL, // Sender email address
+        from: smtpConfig.auth.user, // Sender email address
         to: email, // Recipient email address
         subject: subject, // Email subject
         html: html, // Email content in HTML format
@@ -46,11 +47,7 @@ const sendEmail = (email, subject, html) => {
     // Send the email
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.log('Loaded environment variables:', {
-                EMAIL_HOST: process.env.EMAIL_HOST,
-                EMAIL_PORT: Number(process.env.EMAIL_PORT),
-                EMAIL: process.env.EMAIL,
-            });
+            console.log('Loaded configuration:', smtpConfig);
 
             console.error("Mail Error:", error);
         } else {
