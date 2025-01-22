@@ -6,7 +6,7 @@ const smtpConfig = {
     port: 587, // Hardcoded SMTP server port
     auth: {
         user: '840e37002@smtp-brevo.com', // Hardcoded email address
-        pass: 'tz6HXZqsSwdOEfNQ', // Hardcoded email password
+        pass: 'xsmtpsib-ec10d1ab78bb8ec2ea685d98f552b2e940e44169eb55592336327b42081efcd7-pGnyc48YfSDZaJCM', // Hardcoded email password
     },
     requireTLS: true, // Ensure the connection uses TLS
     connectionTimeout: 10000, // 10 seconds timeout for connection
