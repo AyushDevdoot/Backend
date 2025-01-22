@@ -1,19 +1,20 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
-// const Config = require("../Configs/Config.json");
 const logger = require('./loggerFunction');
+
+// Utility function to send response
 const sendResponse = (res, error = null, statusCode = 500, success = false, message = "internal server error", data = undefined) => {
     if (error) {
         logger.error(error);
     }
-    res.status(statusCode).json(
-        {
-            success,
-            message,
-            data,
-        }
-    )
-}
+    res.status(statusCode).json({
+        success,
+        message,
+        data,
+    });
+};
 
+// Function to generate an OTP of specified length
 const generateOTP = (length = 6) => {
     const digits = '0123456789';
     let otp = '';
@@ -23,20 +24,14 @@ const generateOTP = (length = 6) => {
     return otp;
 };
 
-const generateToken = async (body, key = Config.KEY, expiry = 60 * 60 * 72) => {
-    if (key === undefined || key === null) {
-        key = process.env.KEY;
+// Function to generate a JWT token
+const generateToken = async (body, key = process.env.JWT_SECRET_KEY, expiry = 60 * 60 * 72) => {
+    if (!key) {
+        throw new Error('JWT_SECRET_KEY is not defined in environment variables.');
     }
-    const accessToken = jwt.sign(
-        body,
-        key,
-        {
-            expiresIn: expiry,
-            // 60 * 60 * 72
-        }
-    );
-    return accessToken
-}
+    const accessToken = jwt.sign(body, key, { expiresIn: expiry });
+    return accessToken;
+};
 
 module.exports = {
     sendResponse,
