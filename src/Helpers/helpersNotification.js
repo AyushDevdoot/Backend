@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config(); 
 
 // SMTP configuration
 const smtpConfig = {
@@ -7,7 +6,7 @@ const smtpConfig = {
     port: 587, // Hardcoded SMTP server port
     auth: {
         user: '840e37002@smtp-brevo.com', // Hardcoded email address
-        pass: process.env.EMAIL_PASSWORD, // Hardcoded email addressaddresspassword
+        pass: 'tz6HXZqsSwdOEfNQ', // Hardcoded email password
     },
     requireTLS: true, // Ensure the connection uses TLS
     connectionTimeout: 10000, // 10 seconds timeout for connection
