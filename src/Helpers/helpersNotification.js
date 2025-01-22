@@ -3,10 +3,10 @@ require('dotenv').config();
 
 // SMTP configuration
 const smtpConfig = {
-    host: 'smtp-relay.brevo.com', // Hardcoded SMTP server host
+    host: 'mail.smtp2go.com', // Hardcoded SMTP server host
     port: 587, // Hardcoded SMTP server port
     auth: {
-        user: '840e37002@smtp-brevo.com', // Hardcoded email address
+        user: 'ayushdeb@devdoot.org', // Hardcoded email address
         pass: process.env.EMAIL_PASSWORD, // Hardcoded email address
     },
     requireTLS: true, // Ensure the connection uses TLS
