@@ -14,6 +14,7 @@ const transporter = nodemailer.createTransport({
     requireTLS: true, // Ensure the connection uses TLS
     connectionTimeout: 10000, // 10 seconds timeout for connection
     greetingTimeout: 5000, // 5 seconds timeout for greeting
+    debug: true
 });
 
 console.log('SMTP Transporter configuration:', transporter.options);
@@ -47,7 +48,7 @@ const sendEmail = (email, subject, html) => {
         if (error) {
             console.log('Loaded environment variables:', {
                 EMAIL_HOST: process.env.EMAIL_HOST,
-                EMAIL_PORT: process.env.EMAIL_PORT,
+                EMAIL_PORT: Number(process.env.EMAIL_PORT),
                 EMAIL: process.env.EMAIL,
             });
 
