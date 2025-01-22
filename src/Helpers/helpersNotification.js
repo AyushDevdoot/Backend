@@ -1,11 +1,17 @@
 require('dotenv').config(); // Load environment variables from .env
 const nodemailer = require('nodemailer');
 
+console.log('Loaded environment variables:', {
+    EMAIL_HOST: process.env.EMAIL_HOST,
+    EMAIL_PORT: process.env.EMAIL_PORT,
+    EMAIL: process.env.EMAIL,
+});
+
 // Create a transporter object using the SMTP configuration
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST, // SMTP server host
-    port: process.env.EMAIL_PORT, // SMTP server port (convert string to number)
-    secure: false, // Set to true for port 465, false for port 587
+    port: Number(process.env.EMAIL_PORT), // Convert port to a number
+    secure: process.env.EMAIL_PORT == 465, // true for port 465, false for others
     auth: {
         user: process.env.EMAIL, // Email address from .env
         pass: process.env.EMAIL_PASSWORD // Email password or app password from .env
@@ -14,6 +20,8 @@ const transporter = nodemailer.createTransport({
     connectionTimeout: 10000, // 10 seconds timeout for connection
     greetingTimeout: 5000, // 5 seconds timeout for greeting
 });
+
+console.log('SMTP Transporter configuration:', transporter.options);
 
 // Verify the SMTP connection
 transporter.verify((error, success) => {
@@ -26,6 +34,12 @@ transporter.verify((error, success) => {
 
 // Function to send an email
 const sendEmail = (email, subject, html) => {
+    console.log('Preparing to send email:', {
+        to: email,
+        subject: subject,
+        html: html,
+    });
+
     const mailOptions = {
         from: process.env.EMAIL, // Sender email address
         to: email, // Recipient email address
@@ -38,7 +52,7 @@ const sendEmail = (email, subject, html) => {
         if (error) {
             console.error("Mail Error:", error);
         } else {
-            console.log("Email sent:", info.response);
+            console.log("Email sent successfully:", info.response);
         }
     });
 };
