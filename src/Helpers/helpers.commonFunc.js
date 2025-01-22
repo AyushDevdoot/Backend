@@ -1,41 +1,53 @@
-require('dotenv').config();
-const jwt = require('jsonwebtoken');
-const logger = require('./loggerFunction');
+require('dotenv').config(); // Load environment variables from .env
+const nodemailer = require('nodemailer');
 
-// Utility function to send response
-const sendResponse = (res, error = null, statusCode = 500, success = false, message = "internal server error", data = undefined) => {
+// Validate environment variables
+if (!process.env.EMAIL_HOST || !process.env.EMAIL_PORT || !process.env.EMAIL || !process.env.EMAIL_PASSWORD) {
+    console.error("Missing required environment variables. Please check your .env file.");
+    process.exit(1);
+}
+
+// Create a transporter object using the SMTP configuration
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST, // SMTP server host
+    port: parseInt(process.env.EMAIL_PORT, 10), // SMTP server port
+    secure: process.env.EMAIL_PORT === "465", // Use true for port 465, false otherwise
+    auth: {
+        user: process.env.EMAIL, // Email address from .env
+        pass: process.env.EMAIL_PASSWORD, // Email password from .env
+    },
+    requireTLS: true, // Ensure the connection uses TLS
+    connectionTimeout: 10000, // 10 seconds timeout for connection
+    greetingTimeout: 5000, // 5 seconds timeout for greeting
+});
+
+// Verify the SMTP connection
+transporter.verify((error, success) => {
     if (error) {
-        logger.error(error);
+        console.error('SMTP Connection Error:', error.message);
+    } else {
+        console.log('SMTP Server is ready to send emails:', success);
     }
-    res.status(statusCode).json({
-        success,
-        message,
-        data,
-    });
-};
+});
 
-// Function to generate an OTP of specified length
-const generateOTP = (length = 6) => {
-    const digits = '0123456789';
-    let otp = '';
-    for (let i = 0; i < length; i++) {
-        otp += digits[Math.floor(Math.random() * 10)];
-    }
-    return otp;
-};
+// Function to send an email
+const sendEmail = async (email, subject, html) => {
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL, // Sender email address
+            to: email, // Recipient email address
+            subject: subject, // Email subject
+            html: html, // Email content in HTML format
+        };
 
-// Function to generate a JWT token
-const generateToken = async (body, key = process.env.JWT_SECRET_KEY, expiry = 60 * 60 * 72) => {
-    console.log("JWT_SECRET_KEY:", key);
-    if (!key) {
-        throw new Error('JWT_SECRET_KEY is not defined in environment variables.');
+        // Send the email
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully:', info.response);
+    } catch (error) {
+        console.error('Error sending email:', error.message);
     }
-    const accessToken = jwt.sign(body, key, { expiresIn: expiry });
-    return accessToken;
 };
 
 module.exports = {
-    sendResponse,
-    generateToken,
-    generateOTP
+    sendEmail
 };
