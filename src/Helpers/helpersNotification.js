@@ -9,7 +9,10 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.EMAIL, // Email address from .env
         pass: process.env.EMAIL_PASSWORD // Email password or app password from .env
-    }
+    },
+    requireTLS: true, // Ensure the connection uses TLS
+    connectionTimeout: 10000, // 10 seconds timeout for connection
+    greetingTimeout: 5000, // 5 seconds timeout for greeting
 });
 
 // Verify the SMTP connection
