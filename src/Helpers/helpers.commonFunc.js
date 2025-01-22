@@ -26,6 +26,7 @@ const generateOTP = (length = 6) => {
 
 // Function to generate a JWT token
 const generateToken = async (body, key = process.env.JWT_SECRET_KEY, expiry = 60 * 60 * 72) => {
+    console.log("JWT_SECRET_KEY:", key);
     if (!key) {
         throw new Error('JWT_SECRET_KEY is not defined in environment variables.');
     }
