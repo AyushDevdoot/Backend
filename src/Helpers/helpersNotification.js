@@ -1,11 +1,6 @@
 require('dotenv').config(); // Load environment variables from .env
 const nodemailer = require('nodemailer');
 
-console.log('Loaded environment variables:', {
-    EMAIL_HOST: process.env.EMAIL_HOST,
-    EMAIL_PORT: process.env.EMAIL_PORT,
-    EMAIL: process.env.EMAIL,
-});
 
 // Create a transporter object using the SMTP configuration
 const transporter = nodemailer.createTransport({
@@ -50,6 +45,12 @@ const sendEmail = (email, subject, html) => {
     // Send the email
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
+            console.log('Loaded environment variables:', {
+                EMAIL_HOST: process.env.EMAIL_HOST,
+                EMAIL_PORT: process.env.EMAIL_PORT,
+                EMAIL: process.env.EMAIL,
+            });
+
             console.error("Mail Error:", error);
         } else {
             console.log("Email sent successfully:", info.response);
