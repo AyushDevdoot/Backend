@@ -43,52 +43,39 @@ const loginUserController = async (req, res) => {
 
 const createUserController = async (req, res) => {
     try {
+        console.log("Request received:", req.body);
+
+        // Validate request body
         if (!validateCreateUserDto(req.body)) {
+            console.log("Invalid request body:", req.body);
+
             const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
             if (!isValidEmail(req.body.email.toLowerCase())) {
+                console.log("Invalid email format:", req.body.email);
                 sendResponse(res, null, 400, false, "Invalid email format");
                 return;
             }
             sendResponse(res, null, 400, false, "Invalid request body");
             return;
-        } else {
-            let userDetails = await getUserDetailsByEmailService(req.body.email.toLowerCase());
-            if (userDetails) {
-                if (userDetails.isVerified) {
-                    sendResponse(res, null, 400, false, "User already exists");
-                    return;
-                } else {
-                    const emailOtp = generateOTP();
-                    const token = await generateToken({
-                        user: {
-                            _id: userDetails._id,
-                            userType: userDetails.userType,
-                            email: userDetails.email,
-                        },
-                        isVerified: false
-                    });
-                    await updateUserDetailsByIdService(userDetails._id, { emailOtp });
-                    sendEmail(userDetails.email, "login otp", html(emailOtp));
-                    sendResponse(res, null, 200, true, "OTP sent successfully on email", { token });
-                    return;
-                }
+        }
+
+        // Normalize email and check for existing user
+        const email = req.body.email.toLowerCase();
+        console.log("Validated email:", email);
+
+        let userDetails = await getUserDetailsByEmailService(email);
+        console.log("User details fetched:", userDetails);
+
+        if (userDetails) {
+            if (userDetails.isVerified) {
+                console.log("User already verified:", userDetails);
+                sendResponse(res, null, 400, false, "User already exists");
+                return;
             } else {
-                let userType = "care-giver";
-                if (req.body.registerType) {
-                    userType = req.body.registerType;
-                }
-                // Encrypt the password using bcrypt
-                const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+                console.log("User exists but not verified:", userDetails);
 
                 const emailOtp = generateOTP();
-                userDetails = await createUserService({
-                    ...createUserDto({ ...req.body, email: req.body.email.toLowerCase(), password: hashedPassword }),
-                    userType,
-                    emailOtp
-                });
-
-                sendEmail(userDetails.email, "login otp", html(emailOtp));
-                await createUserDictonaryServices({ userId: userDetails._id });
+                console.log("Generated OTP:", emailOtp);
 
                 const token = await generateToken({
                     user: {
@@ -96,17 +83,71 @@ const createUserController = async (req, res) => {
                         userType: userDetails.userType,
                         email: userDetails.email,
                     },
-                    isVerified: false
+                    isVerified: false,
                 });
+                console.log("Generated token:", token);
 
-                sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", { token });
+                await updateUserDetailsByIdService(userDetails._id, { emailOtp });
+                console.log("User details updated with OTP:", userDetails._id);
+
+                sendEmail(userDetails.email, "login otp", html(emailOtp));
+                console.log("Email sent to:", userDetails.email);
+
+                sendResponse(res, null, 200, true, "OTP sent successfully on email", { token });
                 return;
             }
+        } else {
+            console.log("User does not exist. Creating a new user.");
+
+            let userType = "care-giver";
+            if (req.body.registerType) {
+                userType = req.body.registerType;
+            }
+            console.log("User type:", userType);
+
+            // Encrypt the password
+            const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+            console.log("Password hashed.");
+
+            const emailOtp = generateOTP();
+            console.log("Generated OTP for new user:", emailOtp);
+
+            userDetails = await createUserService({
+                ...createUserDto({
+                    ...req.body,
+                    email,
+                    password: hashedPassword,
+                }),
+                userType,
+                emailOtp,
+            });
+            console.log("New user created:", userDetails);
+
+            sendEmail(userDetails.email, "login otp", html(emailOtp));
+            console.log("Email sent to new user:", userDetails.email);
+
+            await createUserDictonaryServices({ userId: userDetails._id });
+            console.log("User dictionary created for:", userDetails._id);
+
+            const token = await generateToken({
+                user: {
+                    _id: userDetails._id,
+                    userType: userDetails.userType,
+                    email: userDetails.email,
+                },
+                isVerified: false,
+            });
+            console.log("Generated token for new user:", token);
+
+            sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", { token });
+            return;
         }
     } catch (err) {
+        console.error("Error in createUserController:", err);
         sendResponse(res, err);
     }
 };
+
 
 const getUserDetailsController = async (req, res) => {
     try {
