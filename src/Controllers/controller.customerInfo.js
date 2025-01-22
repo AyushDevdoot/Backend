@@ -1,6 +1,6 @@
 const { createCustomerDto, validateCustomerFields } = require("../DTOs/customer.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { getCustomerByIdServices, createCustomerServices } = require("../Services/services.customerinfo");
+const { getCustomerByIdServices, createCustomerServices } = require("../Services/services.customerInfo");
 
 const createCustomerController = async (req, res) => {
     try {
