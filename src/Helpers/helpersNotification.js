@@ -2,12 +2,11 @@ const nodemailer = require('nodemailer');
 
 // SMTP configuration
 const smtpConfig = {
-    host: 'mailslurp.mx', // Hardcoded SMTP server host
-    port: 2465, // Hardcoded SMTP server port
-    secure: 2465 === 465, // true for port 465, false for others
+    host: 'smtp-relay.brevo.com', // Hardcoded SMTP server host
+    port: 587, // Hardcoded SMTP server port
     auth: {
-        user: 'd2912909-6898-4981-92a5-b65a438baad4@tempsmtp.com', // Hardcoded email address
-        pass: 'WQfEnl7W1Nt7myfdYsvD5Ur2tbeBCe8m', // Hardcoded email password
+        user: '840e37001@smtp-brevo.com', // Hardcoded email address
+        pass: 'tkvOFn7Q0cyAVh9w', // Hardcoded email password
     },
     requireTLS: true, // Ensure the connection uses TLS
     connectionTimeout: 10000, // 10 seconds timeout for connection
