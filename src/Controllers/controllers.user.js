@@ -6,6 +6,7 @@ const { createUserService, getUserDetailsByIdService, getUserDetailsByEmailServi
 const bcrypt = require("bcrypt");
 const { createUserDictonaryServices } = require("../Services/services.userDictonary");
 const { sendEmail } = require("../Helpers/helpersNotification");
+require('dotenv').config(); 
 
 const loginUserController = async (req, res) => {
     try {
@@ -261,7 +262,7 @@ const forgetPasswordController = async (req, res) => {
         console.log('verify ho gaya')
         const token = generateToken(
             { user: { _id: user._id, email: user.email }, isVerified: user.isVerified },
-            "forget",
+            process.env.JWT_SECRET_KEY,
             "15m" // Token expires in 15 minutes
         );
         console.log('yeh lo',token)
