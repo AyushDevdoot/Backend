@@ -246,10 +246,11 @@ const sendOtpToEmail = async (req, res) => {
 const forgetPasswordController = async (req, res) => {
     try {
         const { email } = req.body;
-        console.log(email);
+
         // Fetch user by email
         const user = await getUserDetailsByEmailService(email);
         console.log(user);
+
         if (!user) {
             return sendResponse(res, null, 400, false, "Invalid credentials");
         }
@@ -259,19 +260,18 @@ const forgetPasswordController = async (req, res) => {
         }
 
             
-        console.log('verify ho gaya')
         const token = generateToken(
             { user: { _id: user._id, email: user.email }, isVerified: user.isVerified },
             process.env.JWT_SECRET_KEY,
             "15m" // Token expires in 15 minutes
         );
-        console.log('yeh lo',token)
 
         // Create a password reset link
         const resetLink = `devdoot/reset-password?token=${token}.com`;
         console.log(resetLink,'yeh lo');
 
         sendEmail(email, "Click on this link to reset the password ", forgothtml(resetLink));
+        sendResponse(res, null, 200, true, "Reset Password Mail Sent Successfully");
 
 
     } catch (err) {
@@ -285,19 +285,19 @@ const forgetPasswordController = async (req, res) => {
 
 const changePasswordController = async (req, res) => {
     try {
-        const { newPassword } = req.body; // Extract newPassword from req.body
-        const userId = req.user._id; // Get userId from req.user
-
+        const { newPassword } = req.body; 
+        const userId = req.user._id; 
         // Validate new password
+
         if (!newPassword || newPassword.length < 8) {
             return sendResponse(res, null, 400, false, "Password must be at least 8 characters long");
         }
 
         // Hash the new password
-        const saltRounds = 10; // Define the number of salt rounds
+        const saltRounds = 10; 
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
-        // Update the user's password in the database
+     
         const isUpdated = await updateUserDetailsByIdService(userId, { password: hashedPassword });
 
         if (!isUpdated) {
