@@ -245,6 +245,7 @@ const sendOtpToEmail = async (req, res) => {
 const forgetPasswordController = async (req, res) => {
     try {
         const { email } = req.user;
+        console.log(email);
         // Fetch user by email
         const user = await getUserDetailsByEmailService(email);
         console.log(user);
