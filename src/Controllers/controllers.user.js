@@ -256,23 +256,8 @@ const forgetPasswordController = async (req, res) => {
         if (!user.isVerified) {
             return sendResponse(res, null, 400, false, "User not verified");
         }
-        // if (req.user.tokenType == "forget") {
-        //     if (req.body.newPass != "") {
-        //         const isCurrPasswordValid = await bcrypt.compare(req.body.newPass, user.password);
-        //         if (isCurrPasswordValid) {
-        //             return sendResponse(res, null, 400, false, "Previous password cannot be same as new password");
-        //         }
 
-        //         const hashedPassword = await bcrypt.hash(req.body.newPass, saltRounds);
-        //         await updateUserDetailsByIdService(user._id, { password: hashedPassword });
-        //         // Send response with token and user info
-        //         sendResponse(res, null, 200, true, "Your Password has been changed Successfully");
-        //     } else {
-        //         sendResponse(res, null, 400, false, "Invalid request body");
-        //     }
-        // } else {
-        //     return sendResponse(res, null, 400, false, "Invalid Token");
-        // }
+            
         console.log('verify ho gaya')
         const token = generateToken(
             { user: { _id: user._id, email: user.email }, isVerified: user.isVerified },
@@ -296,47 +281,36 @@ const forgetPasswordController = async (req, res) => {
 };
 
 const changePasswordController = async (req, res) => {
-    try {
-        const { email } = req.user;
-        // Fetch user by email
-        const user = await getUserDetailsByEmailService(email);
-        console.log(user);
-        if (!user) {
-            return sendResponse(res, null, 400, false, "Invalid credentials");
+    try{
+        const newPassword =req.body
+        const userId = req.user._id;
+
+        if(!newPassword || newPassword.length<8){
+            return sendResponse(res, null, 400, false, "Password must be at least 8 characters long");
         }
-        // Check if the user is verified
-        if (!user.isVerified) {
-            return sendResponse(res, null, 400, false, "User not verified");
-        }
-        // Generate token if password is valid and user is verified
-        if (req.body.currPass == req.body.newPass) {
-            return sendResponse(res, null, 400, false, "New password cannot be same as current password");
-        }
-        else if (req.body.currPass != "" && req.body.newPass != "") {
-            const isCurrPasswordValid = await bcrypt.compare(req.body.currPass, user.password);
-            if (!isCurrPasswordValid) {
-                return sendResponse(res, null, 400, false, "Current password is incorrect");
-            }
-            const accessToken = await generateToken({
-                user: {
-                    _id: user._id,
-                    userType: user.userType,
-                    email: user.email,
-                },
-                isVerified: false
-            });
-            const hashedPassword = await bcrypt.hash(req.body.newPass, saltRounds);
+        
+        if (newPassword != "") {
+            // const isCurrPasswordValid = await bcrypt.compare(newPassword, userId.password);
+            // if (isCurrPasswordValid) {
+            //     return sendResponse(res, null, 400, false, "Previous password cannot be same as new password");
+            // }
+
+            const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
             await updateUserDetailsByIdService(user._id, { password: hashedPassword });
+            if(!hashedPassword){
+                sendResponse(res,null,500,false,"Password was not Updated");
+            }
             // Send response with token and user info
-            sendResponse(res, null, 200, true, "Your Password has been changed Successfully", { token: accessToken });
+            sendResponse(res, null, 200, true, "Your Password has been changed Successfully");
         } else {
             sendResponse(res, null, 400, false, "Invalid request body");
         }
+    
 
-    } catch (err) {
-        console.log(err);
-        logger.error(err);
-        sendResponse(res, err);
+    }
+    catch(err){
+        console.log(err)
+        sendResponse(res,err,500,false,"Some Error occurred")
     }
 };
 module.exports = {
