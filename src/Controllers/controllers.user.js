@@ -281,39 +281,40 @@ const forgetPasswordController = async (req, res) => {
     }
 };
 
-const changePasswordController = async (req, res) => {
-    try{
-        const newPassword =req.body
-        const userId = req.user._id;
+const bcrypt = require('bcrypt');
+const { updateUserDetailsByIdService } = require('../services/userService');
+const { sendResponse } = require('../utils/responseHandler');
 
-        if(!newPassword || newPassword.length<8){
+const changePasswordController = async (req, res) => {
+    try {
+        const { newPassword } = req.body; // Extract newPassword from req.body
+        const userId = req.user._id; // Get userId from req.user
+
+        // Validate new password
+        if (!newPassword || newPassword.length < 8) {
             return sendResponse(res, null, 400, false, "Password must be at least 8 characters long");
         }
-        
-        if (newPassword != "") {
-            // const isCurrPasswordValid = await bcrypt.compare(newPassword, userId.password);
-            // if (isCurrPasswordValid) {
-            //     return sendResponse(res, null, 400, false, "Previous password cannot be same as new password");
-            // }
 
-            const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-            await updateUserDetailsByIdService(user._id, { password: hashedPassword });
-            if(!hashedPassword){
-                sendResponse(res,null,500,false,"Password was not Updated");
-            }
-            // Send response with token and user info
-            sendResponse(res, null, 200, true, "Your Password has been changed Successfully");
-        } else {
-            sendResponse(res, null, 400, false, "Invalid request body");
+        // Hash the new password
+        const saltRounds = 10; // Define the number of salt rounds
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+        // Update the user's password in the database
+        const isUpdated = await updateUserDetailsByIdService(userId, { password: hashedPassword });
+
+        if (!isUpdated) {
+            return sendResponse(res, null, 500, false, "Password update failed");
         }
-    
 
-    }
-    catch(err){
-        console.log(err)
-        sendResponse(res,err,500,false,"Some Error occurred")
+        // Respond with success
+        return sendResponse(res, null, 200, true, "Your password has been changed successfully");
+    } catch (err) {
+        console.error(err);
+        return sendResponse(res, err, 500, false, "An error occurred");
     }
 };
+
+
 module.exports = {
     createUserController,
     getUserDetailsController,
