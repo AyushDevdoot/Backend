@@ -281,9 +281,7 @@ const forgetPasswordController = async (req, res) => {
     }
 };
 
-const bcrypt = require('bcrypt');
-const { updateUserDetailsByIdService } = require('../services/userService');
-const { sendResponse } = require('../utils/responseHandler');
+
 
 const changePasswordController = async (req, res) => {
     try {
