@@ -274,7 +274,7 @@ const forgetPasswordController = async (req, res) => {
         //     return sendResponse(res, null, 400, false, "Invalid Token");
         // }
         console.log('verify ho gaya')
-        const token = generatedToken(
+        const token = generateToken(
             { user: { _id: user._id, email: user.email }, isVerified: user.isVerified },
             "forget",
             "15m" // Token expires in 15 minutes
