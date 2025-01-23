@@ -13,6 +13,21 @@ const html = (otp) => {
         `)
 }
 
+const forgothtml = (link)=>{
+  return (`
+      <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+                <h2 style="color: #4CAF50;">Forgot Your Password ?</h2>
+                <p>Dear User,</p>
+                <p>Press the following Link to Reset you Password. </p>
+                <h1 style="background: #f3f3f3; padding: 10px; text-align: center; border-radius: 5px; color: #333;">${link}</h1>
+                <p>If you did not request this, please ignore this email.</p>
+                <p>Thank you,<br>Your Service Team</p>
+            </div>
+
+    `)
+
+}
+
 const specialistEnums = [
     "emergencymedicalservices",
     "mentalhealthsupport",
@@ -41,5 +56,6 @@ const specialistEnums = [
 module.exports = {
     saltRounds,
     html,
-    specialistEnums
+    specialistEnums,
+    forgothtml
 };

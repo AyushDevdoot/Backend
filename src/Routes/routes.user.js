@@ -8,7 +8,7 @@ userRouter.post('/login', loginUserController);
 userRouter.get('/details', verifyUserMiddleware, getUserDetailsController);
 userRouter.post('/otp', verifytUserOtpMiddleware, verifyOtpController);
 userRouter.post('/send-otp', sendOtpToEmail);
-userRouter.patch('/forget', verifyUserMiddleware, forgetPasswordController);
+userRouter.post('/forget', verifyUserMiddleware, forgetPasswordController);
 userRouter.patch('/change', verifyUserMiddleware, changePasswordController);
 
 

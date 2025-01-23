@@ -1,6 +1,6 @@
 const { createUserDto, validateCreateUserDto, getUserDto } = require("../DTOs/user.dto");
 const { sendResponse, generateToken, generateOTP } = require("../Helpers/helpers.commonFunc");
-const { saltRounds, html } = require("../Helpers/helpers.constant");
+const { saltRounds, html, forgothtml } = require("../Helpers/helpers.constant");
 const logger = require("../Helpers/loggerFunction");
 const { createUserService, getUserDetailsByIdService, getUserDetailsByEmailService, updateUserDetailsByIdService } = require("../Services/services.user");
 const bcrypt = require("bcrypt");
@@ -255,23 +255,36 @@ const forgetPasswordController = async (req, res) => {
         if (!user.isVerified) {
             return sendResponse(res, null, 400, false, "User not verified");
         }
-        if (req.user.tokenType == "forget") {
-            if (req.body.newPass != "") {
-                const isCurrPasswordValid = await bcrypt.compare(req.body.newPass, user.password);
-                if (isCurrPasswordValid) {
-                    return sendResponse(res, null, 400, false, "Previous password cannot be same as new password");
-                }
+        // if (req.user.tokenType == "forget") {
+        //     if (req.body.newPass != "") {
+        //         const isCurrPasswordValid = await bcrypt.compare(req.body.newPass, user.password);
+        //         if (isCurrPasswordValid) {
+        //             return sendResponse(res, null, 400, false, "Previous password cannot be same as new password");
+        //         }
 
-                const hashedPassword = await bcrypt.hash(req.body.newPass, saltRounds);
-                await updateUserDetailsByIdService(user._id, { password: hashedPassword });
-                // Send response with token and user info
-                sendResponse(res, null, 200, true, "Your Password has been changed Successfully");
-            } else {
-                sendResponse(res, null, 400, false, "Invalid request body");
-            }
-        } else {
-            return sendResponse(res, null, 400, false, "Invalid Token");
-        }
+        //         const hashedPassword = await bcrypt.hash(req.body.newPass, saltRounds);
+        //         await updateUserDetailsByIdService(user._id, { password: hashedPassword });
+        //         // Send response with token and user info
+        //         sendResponse(res, null, 200, true, "Your Password has been changed Successfully");
+        //     } else {
+        //         sendResponse(res, null, 400, false, "Invalid request body");
+        //     }
+        // } else {
+        //     return sendResponse(res, null, 400, false, "Invalid Token");
+        // }
+        console.log('verify ho gaya')
+        const token = generatedToken(
+            { user: { _id: user._id, email: user.email }, isVerified: user.isVerified },
+            "forget",
+            "15m" // Token expires in 15 minutes
+        );
+        console.log('yeh lo',token)
+
+        // Create a password reset link
+        const resetLink = `devdoot/reset-password?token=${token}.com`;
+        console.log(resetLink,'yeh lo');
+
+        sendEmail(email, "Click on this link to reset the password ", forgothtml(resetLink));
 
 
     } catch (err) {
