@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
     userType: {
         type: String,
         required: true,
-        enum: ["care-giver", "user"]
+        enum: ["care-giver", "patient"]
     },
     coachType: {
         type: String,
