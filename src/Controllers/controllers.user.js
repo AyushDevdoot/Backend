@@ -101,8 +101,8 @@ const createUserController = async (req, res) => {
             console.log("User does not exist. Creating a new user.");
 
             let userType = "care-giver";
-            if (req.body.registerType) {
-                userType = req.body.registerType;
+            if (req.body.userType) {
+                userType = req.body.userType;
             }
             console.log("User type:", userType);
 
