@@ -121,6 +121,7 @@ const createUserController = async (req, res) => {
                 }),
                 userType,
                 emailOtp,
+                ...(userType === "care-giver" && { coachType: req.body.coachType })
             });
             console.log("New user created:", userDetails);
 
@@ -260,7 +261,7 @@ const forgetPasswordController = async (req, res) => {
         }
 
             
-        const token = generateToken(
+        const token = await generateToken(
             { user: { _id: user._id, email: user.email }, isVerified: user.isVerified },
             process.env.JWT_SECRET_KEY,
             "15m" // Token expires in 15 minutes

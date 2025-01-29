@@ -35,6 +35,13 @@ const userSchema = new mongoose.Schema({
         required: true,
         enum: ["care-giver", "user"]
     },
+    coachType:{
+        type:String,
+        enum:["child care", "pet care", "virtual coach", "senior care", "tutoring"],
+        required: function (){
+            return this.userType === "care-giver"
+        }
+    },
     isVerified: {
         type: Boolean,
         required: true,
