@@ -1,5 +1,5 @@
 const createUserDto = (data) => {
-    const { firstName, lastName, mobile, email, password, coachType } = data;
+    const { firstName, lastName, mobile, email, password,userType, coachType } = data;
     return {
         firstName,
         lastName,
