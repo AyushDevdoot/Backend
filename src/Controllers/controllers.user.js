@@ -118,6 +118,7 @@ const createUserController = async (req, res) => {
                     ...req.body,
                     email,
                     password: hashedPassword,
+                    userType
                 }),
                 userType,
                 emailOtp,
