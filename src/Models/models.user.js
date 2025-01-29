@@ -40,12 +40,16 @@ const userSchema = new mongoose.Schema({
         enum: ["child care", "pet care", "virtual coach", "senior care", "tutoring"],
         validate: {
             validator: function (value) {
-                // Ensure coachType is only provided when userType is 'care-giver'
-                return this.userType !== "care-giver" || value;
+                if (this.userType === "care-giver") {
+                    return Boolean(value); 
+                }
+                return true; 
             },
-            message: "CoachType is required when userType is 'care-giver'."
-        }
+            message: "CoachType is required when userType is 'care-giver'.",
+        },
+        default: undefined,
     },
+
     isVerified: {
         type: Boolean,
         required: true,
