@@ -1,11 +1,12 @@
 const createUserDto = (data) => {
-    const { firstName, lastName, mobile, email, password } = data;
+    const { firstName, lastName, mobile, email, password, coachType } = data;
     return {
         firstName,
         lastName,
         mobile,
         email,
         password,
+        ...(userType === "care-giver" && { coachType })
     }
 }
 
@@ -38,14 +39,15 @@ const validateCreateUserDto = (data) => {
 
 
 const getUserDto = (data) => {
-    const { _id, firstName, lastName, phone, email, userType } = data;
+    const { _id, firstName, lastName, phone, email, userType,coachType } = data;
     return {
         _id,
         firstName,
         lastName,
         phone,
         email,
-        userType
+        userType,
+        ...(userType === "care-giver" && { coachType })
     }
 }
 
