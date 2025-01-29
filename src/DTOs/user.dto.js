@@ -6,6 +6,7 @@ const createUserDto = (data) => {
         mobile,
         email,
         password,
+        userType,
         ...(userType === "care-giver" && { coachType })
     }
 }
