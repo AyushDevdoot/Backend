@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const slotSchema = new Mongoose.Schema({
+const slotSchema = new mongoose.Schema({
     startTime: {type:String, required: True},
     endTime:  {type:String, required: True}
 
