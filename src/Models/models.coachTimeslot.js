@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const slotSchema = new mongoose.Schema({
-    startTime: {type:String, required: True},
-    endTime:  {type:String, required: True}
+    startTime: {type:String, required: true},
+    endTime:  {type:String, required: true}
 
 })
 
