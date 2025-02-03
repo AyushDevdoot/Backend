@@ -16,7 +16,7 @@ const coachSlotSchema = new mongoose.Schema({
     slots:{
         type:Map,
         of:[slotSchema],
-        required:True,
+        required:true,
     },
 
 });
