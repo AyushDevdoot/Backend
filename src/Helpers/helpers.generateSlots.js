@@ -30,7 +30,7 @@ const generateTimeSlots = (data, x) => {
       weekSlots[day.day] = daySlots;
     });
   
-    return JSON.stringify({"adminID":data.adminID,slots:weekSlots}, null, 2);
+    return JSON.parse({"adminID":data.adminID,slots:weekSlots}, null, 2);
 
   }
   
