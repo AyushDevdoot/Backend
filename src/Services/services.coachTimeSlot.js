@@ -1,5 +1,5 @@
 const CoachTimeslotModel = require("../Models/models.coachTimeslot");
-const {generateTimeSlots} = require("../Helpers/helpers.generateSlots");
+const generateTimeSlots = require("../Helpers/helpers.generateSlots");
 
 
 const createCoachTimeSlotServices = async (coachTimeSlot) => {
