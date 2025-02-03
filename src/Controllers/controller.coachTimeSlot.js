@@ -1,15 +1,16 @@
 const { createCoachTimeslotDto, validateCoachTimeslotFields } = require("../DTOs/coachTimeSlot.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
+const {generateTimeSlots} = require("../Helpers/helpers.generateSlots")
 const { createCoachTimeSlotServices } = require("../Services/services.coachTimeSlot");
 
 const createCoachTimeSlotController = async (req, res) => {
     try {
         const coachTimeSlot = createCoachTimeslotDto(req.body);
-        const errors = validateCoachTimeslotFields(coachTimeSlot);
-        if (Object.keys(errors).length > 0) {
-            sendResponse(res, null, 400, false, errors);
-            return
-        }
+        // const errors = validateCoachTimeslotFields(coachTimeSlot);
+        // if (Object.keys(errors).length > 0) {
+        //     sendResponse(res, null, 400, false, errors);
+        //     return
+        // }
         await createCoachTimeSlotServices({ ...coachTimeSlot, createdBy: req.user._id });
         sendResponse(res, null, 201, true, "Coach time slot created successfully");
         return
