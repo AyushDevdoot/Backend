@@ -19,8 +19,8 @@ const generateTimeSlots = (data, x) => {
           let slotEndMinute = slotEndMinutes % 60;
   
           daySlots.push({
-            start: formatTime(slotStartHour, slotStartMinute),
-            end: formatTime(slotEndHour, slotEndMinute)
+            startTime: formatTime(slotStartHour, slotStartMinute),
+            endTime: formatTime(slotEndHour, slotEndMinute)
           });
   
           totalStartMinutes += x;
@@ -30,7 +30,7 @@ const generateTimeSlots = (data, x) => {
       weekSlots[day.day] = daySlots;
     });
   
-    return {"adminID":data.adminID,slots:weekSlots};
+    return {coachId:data.coachId,slots:weekSlots};
 
   }
   
