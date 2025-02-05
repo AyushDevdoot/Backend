@@ -4,7 +4,7 @@ const CoachInfo = require ("../Models/models.coachInfo");
 
 const createCoachTimeSlotServices = async (coachTimeSlot) => {
     console.log(coachTimeSlot.coachId);
-    const minutesSession = await CoachInfo.findById(coachTimeSlot.coachId, 'sessionTimee');
+    const minutesSession = await CoachInfo.findById(coachTimeSlot.coachId, 'sessionTime');
     coachTimeSlot = generateTimeSlots(coachTimeSlot,minutesSession);
 
     const finalBody = new CoachTimeslotModel(coachTimeSlot);
