@@ -25,7 +25,7 @@ const getCoachTimeSlotController = async (req, res) => {
 
     try {
         console.log("idhar")
-        console.log(req.params.id)
+        console.log(mongoose.Types.ObjectId.isValid(req.params.coachId))
         const coachTimeSlot = await getCoachTimeSlotServices(req.params.coachId);
         if (!coachTimeSlot) {
             console.log(" ya idhar")
