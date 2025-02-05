@@ -22,8 +22,10 @@ const createCoachTimeSlotController = async (req, res) => {
 };
 
 const getCoachTimeSlotController = async (req, res) => {
+
     try {
         console.log("idhar")
+        console.log(req.params.id)
         const coachTimeSlot = await getCoachTimeSlotServices(req.params.coachId);
         if (!coachTimeSlot) {
             console.log(" ya idhar")
