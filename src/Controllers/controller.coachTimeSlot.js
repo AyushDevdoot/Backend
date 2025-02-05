@@ -1,7 +1,7 @@
 const { createCoachTimeslotDto, validateCoachTimeslotFields } = require("../DTOs/coachTimeSlot.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
 const {generateTimeSlots} = require("../Helpers/helpers.generateSlots")
-const { createCoachTimeSlotServices } = require("../Services/services.coachTimeSlot");
+const { createCoachTimeSlotServices, getCoachTimeSlotServices } = require("../Services/services.coachTimeSlot");
 
 const createCoachTimeSlotController = async (req, res) => {
     try {
