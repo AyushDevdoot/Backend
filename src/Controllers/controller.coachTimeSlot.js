@@ -27,6 +27,7 @@ const getCoachTimeSlotController = async (req, res) => {
         console.log("idhar")
         console.log(req.params)
         const coachTimeSlot = await getCoachTimeSlotServices(req.params.coachId);
+        console.log(coachTimeSlot)
         if (!coachTimeSlot) {
             console.log(" ya idhar")
             sendResponse(res, null, 400, false, "Coach time slot not found");
