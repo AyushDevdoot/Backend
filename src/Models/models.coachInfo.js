@@ -31,7 +31,12 @@ const coachInfoSchema = new mongoose.Schema({
         required: true,
         default: 0
     },
-    pricePerMinute: {
+    sessionTime:{
+        type:Number,
+        required:true,
+        default:60
+    },
+    pricePerSession: {
         type: Number,
         required: true
     },
