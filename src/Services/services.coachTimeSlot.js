@@ -11,7 +11,8 @@ const createCoachTimeSlotServices = async (coachTimeSlot) => {
 }
 
 const getCoachTimeSlotServices = async (coachId) => {
-    return await CoachTimeslotModel.findOne({ coachId }).populate("coachId");;
+    console.log("Looking for Coach Time Slot with ID:", coachId);
+    return await CoachTimeslotModel.findOne({ coachId }).populate("coachId");
 }
 module.exports = {
     createCoachTimeSlotServices,
