@@ -9,7 +9,7 @@ const slotSchema = new mongoose.Schema({
 const coachSlotSchema = new mongoose.Schema({
     coachId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Coach",
+        ref:"coachinfo",
         required:true,
     },
     
