@@ -215,26 +215,18 @@ const verifyOtpController = async (req, res) => {
     }
 }
 
-const sendOtpToEmail = async (req, res) => {
+const resendOtpToEmail = async (req, res) => {
     try {
         const user = await getUserDetailsByEmailService(req.body.email?.toLowerCase());
         if (!user) {
             sendResponse(res, null, 400, false, "User not found");
             return
         }
-        const token = await generateToken({
-            user: {
-                _id: user._id,
-                userType: user.userType,
-                email: user.email,
-                tokenType: "forget"
-            },
-            isVerified: false
-        });
+       
         const emailOtp = generateOTP();
         await updateUserDetailsByIdService(user._id, { emailOtp });
-        // sendEmail(user.email, "Forget Password otp", html(emailOtp));
-        sendResponse(res, null, 200, true, "OTP sent successfully on email", { token });
+        sendEmail(userDetails.email, "login otp", html(emailOtp));
+        sendResponse(res, null, 200, true, "OTP sent successfully on email");
         return
     } catch (error) {
         console.log(error);
@@ -321,6 +313,6 @@ module.exports = {
     loginUserController,
     verifyOtpController,
     forgetPasswordController,
-    sendOtpToEmail,
+    resendOtpToEmail,
     changePasswordController
 };
