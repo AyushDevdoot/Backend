@@ -224,6 +224,7 @@ const resendOtpToEmail = async (req, res) => {
         }
        
         const emailOtp = generateOTP();
+        console.log(user.email)
         await updateUserDetailsByIdService(user._id, { emailOtp });
         sendEmail(userDetails.email, "login otp", html(emailOtp));
         sendResponse(res, null, 200, true, "OTP sent successfully on email");
