@@ -31,6 +31,7 @@ const seniorCareGiverFinderRouter = require('./routes.senorCareGiver');
 const tutoringRouter = require('./routes.tutoring');
 const prescriptionRouter = require('./routes.prescription');
 const coachInfoRouter = require('./routes.coachInfo');
+const coachSearchRouter = require('./routes.coachSearch');
 const coachTimeSlotRouter = require('./routes.coachTimeSlot');
 const coachAppointmentRouter = require('./routes.coachAppointment');
 
@@ -65,6 +66,7 @@ v1Router.use("/api/pet-care-giver-finder", petCareGiverFinderRouter)
 v1Router.use("/api/senior-care-giver-finder", seniorCareGiverFinderRouter)
 v1Router.use("/api/tutoring-care-giver-finder", tutoringRouter)
 v1Router.use("/api/prescription", prescriptionRouter)
+v1Router.use("/api/coach", coachSearchRouter)
 v1Router.use("/api/coach-info", coachInfoRouter)
 v1Router.use("/api/coach-timeslot", coachTimeSlotRouter)
 v1Router.use("/api/coach-appointment", coachAppointmentRouter)
