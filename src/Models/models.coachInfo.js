@@ -53,7 +53,11 @@ const coachInfoSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: true
-    }
+    },
+    currency: {
+	type: String,
+	default: 'Inr'
+    },
 }, { timestamps: true });
 
 const CoachInfoModel = mongoose.model('coachinfo', coachInfoSchema);
