@@ -55,5 +55,6 @@ module.exports = {
 	createNewSpecialization,
 	getAllSpecializations,
 	getSpecializationByCounterId,
-	getSpecializationBy_Id
+	getSpecializationBy_Id,
+    refreshCounterAndSpecializations
 };
