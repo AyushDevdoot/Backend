@@ -60,7 +60,77 @@ const validateSpecialistFields = (data) => {
     return errors;
 }
 
+
+
+const createNewSpecializationDto = (data) => {
+    	const { specialization, isActive = true } = data;
+	return { specialization, isActive :isActive }
+}
+
+
+
+const validateNewSpecialization = (data, specialization) => {
+    const errors = {};
+
+    // specialistServiceCategory validation
+    if (!data.specialization || typeof data.specialization !== 'string') {
+        errors.specialization = "specialization must be a valid string.";
+    }
+
+    if (specialization[data.specialization]){
+	    errors.specialization = "Specialization Already Exists"
+    }
+    if (!data.isActive || typeof data.isActive !== 'boolean') {
+        errors.isActive = "Specialization activation needs boolean or no value";
+    }
+
+    return errors;
+}
+
+
+const specializationSearchByIdDto = (data) => {
+	const { id } = data;
+    	return { id };
+}
+
+const specializationSearchBy_idDto = (data) => {
+	const { id } = data;
+	return { _id : id };
+}
+
+const validateSpecializationId = (data) => {
+	if (!(data.id - 0 ) || typeof (data.id - 0) !== 'Number') {
+		errors.id = "id must be a valid Number";
+    	}
+	return errors
+}
+
+const validateSpecialization_id = (data) => {
+	const hex = { '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6,
+	  '7': 7, '8': 8, '9': 9, 'a': 10, 'b': 11, 'c': 12, 'd': 13, 'e': 14,
+	  'f': 15 
+	}
+	count=0
+	for (let char of data._id){
+		if (!hex[char]){
+			errors._id = "Invaid _id";
+		}
+		count++;
+	}
+	if (!data._id || count !== 24) {
+        	errors._id = "_id must be a valid mongo db id";
+	}
+	return errors
+}
+
+
 module.exports = {
     createSpecialistDto,
-    validateSpecialistFields
+    validateSpecialistFields,
+    createNewSpecializationDto,
+    validateNewSpecialization,
+    specializationSearchByIdDto,
+    specializationSearchBy_idDto,
+    validateSpecializationId,
+    validateSpecialization_id
 };

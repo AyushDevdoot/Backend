@@ -19,7 +19,7 @@ const searchCoachesByName = async (req, res) => {
             return
         }
 
-        sendResponse(res, null, 201, true, result);
+        sendResponse(res, null, 201, true, 'Search Successfull',result);
     }catch (err) {
         console.log(err);
         sendResponse(res, err, 500);
@@ -43,7 +43,7 @@ const searchCoachesByCategory = async (req, res) => {
             return
         }
 
-        sendResponse(res, null, 201, true, result);
+        sendResponse(res, null, 201, true, 'search success',result);
     }catch (err) {
         console.log(err);
         sendResponse(res, err, 500);
@@ -67,7 +67,7 @@ const searchCoachesByLanguage = async (req, res) => {
             return
         }
 
-        sendResponse(res, null, 201, true, result);
+        sendResponse(res, null, 201, true, 'search success',result);
     }catch (err) {
         console.log(err);
         sendResponse(res, err, 500);
@@ -92,7 +92,7 @@ const searchCoachesBySorted = async (req, res) => {
             return
         }
 
-        sendResponse(res, null, 201, true, result);
+        sendResponse(res, null, 201, true, 'search success',result);
     }catch (err) {
         console.log(err);
         sendResponse(res, err, 500);

@@ -1,25 +1,20 @@
-const {  validateCoachSortedSearchDto } = require("../../DTOs/search.dto");
+const { createNewSpecializationDto, validateNewSpecialization, specializationSearchByIdDto, specializationSearchBy_idDto, validateSpecializationId, validateSpecialization_id } = require("../../DTOs/specialist.dto");
 const { sendResponse } = require("../../Helpers/helpers.commonFunc");
-const {  getCoachesSorted } = require("../../Services/services.searchCoaches");
+const { createNewSpecialization, getAllSpecializations, getSpecializationByCounterId, getSpecializationBy_Id } = require("../../Services/services.specialization");
 
 
-const createSpecializations = async () => {
+const createSpecializations = async (req, res) => {
     try {
-        const search_data = coachNameSearchDto(req.query);
-        const errors = validateCoachNameSearchDto(search_data);
+        const specialization = createNewSpecializationDto(req.query);
+        const existing = await getAllSpecializations(); 
+        const errors = validateNewSpecialization(specialization, existing);
         if (Object.keys(errors).length > 0){
             sendResponse(res, null, 422, false, errors);
             return
-        }
-        console.log('--->',search_data)
-        let result = await getCoachesByName(search_data);
+        } 
+        let result = await createNewSpecialization(specialization);
         console.log(result);
-        if (result.total_results === 0){
-            sendResponse(res, null, 204, true, message = "No Result Found",result);
-            return
-        }
-
-        sendResponse(res, null, 201, true, result);
+        sendResponse(res, null, 201, true, 'Specialization Created',result);
     }catch (err) {
         console.log(err);
         sendResponse(res, err, 500);
@@ -27,23 +22,39 @@ const createSpecializations = async () => {
 
 };
 
-const searchSpecializations = async (req, res) => {
+const allSpecialization = async (req, res) => {
     try {
-        const search_data = coachNameSearchDto(req.query);
-        const errors = validateCoachNameSearchDto(search_data);
+        let result = await getAllSpecializations();
+        console.log(result);
+        if (result.total_results === 0){
+            sendResponse(res, null, 204, true, message = "No Result Found",result);
+            return
+        }
+        sendResponse(res, null, 201, true, 'success', result);
+    }catch (err) {
+        console.log(err);
+        sendResponse(res, err, 500);
+    }
+
+
+};
+
+const searchSpecializationsById = async (req, res) => {
+    try {
+        const data = specializationSearchByIdDto(req.query);
+        const errors = validateSpecializationId(data);
         if (Object.keys(errors).length > 0){
             sendResponse(res, null, 422, false, errors);
             return
         }
-        console.log('--->',search_data)
-        let result = await getCoachesByName(search_data);
+        let result = await getSpecializationByCounterId(search_data);
         console.log(result);
         if (result.total_results === 0){
             sendResponse(res, null, 204, true, message = "No Result Found",result);
             return
         }
 
-        sendResponse(res, null, 201, true, result);
+        sendResponse(res, null, 201, true, 'success', result);
     }catch (err) {
         console.log(err);
         sendResponse(res, err, 500);
@@ -51,47 +62,23 @@ const searchSpecializations = async (req, res) => {
 };
 
 
-const searchSpecialization = async (req, res) => {
+const searchSpecializationBy_id = async (req, res) => {
     try {
-        const search_data = coachNameSearchDto(req.query);
-        const errors = validateCoachNameSearchDto(search_data);
+        const data = specializationSearchBy_idDto(req.query);
+        const errors = validateSpecialization_id(data);
         if (Object.keys(errors).length > 0){
             sendResponse(res, null, 422, false, errors);
             return
         }
         console.log('--->',search_data)
-        let result = await getCoachesByName(search_data);
+        let result = await getSpecializationBy_Id(data);
         console.log(result);
         if (result.total_results === 0){
             sendResponse(res, null, 204, true, message = "No Result Found",result);
             return
         }
 
-        sendResponse(res, null, 201, true, result);
-    }catch (err) {
-        console.log(err);
-        sendResponse(res, err, 500);
-    }
-};
-
-
-
-const searchCoachesByCategory = async (req, res) => {
-    try {
-        const search_data = coachCategorySearchDto(req.query);
-        const errors = validateCoachCategorySearchDto(search_data);
-        if (Object.keys(errors).length > 0){
-            sendResponse(res, null, 422, false, errors);
-            return
-        }
-        let result = await getCoachesByCategory(search_data);
-        console.log(result);
-        if (result.total_results === 0){
-            sendResponse(res, null, 204, true, message = "No Result Found",result);
-            return
-        }
-
-        sendResponse(res, null, 201, true, result);
+        sendResponse(res, null, 201, true, 'success', result);
     }catch (err) {
         console.log(err);
         sendResponse(res, err, 500);
@@ -99,4 +86,8 @@ const searchCoachesByCategory = async (req, res) => {
 };
 
 module.exports = {
+createSpecializations,
+allSpecialization,
+searchSpecializationsById,
+searchSpecializationBy_id
 };

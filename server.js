@@ -14,14 +14,8 @@ app.use(cors());
 
 mongoose
   .connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-
   })
   .then(() => {
-    //const admin = mongoose.connection;
-    //const dbs = await admin.listCollections();
-    //console.log(dbs);
     console.log('Connected To Db');
   })
   .catch((error) => {

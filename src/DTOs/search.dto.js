@@ -64,9 +64,6 @@ const validateCoachCategorySearchDto = (data) => {
 };
 
 
-
-
-
 const coachLanguageSearchDto = (data) => {
     const {
         language,
