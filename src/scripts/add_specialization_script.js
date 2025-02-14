@@ -4,7 +4,6 @@ const SpecialistCategoriesModel = require("../Models/models.specialistCategories
 const Counter = require("../Models/models.counterForAll");
 
 
-const mongoUri='mongodb+srv://debayush2002:deINFBAlnXQPywaE@clusterone.5owul.mongodb.net/?retryWrites=true&w=majority&appName=ClusterOne'
 mongoose
   .connect(mongoUri, {
   })
