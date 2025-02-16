@@ -1,4 +1,4 @@
-const {createCoachBankDetailsServices}= require('../Services/services.coachBankDetails');
+const {createCoachBankDetailsServices, getCoachBankDetailsByIdService}= require('../Services/services.coachBankDetails');
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
 
 const createCoachBankDetailsController = async (req, res) => {
@@ -16,4 +16,16 @@ const createCoachBankDetailsController = async (req, res) => {
     }
 };
 
-module.exports ={ createCoachBankDetailsController }; 
+const getCoachBankDetailsController= async(req,res) =>{
+    const user = await getCoachBankDetailsByIdService(req.user._id);
+    if (!user) {
+        sendResponse(res, null, 400, false, "user not found");
+        return
+    } else {
+        sendResponse(res, null, 200, true, "user details fetched successfully", getUserDto(user));
+        return
+    }
+
+}
+
+module.exports ={ createCoachBankDetailsController ,getCoachBankDetailsController}; 
