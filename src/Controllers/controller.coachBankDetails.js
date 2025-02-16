@@ -19,6 +19,7 @@ const createCoachBankDetailsController = async (req, res) => {
 
 const getCoachBankDetailsController= async(req,res) =>{
     const user = await getCoachBankDetailsByIdService(req.user._id);
+    console.log(user,"hi")
     if (!user) {
         sendResponse(res, null, 400, false, "user not found");
         return
@@ -26,6 +27,7 @@ const getCoachBankDetailsController= async(req,res) =>{
         sendResponse(res, null, 200, true, "user details fetched successfully", getUserDto(user));
         return
     }
+
 
 }
 
