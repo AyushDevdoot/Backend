@@ -14,4 +14,4 @@ const createCoachBankDetailsController = async (req, res) => {
     }
 };
 
-module.exports = createCoachBankDetailsController
+module.exports ={ createCoachBankDetailsController }; 

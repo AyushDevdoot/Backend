@@ -8,6 +8,8 @@ coachInfoRouter.post('/', verifyUserMiddleware, createCoachInfoController);
 coachInfoRouter.get('/search', verifyUserMiddleware, getCoachInfoController);
 coachInfoRouter.patch('/:coachId', updateCoachInfoController);
 
+console.log("createCoachBankDetailsController:", createCoachBankDetailsController);
+
 coachInfoRouter.post('/account-details',verifyUserMiddleware, createCoachBankDetailsController )
 
 module.exports = coachInfoRouter;
