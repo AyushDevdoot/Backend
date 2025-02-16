@@ -36,6 +36,7 @@ const coachTimeSlotRouter = require('./routes.coachTimeSlot');
 const coachAppointmentRouter = require('./routes.coachAppointment');
 
 
+
 v1Router.use("/api/user", userRouter)
 v1Router.use("/api/medicalequipment", medicalEquipmentRouter)
 v1Router.use("/api/customer", customerInfoRouter)
@@ -70,5 +71,6 @@ v1Router.use("/api/coach", coachSearchRouter)
 v1Router.use("/api/coach-info", coachInfoRouter)
 v1Router.use("/api/coach-timeslot", coachTimeSlotRouter)
 v1Router.use("/api/coach-appointment", coachAppointmentRouter)
+
 
 module.exports = v1Router;
