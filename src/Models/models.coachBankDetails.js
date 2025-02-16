@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 const coachBankDetailsSchema = new mongoose.Schema({
-    // coachId:{
-    //     type:mongoose.Schema.Types.ObjectId,
-    //     ref:"coachinfo",
-    //     required:true,
-    // },
+    coachId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"coachinfo",
+        required:true,
+    },
     bankName:{
         type: String,
         required: true

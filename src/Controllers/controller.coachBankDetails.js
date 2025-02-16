@@ -6,8 +6,9 @@ const createCoachBankDetailsController = async (req, res) => {
         const coachBankDetails = req.body;
         console.log("Received request body:", coachBankDetails);
         console.log(req.user._id)
+        const coachId = req.user._id
 
-        await createCoachBankDetailsServices({...coachBankDetails, createdBy: req._id});
+        await createCoachBankDetailsServices({...coachBankDetails,coachId});
         sendResponse(res, null, 200, 'Coach Bank Details Created Successfully');
     } catch (error) {
         console.error("Error in createCoachBankDetailsController:", error);
