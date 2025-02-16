@@ -24,8 +24,8 @@ const getCoachBankDetailsController= async(req,res) =>{
         sendResponse(res, null, 400, false, "user not found");
         return
     } else {
-        sendResponse(res, null, 200, true, "user details fetched successfully", getUserDto(user));
-        return
+        sendResponse(res, null, 200, true, "user details fetched successfully");
+        return user
     }
 
 
