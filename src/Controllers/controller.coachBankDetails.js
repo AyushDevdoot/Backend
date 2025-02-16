@@ -1,5 +1,6 @@
 const {createCoachBankDetailsServices, getCoachBankDetailsByIdService}= require('../Services/services.coachBankDetails');
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
+const { createUserDto, validateCreateUserDto, getUserDto } = require("../DTOs/user.dto");
 
 const createCoachBankDetailsController = async (req, res) => {
     try {
