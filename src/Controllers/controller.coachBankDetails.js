@@ -5,7 +5,7 @@ const createCoachBankDetailsController = async (req, res) => {
     try {
         const coachBankDetails = req.body;
         console.log("Received request body:", coachBankDetails);
-        console.log(req._id)
+        console.log(req.user._id)
 
         await createCoachBankDetailsServices({...coachBankDetails, createdBy: req._id});
         sendResponse(res, null, 200, 'Coach Bank Details Created Successfully');
