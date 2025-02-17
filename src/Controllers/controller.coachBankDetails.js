@@ -48,7 +48,6 @@ const updateCoachBankDetailsController = async (req, res) => {
 
         sendResponse(res, updatedRecord, 200, true, "Bank details updated successfully");
     } catch (error) {
-        console.error("Error in updateCoachBankDetailsController:", error);
         sendResponse(res, null, 500, false, "Internal Server Error");
     }
 };

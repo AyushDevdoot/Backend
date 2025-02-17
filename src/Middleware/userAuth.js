@@ -21,7 +21,7 @@ const verifyUserMiddleware = (req, res, next) => {
             sendResponse(res, null, 401, false, "Invalid Token");
             return;
         }
-
+        console.log('ho gaya')
         next();
     } catch (err) {
         sendResponse(res, null, 401, false, "Unauthorized Token");
