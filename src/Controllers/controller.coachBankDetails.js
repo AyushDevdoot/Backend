@@ -34,6 +34,7 @@ const getCoachBankDetailsController= async(req,res) =>{
 const updateCoachBankDetailsController = async (req,res) =>{
     const coachId = req.user._id
     const updatedCoachBankDetails = req.body
+    console.log(updatedCoachBankDetails)
     await updateCoachBankDetailsServices(coachId,updatedCoachBankDetails);
 }
 
