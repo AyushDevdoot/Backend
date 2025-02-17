@@ -12,18 +12,6 @@ console.log("createCoachBankDetailsController:", createCoachBankDetailsControlle
 
 coachInfoRouter.post('/account-details',verifyUserMiddleware, createCoachBankDetailsController )
 coachInfoRouter.get('/account-details',verifyUserMiddleware, getCoachBankDetailsController )
-// coachInfoRouter.patch('/change-account-details',verifyUserMiddleware, updateCoachBankDetailsController )
-
-const origVerifyMiddleware = verifyUserMiddleware;
-coachInfoRouter.patch('/account-details', 
-    (req, res, next) => {
-        console.log('Before verify middleware');
-        origVerifyMiddleware(req, res, next);
-    }, 
-    (req, res, next) => {
-        console.log('After verify middleware');
-        updateCoachBankDetailsController(req, res, next);
-    }
-);
+coachInfoRouter.patch('/change-account-details', updateCoachBankDetailsController )
 
 module.exports = coachInfoRouter;
