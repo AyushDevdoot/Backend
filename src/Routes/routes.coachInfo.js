@@ -12,6 +12,6 @@ console.log("createCoachBankDetailsController:", createCoachBankDetailsControlle
 
 coachInfoRouter.post('/account-details',verifyUserMiddleware, createCoachBankDetailsController )
 coachInfoRouter.get('/account-details',verifyUserMiddleware, getCoachBankDetailsController )
-coachInfoRouter.patch('/account-details',verifyUserMiddleware, updateCoachBankDetailsController )
+coachInfoRouter.patch('/change-account-details',verifyUserMiddleware, updateCoachBankDetailsController )
 
 module.exports = coachInfoRouter;
