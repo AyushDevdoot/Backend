@@ -3,13 +3,13 @@ const { verifyUserMiddleware } = require('../Middleware/userAuth');
 
 const coachSearchRouter = require('express').Router();
 
-coachSearchRouter.get('/search-by-name', searchCoachesByName);
+coachSearchRouter.get('/search-by-name', verifyUserMiddleware, searchCoachesByName);
 
-coachSearchRouter.get('/sort', searchCoachesBySorted);
+coachSearchRouter.get('/sort', verifyUserMiddleware, searchCoachesBySorted);
 
-coachSearchRouter.get('/search-by-language', searchCoachesByLanguage);
+coachSearchRouter.get('/search-by-language', verifyUserMiddleware, searchCoachesByLanguage);
 
-coachSearchRouter.get('/search-by-category', searchCoachesByCategory);
+coachSearchRouter.get('/search-by-category', verifyUserMiddleware, searchCoachesByCategory);
 
 module.exports = coachSearchRouter;
 

@@ -7,8 +7,8 @@ const specialistDetailsRouter = require('express').Router();
 specialistDetailsRouter.post('/', verifyUserMiddleware, createSpecialistDetailsController);
 specialistDetailsRouter.get('/', verifyUserMiddleware, getSpecialistDetailsController);
 
-specialistDetailsRouter.get('/create', createSpecializations);
-specialistDetailsRouter.get('/search-all', allSpecialization);
-specialistDetailsRouter.get('/search-by-id', searchSpecializationsById);
+//specialistDetailsRouter.get('/create', createSpecializations);
+specialistDetailsRouter.get('/search-all',  verifyUserMiddleware, allSpecialization);
+specialistDetailsRouter.get('/search-by-id', verifyUserMiddleware, searchSpecializationsById);
 
 module.exports = specialistDetailsRouter;
