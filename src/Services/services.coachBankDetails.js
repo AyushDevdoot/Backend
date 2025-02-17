@@ -9,7 +9,13 @@ const getCoachBankDetailsByIdService = async (coachId) => {
     return await coachBankDetailsModel.findOne({ coachId: coachId })
 }
 
+const updateCoachBankDetailsServices = async(coachBankDetails) =>{
+    return await coachBankDetailsModel.findOneAndUpdate({ coachId }, coachBankDetails, { new: true })
+}
+
 module.exports ={
     createCoachBankDetailsServices,
-    getCoachBankDetailsByIdService
+    getCoachBankDetailsByIdService,
+    updateCoachBankDetailsServices
+
 }

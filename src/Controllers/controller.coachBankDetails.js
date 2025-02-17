@@ -1,4 +1,4 @@
-const {createCoachBankDetailsServices, getCoachBankDetailsByIdService}= require('../Services/services.coachBankDetails');
+const {createCoachBankDetailsServices, getCoachBankDetailsByIdService, updateCoachBankDetailsServices}= require('../Services/services.coachBankDetails');
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
 const { createUserDto, validateCreateUserDto, getUserDto } = require("../DTOs/user.dto");
 
@@ -31,4 +31,10 @@ const getCoachBankDetailsController= async(req,res) =>{
 
 }
 
-module.exports ={ createCoachBankDetailsController ,getCoachBankDetailsController}; 
+const updateCoachBankDetailsController = async (req,res) =>{
+    const coachId = req.user._id
+    const updatedCoachBankDetails = req.body
+    await updateCoachBankDetailsServices(coachId,updatedCoachBankDetails);
+}
+
+module.exports ={ createCoachBankDetailsController ,getCoachBankDetailsController, updateCoachBankDetailsController};
