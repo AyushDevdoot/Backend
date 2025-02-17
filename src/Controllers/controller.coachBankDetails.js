@@ -31,11 +31,27 @@ const getCoachBankDetailsController= async(req,res) =>{
 
 }
 
-const updateCoachBankDetailsController = async (req,res) =>{
-    const coachId = req.user._id
-    const updatedCoachBankDetails = req.body
-    console.log(updatedCoachBankDetails)
-    await updateCoachBankDetailsServices(coachId,updatedCoachBankDetails);
-}
+const updateCoachBankDetailsController = async (req, res) => {
+    try {
+        const coachId = req.user._id;
+        const updatedCoachBankDetails = req.body;
+
+        console.log("Updating coach bank details for:", coachId);
+        console.log("New details:", updatedCoachBankDetails);
+
+        // Call service to update details
+        const updatedRecord = await updateCoachBankDetailsServices(coachId, updatedCoachBankDetails);
+
+        if (!updatedRecord) {
+            return sendResponse(res, null, 404, false, "Bank details not found or update failed");
+        }
+
+        sendResponse(res, updatedRecord, 200, true, "Bank details updated successfully");
+    } catch (error) {
+        console.error("Error in updateCoachBankDetailsController:", error);
+        sendResponse(res, null, 500, false, "Internal Server Error");
+    }
+};
+
 
 module.exports ={ createCoachBankDetailsController ,getCoachBankDetailsController, updateCoachBankDetailsController};
