@@ -6,7 +6,7 @@ const coachInfoRouter = require('express').Router();
 
 coachInfoRouter.post('/', verifyUserMiddleware, createCoachInfoController);
 coachInfoRouter.get('/search', verifyUserMiddleware, getCoachInfoController);
-// coachInfoRouter.patch('/:coachId', updateCoachInfoController);
+coachInfoRouter.patch('/:coachId',verifyUserMiddleware, updateCoachInfoController);
 
 console.log("createCoachBankDetailsController:", createCoachBankDetailsController);
 
