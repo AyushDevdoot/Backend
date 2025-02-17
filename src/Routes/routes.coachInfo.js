@@ -6,12 +6,12 @@ const coachInfoRouter = require('express').Router();
 
 coachInfoRouter.post('/', verifyUserMiddleware, createCoachInfoController);
 coachInfoRouter.get('/search', verifyUserMiddleware, getCoachInfoController);
-coachInfoRouter.patch('/:coachId', updateCoachInfoController);
+// coachInfoRouter.patch('/:coachId', updateCoachInfoController);
 
 console.log("createCoachBankDetailsController:", createCoachBankDetailsController);
 
 coachInfoRouter.post('/account-details',verifyUserMiddleware, createCoachBankDetailsController )
 coachInfoRouter.get('/account-details',verifyUserMiddleware, getCoachBankDetailsController )
-coachInfoRouter.patch('/change-account-details', updateCoachBankDetailsController )
+coachInfoRouter.patch('/change-account-details',verifyUserMiddleware, updateCoachBankDetailsController )
 
 module.exports = coachInfoRouter;
