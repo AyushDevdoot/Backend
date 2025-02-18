@@ -63,8 +63,8 @@ const updateCoachInfoController = async (req, res) => {
 
 const getProfileController = async(req,res) => {
     try {
-        const coachProfile = getCoachProfileServices(req.user._id)
-
+        const coachProfile = await getCoachProfileServices(req.user._id)
+        console.log(coachProfile)
         if (!coachProfile) {
             return sendResponse(res, null, 404, false, "Coach profile not found");
         }
