@@ -69,7 +69,8 @@ const getProfileController = async(req,res) => {
             return sendResponse(res, null, 404, false, "Coach profile not found");
         }
 
-        sendResponse(res, coachProfile, 200, true, "Coach profile fetched successfully");
+        sendResponse(res, null, 200, true, "Coach profile fetched successfully");
+        return
     } catch (error) {
         sendResponse(res, error, 500, false, "Error fetching coach profile");
     }
