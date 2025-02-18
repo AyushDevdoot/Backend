@@ -1,6 +1,6 @@
 const { createCoachDto, validateCreateCoachDto, getCoachesListDto } = require("../DTOs/coachInfo.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { createCoachInfoServices, getCoachInfoServices } = require("../Services/services.coachInfo");
+const { createCoachInfoServices, getCoachInfoServices,updateCoachInfoServices ,getCoachProfileServices} = require("../Services/services.coachInfo");
 
 const createCoachInfoController = async (req, res) => {
     try {
@@ -45,13 +45,13 @@ const getCoachInfoController = async (req, res) => {
 
 const updateCoachInfoController = async (req, res) => {
     try {
-        const coachInfo = await getCoachInfoByIdServices(req.params.coachId);
+        const coachInfo = req.user._id
         if (!coachInfo) {
             sendResponse(res, null, 400, false, "Coach info not found");
             return
         } else {
-            const coachInfoBody = updateCoachInfoDto(req.body, coachInfo);
-            await updateCoachInfoServices(coachInfo._id, coachInfoBody);
+            // const coachInfoBody = updateCoachInfoDto(req.body, coachInfo);
+            await updateCoachInfoServices(coachInfo,req.body);
             sendResponse(res, null, 200, true, "Coach info updated successfully");
             return
         }
@@ -61,8 +61,23 @@ const updateCoachInfoController = async (req, res) => {
     }
 };
 
+const getProfileController = async(req,res) => {
+    try {
+        const coachProfile = getCoachProfileServices(req.user._id)
+
+        if (!coachProfile) {
+            return sendResponse(res, null, 404, false, "Coach profile not found");
+        }
+
+        sendResponse(res, coachProfile, 200, true, "Coach profile fetched successfully");
+    } catch (error) {
+        sendResponse(res, error, 500, false, "Error fetching coach profile");
+    }
+}
+
 module.exports = {
     createCoachInfoController,
     getCoachInfoController,
-    updateCoachInfoController
+    updateCoachInfoController,
+    getProfileController
 };

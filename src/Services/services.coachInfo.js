@@ -17,9 +17,14 @@ const updateCoachInfoServices = async (coachId, coachInfoBody) => {
     return await CoachInfoModel.updateOne({ _id: coachId }, coachInfoBody);
 };
 
+const getCoachProfileServices = async(coachId)=>{
+    return await CoachInfoModel.findOne({ createdBy: coachId });
+}
+
 module.exports = {
     createCoachInfoServices,
     getCoachInfoServices,
     getCoachInfoByIdServices,
-    updateCoachInfoServices
+    updateCoachInfoServices,
+    getCoachProfileServices
 };
