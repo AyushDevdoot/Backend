@@ -4,10 +4,11 @@ const { createCoachBankDetailsController, getCoachBankDetailsController, updateC
 
 const coachInfoRouter = require('express').Router();
 
+coachInfoRouter.get('/profile', verifyUserMiddleware, getProfileController);
 coachInfoRouter.post('/', verifyUserMiddleware, createCoachInfoController);
 coachInfoRouter.get('/search', verifyUserMiddleware, getCoachInfoController);
 coachInfoRouter.patch('/',verifyUserMiddleware, updateCoachInfoController);
-coachInfoRouter.get('/profile', verifyUserMiddleware, getProfileController);
+
 
 
 console.log("createCoachBankDetailsController:", createCoachBankDetailsController);
