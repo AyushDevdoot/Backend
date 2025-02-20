@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -14,11 +15,20 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    user: {
-        type: String, //ref // user or coach 
-        required: true,
-        enum: ["care-giver", "patient"]
-    },
+    references:[
+        {
+            reference: {
+                type: Schema.Type.ObjectId,
+                required: true,
+                refPath: 'referenceType'
+            },
+            referenceType: {
+                type: String,
+                required: true,
+                enum: ['coachInfo', 'userInfo'] 
+            }
+        }
+    ],
     isActive: {
         type: Boolean,
         required: true,
