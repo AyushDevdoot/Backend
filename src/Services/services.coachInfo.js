@@ -10,7 +10,7 @@ const getCoachInfoServices = async (query) => {
 };
 
 const getCoachInfoByIdServices = async (coachId) => {
-    return await CoachInfoModel.findOne({ _id: coachId });
+    return await CoachInfoModel.find({ _id: coachId });
 };
 
 const updateCoachInfoServices = async (coachId, coachInfoBody) => {

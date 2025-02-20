@@ -1,6 +1,7 @@
 const { createCoachDto, validateCreateCoachDto, getCoachesListDto } = require("../DTOs/coachInfo.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { createCoachInfoServices, getCoachInfoServices } = require("../Services/services.coachInfo");
+const { createCoachInfoServices, getCoachInfoServices, getCoachInfoByIdServices } = require("../Services/services.coachInfo");
+
 
 const createCoachInfoController = async (req, res) => {
     try {
@@ -37,10 +38,26 @@ const getCoachInfoController = async (req, res) => {
             return
         }
     } catch (err) {
-        console.log(err);
         sendResponse(res, err);
         return
     }
+};
+
+const getCoachInfoByIdController = async (req, res) => {
+    try {
+        console.log(req.user._id);
+        const query = req.user._id;
+        console.log(query);
+        const coachInfo = await getCoachInfoByIdServices(query);
+        console.log(coachInfo)
+        sendResponse(res, null, 200, true, "Coach info fetched successfully", coachInfo);
+        return
+    } catch (err) {
+        console.log(err)
+        sendResponse(res, err);
+        return
+    }
+
 };
 
 const updateCoachInfoController = async (req, res) => {
@@ -64,5 +81,6 @@ const updateCoachInfoController = async (req, res) => {
 module.exports = {
     createCoachInfoController,
     getCoachInfoController,
+    getCoachInfoByIdController,
     updateCoachInfoController
 };

@@ -10,6 +10,7 @@ require('dotenv').config();
 
 const loginUserController = async (req, res) => {
     try {
+        console.log(req.body)
         const { email, password } = req.body;
         
         // Fetch user by email

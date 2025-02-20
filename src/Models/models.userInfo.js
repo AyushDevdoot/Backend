@@ -1,13 +1,8 @@
 const mongoose = require('mongoose');
 
-const coachInfoSchema = new mongoose.Schema({
-    coachName: {
+const UserInfoSchema = new mongoose.Schema({
+    name: {
         type: String,
-        required: true
-    },
-    specialization: {
-        type: String, // ref with specialization schema -> two id and name -> id 
-        enum: ["health-fitness", "chronic-diseases", "sleep-wellness", "holistic-wellness", "stem-skills", "parenting", "worklife-balance", "immunity-coach"],
         required: true
     },
     email: {
@@ -23,10 +18,6 @@ const coachInfoSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    experienceYear: {
-        type: Number,
-        required: true
-    },
     bio: {
         type: String,
         required: true
@@ -36,17 +27,17 @@ const coachInfoSchema = new mongoose.Schema({
         required: true,
         default: 0
     },
-    sessionTime:{
+    sessions:{
         type:Number,
         required:true,
         default:60
     },
-    pricePerSession: {
+    amountSpend: {
         type: Number,
         required: true
     },
     languages: {
-        type: [String],
+        type: String,
         required: true
     },
     country: {
@@ -57,9 +48,11 @@ const coachInfoSchema = new mongoose.Schema({
         type: String,
         maxlength: 4,
     },
+    certificate: {
+        type: String,
+    },
     isVerified: {
         type: Boolean,
-        required: true,
         default: false,
     },
     currency: {
@@ -68,6 +61,6 @@ const coachInfoSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-const CoachInfoModel = mongoose.model('coachinfo', coachInfoSchema);
+const UserInfoModel = mongoose.model('userinfo', UserInfoSchema);
 
-module.exports = CoachInfoModel;
+module.exports = UserInfoModel;
