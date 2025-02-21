@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
 
+const isValidGoogleDriveLink = (url) => {
+    const driveRegex = /^https?:\/\/(drive\.google\.com\/(?:file\/d\/|open\?id=))[a-zA-Z0-9_-]+/;
+    return driveRegex.test(url);
+};
+
 const coachInfoSchema = new mongoose.Schema({
     coachName: {
         type: String,
@@ -58,6 +63,14 @@ const coachInfoSchema = new mongoose.Schema({
 	type: String,
 	default: 'Inr'
     },
+    certification :{
+        type: String,
+        required: true,
+        validate: {
+            validator: isValidGoogleDriveLink,
+            message: 'Certification link must be a valid Google Drive link.'
+        }
+    }
 }, { timestamps: true });
 
 const CoachInfoModel = mongoose.model('coachinfo', coachInfoSchema);

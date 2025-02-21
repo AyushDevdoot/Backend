@@ -8,7 +8,8 @@ const createCoachDto = (data) => {
         bio,
         rating,
         pricePerMinute,
-        languages
+        languages,
+        certification
     } = data;
 
     return {
@@ -20,7 +21,8 @@ const createCoachDto = (data) => {
         bio,
         rating,
         pricePerMinute,
-        languages
+        languages,
+        certification
     };
 };
 
