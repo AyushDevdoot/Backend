@@ -6,7 +6,7 @@ const createCoachInfoServices = async (coachInfo) => {
 };
 
 const getCoachInfoServices = async (query) => {
-    return await CoachInfoModel.find(query);
+    return await CoachInfoModel.find(query).populate();
 };
 
 const getCoachInfoByIdServices = async (coachId) => {

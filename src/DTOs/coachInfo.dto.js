@@ -131,43 +131,51 @@ const getCoachesListDto = (data) => {
     };
 };
 
-const getCoachDto = (data) => {
-    const {
-        _id,
-        coachName,
-        specialization,
-        contactInfo,
-        profilePhoto,
-        experienceYear,
-        bio,
-        rating,
-        isActive,
-        pricePerMinute,
-        languages,
-        createdAt,
-        updatedAt
+const getCoachProfileDto = (data) => {
+    const { _id, 
+	    firstName, 
+	    lastName, 
+	    specialization,
+	    experienceYear,
+	    pricePerSession,
+	    sessionTime,
+	    mobile, 
+	    email, 
+	    profilePhoto, 
+	    bio, 
+	    rating, 
+	    languages, 
+	    countryCode,
+	    amountSpend,
+	    currency,
+	    subscriptionStatus,
+	    isVerified 
     } = data;
-
     return {
-        _id,
-        coachName,
-        specialization,
-        contactInfo,
-        profilePhoto,
-        experienceYear,
-        bio,
-        rating,
-        isActive,
-        pricePerMinute,
-        languages,
-        createdAt,
-        updatedAt
-    };
-};
+	    _id,
+	    firstName, 
+	    lastName, 
+	    specialization,
+	    experienceYear,
+	    pricePerSession,
+	    sessionTime,
+	    mobile, 
+	    email, 
+	    profilePhoto, 
+	    bio, 
+	    rating, 
+	    languages, 
+	    countryCode,
+	    amountSpend,
+	    currency,
+	    subscriptionStatus,
+	    isVerified 
+    }
+}
 
 module.exports = {
     createCoachDto,
     validateCreateCoachDto,
     getCoachesListDto,
-    getCoachDto
+    getCoachProfileDto,
 };

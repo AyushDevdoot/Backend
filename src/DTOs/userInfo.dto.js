@@ -136,5 +136,5 @@ const getUserProfileDto = (data) => {
 module.exports = {
     createUserDto,
     validateCreateUserDto,
-    getUserDto
+    getUserProfileDto,
 };

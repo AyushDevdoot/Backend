@@ -11,6 +11,10 @@ const specialistCategoriesSchema = new mongoose.Schema({
         maxLength: 100,
         required: true
     },
+    description: {
+        type: String,
+        maxLength: 500,
+    },
     isActive: {
         type: Boolean,
         required: true,

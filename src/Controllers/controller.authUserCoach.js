@@ -38,8 +38,15 @@ const loginUserController = async (req, res) => {
             },
             isVerified: user.isVerified,
         });
-        // Send response with token and user info
-        sendResponse(res, null, 200, true, "Login successful", { token: accessToken, user: getUserDto(user) });
+        let response_data = {token: accessToken};
+        for (let ref of user.references[0]){
+            if (ref.referenceType === 'coachinfo'){
+                response_data[ref.referenceType] = getCoachProfileDto(ref.reference)
+            }else{
+                response_data[ref.referenceType] = getUserProfileDto(ref.reference)
+            }
+        }
+        sendResponse(res, null, 200, true, "Login successful", response_data);
     } catch (err) {
         sendResponse(res, err);
     }
@@ -249,7 +256,7 @@ const forgetPasswordController = async (req, res) => {
         const { email } = req.body;
 
         // Fetch user by email
-        const user = await getUserDetailsByEmailService(email);
+        const user = await getUserCoachDetailsByEmailService(email);
         console.log(user);
 
         if (!user) {
