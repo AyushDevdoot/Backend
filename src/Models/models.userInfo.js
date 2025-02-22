@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 const UserInfoSchema = new mongoose.Schema({
-    name: {
+    firstName: {
         type: String,
-        required: true
+        required: true,
     },
-    email: {
+    lastName: {
         type: String,
         required: true,
     },
@@ -13,54 +13,61 @@ const UserInfoSchema = new mongoose.Schema({
         type: String,
         maxlength: 15,
         required: true,
+        match: [/^\+?[1-9]\d{1,14}$/, 'Please provide a valid mobile number'],     
     },
     profilePhoto: {
         type: String,
-        required: true
+        required: true,
     },
     bio: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 500, 
     },
     rating: {
         type: Number,
         required: true,
-        default: 0
-    },
-    sessions:{
-        type:Number,
-        required:true,
-        default:60
+        default: 0,
+        min: 0, 
+        max: 5, 
     },
     amountSpend: {
         type: Number,
-        required: true
+        required: true,
+        min: 0, 
     },
     languages: {
-        type: String,
-        required: true
-    },
-    country: {
-        type: String,
+        type: [String], // Store languages as an array (e.g., ["English", "Spanish"])
         required: true,
     },
     countryCode: {
         type: String,
         maxlength: 4,
     },
-    certificate: {
-        type: String,
-    },
     isVerified: {
         type: Boolean,
         default: false,
     },
     currency: {
-	    type: String,
-	    default: 'Inr'
+        type: String,
+        default: 'INR', // Standardize currency code (ISO 4217)
+    },
+    address: {
+        type: String,
+        maxlength: 255, 
+    },
+    bookingHistory: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Booking', // Booking model for reference
+    }],
+    subscriptionStatus: {
+        type: String,
+        enum: ['active', 'inactive', 'pending'],
+        default: 'inactive',
     },
 }, { timestamps: true });
 
-const UserInfoModel = mongoose.model('userinfo', UserInfoSchema);
 
+// Model creation
+const UserInfoModel = mongoose.model('userinfo', UserInfoSchema);
 module.exports = UserInfoModel;

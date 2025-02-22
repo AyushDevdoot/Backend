@@ -1,0 +1,326 @@
+const bcrypt = require("bcrypt");
+const { sendEmail } = require("../Helpers/helpersNotification");
+const logger = require("../Helpers/loggerFunction");
+const { saltRounds, html, forgothtml } = require("../Helpers/helpers.constant");
+const { createUserDto, validateCreateUserDto } = require("../DTOs/userInfo.dto");
+const { createCoachDto, validateCreateCoachDto } = require('../DTOs/coachInfo.dto');
+const { sendResponse, generateToken, generateOTP } = require("../Helpers/helpers.commonFunc");
+const { createUserInfoServices, getUserInfoServices, getUserInfoByIdServices, updateUserInfoServices } = require("../Services/services.userInfo");
+const { createCoachInfoServices, getCoachInfoServices, getCoachInfoByIdServices, updateCoachInfoServices } = require('../Services/services.coachInfo');
+const { createUserCoachAuthService, getUserCoachDetailsByEmailService, getUserCoachDetailsByIdService, updateUserCoachDetailsByIdService } = require('../Services/services.authUserCoach');
+require('dotenv').config(); 
+
+const loginUserController = async (req, res) => {
+    try {
+        console.log(req.body)
+        const { email, password } = req.body;
+        
+        // Fetch user by email
+        const user = await getUserCoachDetailsByEmailService(email.toLowerCase()).populate('references.reference');
+        if (!user) {
+            return sendResponse(res, null, 400, false, "Invalid credentials");
+        }
+        // Check if the user is verified
+        if (!user.isVerified) {
+            return sendResponse(res, null, 400, false, "User not verified");
+        }
+        // Check if the password matches
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return sendResponse(res, null, 400, false, "Invalid credentials");
+        }
+        // Generate token if password is valid and user is verified
+        const accessToken = await generateToken({
+            user: {
+                _id: user._id,
+                userType: user.references[1]?.referenceType || user.references[0]?.referenceType, 
+                email: user.email,
+            },
+            isVerified: user.isVerified,
+        });
+        // Send response with token and user info
+        sendResponse(res, null, 200, true, "Login successful", { token: accessToken, user: getUserDto(user) });
+    } catch (err) {
+        sendResponse(res, err);
+    }
+};
+
+const createUserController = async (req, res) => {
+    try {
+        console.log("Request received:", req.body);
+        // Validate request body
+        let data_coach = {};
+        let errors = {};
+        if (!req.body.user_type){
+            sendResponse(res, null, 422, false, 'Error Invaild user type!');
+            return
+        }
+
+        let data_user = createUserDto(req.body);
+        errors = validateCreateUserDto(data);
+
+        if (req.body.user_type == 'coach'){
+            data_coach = createCoachDto(req.body)
+            errors = validateCreateCoachDto(data);
+        }
+        if (Object.keys(errors).length > 0){
+            sendResponse(res, null, 422, false, errors);
+            return
+        }
+
+        let userDetails = await getUserCoachDetailsByEmailService(data.email);
+        console.log("User details fetched:", userDetails);
+
+        if (userDetails) {
+            if (userDetails.isVerified) {
+                console.log("User already verified:", userDetails);
+                sendResponse(res, null, 400, false, "User already exists");
+                return;
+            } else {
+                console.log("User exists but not verified:", userDetails);
+
+                const emailOtp = generateOTP();
+                console.log("Generated OTP:", emailOtp);
+
+                const token = await generateToken({
+                    user: {
+                        _id: userDetails._id,
+                        userType: userDetails.references[0].referenceType,
+                        email: userDetails.email,
+                    },
+                    isVerified: false,
+                });
+                console.log("Generated token:", token);
+
+                await updateUserCoachDetailsByIdService(userDetails._id, { emailOtp });
+                console.log("User details updated with OTP:", userDetails._id);
+
+                sendEmail(userDetails.email, "login otp", html(emailOtp));
+                console.log("Email sent to:", userDetails.email);
+
+                sendResponse(res, null, 200, true, "OTP sent successfully on email", { token });
+                return;
+            }
+        } else {
+            console.log("User does not exist. Creating a new user.");
+
+            // Encrypt the password
+            const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+            console.log("Password hashed.");
+
+            const emailOtp = generateOTP();
+            console.log("Generated OTP for new user:", emailOtp);
+            if (req.body.user_type.includes('coach')){
+
+            }
+            references = [];
+
+            userDetails = await createUserInfoServices(data_user);
+
+            references.push({
+                reference: userDetails._id, 
+                referenceType: 'userinfo',
+            });
+            if (req.body.user_type == 'coach'){
+                userDetails = await createCoachInfoServices(data_coach);
+                references.push({
+                    reference: userDetails._id,
+                    referenceType: 'coachinfo'
+                });
+            }
+
+            const authDetails = await createUserCoachAuthService({
+                email: data_user.email, 
+                password: hashedPassword,
+                references: references
+            });
+
+            sendEmail(authDetails.email, "login otp", html(emailOtp));
+            console.log("Email sent to new user:", userDetails.email);
+
+            const token = await generateToken({
+                user: {
+                    _id: userDetails._id,
+                    userType: userDetails.userType,
+                    email: userDetails.email,
+                },
+                isVerified: false,
+            });
+            console.log("Generated token for new user:", token);
+
+            sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", { token });
+            return;
+        }
+    } catch (err) {
+        console.error("Error in createUserController:", err);
+        sendResponse(res, err);
+    }
+};
+
+
+const getUserDetailsController = async (req, res) => {
+    try {
+        const user = await getUserDetailsByIdService(req.user._id);
+        if (!user) {
+            sendResponse(res, null, 400, false, "user not found");
+            return
+        } else {
+            sendResponse(res, null, 200, true, "user details fetched successfully", getUserDto(user));
+            return
+        }
+    } catch (err) {
+        sendResponse(res, err);
+    }
+}
+
+// write a controller to verify Otp
+const verifyOtpController = async (req, res) => {
+    try {
+        const userDetails = await getUserDetailsByIdService(req.user._id);
+        if (!userDetails) {
+            return sendResponse(res, null, 400, false, "user not found");
+        } else {
+            if (!userDetails.isVerified) {
+                if (userDetails.emailOtp === req.body.emailOtp) {
+                    const token = await generateToken({
+                        user: {
+                            _id: userDetails._id,
+                            userType: userDetails.userType,
+                            email: userDetails.email,
+                        },
+                        isVerified: true
+                    });
+                    await updateUserDetailsByIdService(userDetails._id, { isVerified: true });
+                    return sendResponse(res, null, 200, true, "user verified successfully", { token });
+                } else {
+                    return sendResponse(res, null, 400, false, "invalid otp");
+                }
+            } else {
+                if (req.user.tokenType == "forget") {
+                    const token = await generateToken({
+                        user: {
+                            _id: userDetails._id,
+                            userType: userDetails.userType,
+                            email: userDetails.email,
+                            tokenType: "forget"
+                        },
+                        isVerified: true
+                    });
+                    await updateUserDetailsByIdService(userDetails._id, { isVerified: true });
+                    sendResponse(res, null, 200, true, "otp verified successfully", { token });
+                    return
+                } else {
+                    sendResponse(res, null, 400, false, "user already verified");
+                    return
+                }
+            }
+        }
+    } catch (err) {
+        console.log(err);
+        sendResponse(res, err);
+    }
+}
+
+const resendOtpToEmail = async (req, res) => {
+    try {
+        const user = await getUserDetailsByEmailService(req.body.email?.toLowerCase());
+        if (!user) {
+            sendResponse(res, null, 400, false, "User not found");
+            return
+        }
+       
+        const emailOtp = generateOTP();
+
+        await updateUserDetailsByIdService(user._id, { emailOtp });
+        sendEmail(user.email, "login otp", html(emailOtp));
+        sendResponse(res, null, 200, true, "OTP sent successfully on email");
+        return
+    } catch (error) {
+        console.log(error);
+        logger.error(error);
+        sendResponse(res, error);
+    }
+
+}
+
+
+const forgetPasswordController = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        // Fetch user by email
+        const user = await getUserDetailsByEmailService(email);
+        console.log(user);
+
+        if (!user) {
+            return sendResponse(res, null, 400, false, "Invalid credentials");
+        }
+        // Check if the user is verified
+        if (!user.isVerified) {
+            return sendResponse(res, null, 400, false, "User not verified");
+        }
+
+            
+        const token = await generateToken(
+            { user: { _id: user._id, email: user.email }, isVerified: user.isVerified },
+            process.env.JWT_SECRET_KEY,
+            "15m" // Token expires in 15 minutes
+        );
+
+        // Create a password reset link
+        const resetLink = `devdoot/reset-password?token=${token}.com`;
+        console.log(resetLink,'yeh lo');
+
+        sendEmail(email, "Click on this link to reset the password ", forgothtml(resetLink));
+        sendResponse(res, null, 200, true, "Reset Password Mail Sent Successfully");
+
+
+    } catch (err) {
+        console.log(err);
+        logger.error(err);
+        sendResponse(res, err);
+    }
+};
+
+
+
+const changePasswordController = async (req, res) => {
+    try {
+        const { newPassword } = req.body; 
+        const userId = req.user._id; 
+        // Validate new password
+
+        if (!newPassword || newPassword.length < 8) {
+            return sendResponse(res, null, 400, false, "Password must be at least 8 characters long");
+        }
+
+        // Hash the new password
+        const saltRounds = 10; 
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+     
+        const isUpdated = await updateUserDetailsByIdService(userId, { password: hashedPassword });
+
+        if (!isUpdated) {
+            return sendResponse(res, null, 500, false, "Password update failed");
+        }
+
+        // Respond with success
+        return sendResponse(res, null, 200, true, "Your password has been changed successfully");
+    } catch (err) {
+        console.error(err);
+        return sendResponse(res, err, 500, false, "An error occurred");
+    }
+};
+
+
+module.exports = {
+    createUserController,
+    getUserDetailsController,
+    loginUserController,
+    verifyOtpController,
+    forgetPasswordController,
+    resendOtpToEmail,
+    changePasswordController
+};
+

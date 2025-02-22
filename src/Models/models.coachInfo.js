@@ -1,23 +1,24 @@
 const mongoose = require('mongoose');
 
 const coachInfoSchema = new mongoose.Schema({
-    coachName: {
+    firstName: {
         type: String,
         required: true
     },
-    specialization: {
-        type: String, // ref with specialization schema -> two id and name -> id 
-        enum: ["health-fitness", "chronic-diseases", "sleep-wellness", "holistic-wellness", "stem-skills", "parenting", "worklife-balance", "immunity-coach"],
+    lastName: {
+        type: String,
         required: true
     },
-    email: {
-        type: String,
-        required: true,
-    },
+    specialization: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Specialization', // Reference to specialization model
+        required: true
+    }],
     mobile: {
         type: String,
         maxlength: 15,
         required: true,
+        match: [/^\+?[1-9]\d{1,14}$/, 'Please provide a valid mobile number'],
     },
     profilePhoto: {
         type: String,
@@ -25,7 +26,9 @@ const coachInfoSchema = new mongoose.Schema({
     },
     experienceYear: {
         type: Number,
-        required: true
+        required: true,
+        min: 0,
+        max: 90,
     },
     bio: {
         type: String,
@@ -34,38 +37,47 @@ const coachInfoSchema = new mongoose.Schema({
     rating: {
         type: Number,
         required: true,
-        default: 0
+        default: 0,
+        min: 0,
+        max: 5,
     },
-    sessionTime:{
-        type:Number,
-        required:true,
-        default:60
+    sessionTime: {
+        type: Number,
+        default: 60,
     },
     pricePerSession: {
         type: Number,
-        required: true
+        min: 0,
     },
     languages: {
         type: [String],
-        required: true
-    },
-    country: {
-        type: String,
-        required: true,
     },
     countryCode: {
         type: String,
         maxlength: 4,
+    },
+    certificate: { 
+        type: String,
     },
     isVerified: {
         type: Boolean,
         required: true,
         default: false,
     },
+    bookingHistory: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Booking', // Reference to Booking model
+    }],
     currency: {
-	    type: String,
-	    default: 'Inr'
+        type: String,
+        default: 'INR'
     },
+    subscriptionStatus: {
+        type: String,
+        enum: ['active', 'inactive', 'pending'],
+        default: 'inactive',
+    },
+
 }, { timestamps: true });
 
 const CoachInfoModel = mongoose.model('coachinfo', coachInfoSchema);

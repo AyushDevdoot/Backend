@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const userSchema = new mongoose.Schema({
+const AuthSchema = new mongoose.Schema({
     email: {
         type: String,
         unique: true,
@@ -11,9 +11,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    mobile: {
-        type: String,
-        required: true
+    emailOtp: {
+        type: Number,
+    },
+    mobileOtp: {
+        type: Number,
     },
     references:[
         {
@@ -35,6 +37,8 @@ const userSchema = new mongoose.Schema({
         default: true
     }
 }, { timestamps: true });
-const UserModel = mongoose.model('user', userSchema);
 
-module.exports = UserModel;
+
+AuthSchema.index({email: 1});
+const AuthModel = mongoose.model('authentication', AuthSchema);
+module.exports = AuthModel;
