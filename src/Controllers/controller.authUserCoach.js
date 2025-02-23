@@ -7,7 +7,7 @@ const { createCoachDto, validateCreateCoachDto } = require('../DTOs/coachInfo.dt
 const { sendResponse, generateToken, generateOTP } = require("../Helpers/helpers.commonFunc");
 const { createUserInfoServices, getUserInfoServices, getUserInfoByIdServices, updateUserInfoServices } = require("../Services/services.userInfo");
 const { createCoachInfoServices, getCoachInfoServices, getCoachInfoByIdServices, updateCoachInfoServices } = require('../Services/services.coachInfo');
-const { createUserCoachAuthService, getUserCoachDetailsByEmailService, getUserCoachDetailsByIdService, updateUserCoachDetailsByIdService } = require('../Services/services.authUserCoach');
+const { createUserCoachAuthService, getUserCoachDetailsByEmailService, getUserCoachAuthDetailsByEmailService, getUserCoachDetailsByIdService, updateUserCoachDetailsByIdService } = require('../Services/services.authUserCoach');
 require('dotenv').config(); 
 
 const loginUserController = async (req, res) => {
@@ -16,7 +16,7 @@ const loginUserController = async (req, res) => {
         const { email, password } = req.body;
         
         // Fetch user by email
-        const user = await getUserCoachDetailsByEmailService(email.toLowerCase()).populate('references.reference');
+        const user = await getUserCoachDetailsByEmailService(email.toLowerCase());
         if (!user) {
             return sendResponse(res, null, 400, false, "Invalid credentials");
         }
@@ -256,7 +256,7 @@ const forgetPasswordController = async (req, res) => {
         const { email } = req.body;
 
         // Fetch user by email
-        const user = await getUserCoachDetailsByEmailService(email);
+        const user = await getUserCoachAuthDetailsByEmailService(email);
         console.log(user);
 
         if (!user) {
