@@ -1,6 +1,6 @@
 const { createCoachDto, validateCreateCoachDto, getCoachesListDto } = require("../DTOs/coachInfo.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { createCoachInfoServices, getCoachInfoServices,updateCoachInfoServices ,getCoachProfileServices} = require("../Services/services.coachInfo");
+const { createCoachInfoServices, getCoachInfoServices,updateCoachInfoServices ,getCoachProfileServices, deleteCoachProfileServices} = require("../Services/services.coachInfo");
 
 const createCoachInfoController = async (req, res) => {
     try {
@@ -76,9 +76,22 @@ const getProfileController = async(req,res) => {
     }
 }
 
+const deleteCoachInfoController = async (req, res) => {
+    const coachProfile = await deleteCoachProfileServices(req.user._id)
+    console.log(coachProfile)
+    if (!coachProfile) {
+        return sendResponse(res, null, 404, false, "Coach profile not found");
+    }
+    sendResponse(res, null, 200, true, "Coach profile deleted successfully",'Deletion Successful');
+        return
+    
+
+}
+
 module.exports = {
     createCoachInfoController,
     getCoachInfoController,
     updateCoachInfoController,
-    getProfileController
+    getProfileController,
+    deleteCoachInfoController
 };

@@ -1,4 +1,4 @@
-const { createCoachInfoController, getCoachInfoController, updateCoachInfoController,getProfileController } = require('../Controllers/controller.coachInfo');
+const { createCoachInfoController, getCoachInfoController, updateCoachInfoController,getProfileController, deleteCoachInfoController } = require('../Controllers/controller.coachInfo');
 const { verifyUserMiddleware } = require('../Middleware/userAuth');
 const { createCoachBankDetailsController, getCoachBankDetailsController, updateCoachBankDetailsController } = require('../Controllers/controller.coachBankDetails');
 
@@ -8,7 +8,7 @@ coachInfoRouter.get('/profile', verifyUserMiddleware, getProfileController);
 coachInfoRouter.post('/', verifyUserMiddleware, createCoachInfoController);
 coachInfoRouter.get('/search', verifyUserMiddleware, getCoachInfoController);
 coachInfoRouter.patch('/',verifyUserMiddleware, updateCoachInfoController);
-
+coachInfoRouter.delete('/delete',verifyUserMiddleware, deleteCoachInfoController)
 
 
 console.log("createCoachBankDetailsController:", createCoachBankDetailsController);

@@ -21,10 +21,15 @@ const getCoachProfileServices = async(coachId)=>{
     return await CoachInfoModel.findOne({ createdBy: coachId });
 }
 
+const deleteCoachProfileServices = async(coachId)=>{
+    await CoachInfoModel.findOneAndDelete({ createdBy: coachId });
+}
+
 module.exports = {
     createCoachInfoServices,
     getCoachInfoServices,
     getCoachInfoByIdServices,
     updateCoachInfoServices,
-    getCoachProfileServices
+    getCoachProfileServices,
+    deleteCoachProfileServices
 };
