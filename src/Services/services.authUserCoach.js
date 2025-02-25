@@ -5,11 +5,10 @@ const createUserCoachAuthService = async (body) => {
     return await finalBody.save()
 }
 
-
 const getUserCoachDetailsByEmailService = async (email) => {
-    return await AuthModel.findOne({ email }).populate('references.reference');
-
-}
+    return await AuthModel
+		.findOne({ email }).populate('references.reference');
+};
 
 const getUserCoachDetailsByIdService = async (userId) => {
     return await AuthModel.findOne({ _id: userId }).populate('references.reference');

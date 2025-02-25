@@ -22,6 +22,7 @@ const specialistCategoriesSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
+specialistCategoriesSchema.index({autoId: 1});
 const SpecialistCategoriesModel = mongoose.model('specialistcategories', specialistCategoriesSchema);
 
 module.exports = SpecialistCategoriesModel;

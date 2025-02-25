@@ -13,7 +13,7 @@ const UserInfoSchema = new mongoose.Schema({
         type: String,
         maxlength: 15,
         required: true,
-        match: [/^\+?[1-9]\d{1,14}$/, 'Please provide a valid mobile number'],     
+        match: [/^[1-9]\d{1,14}$/, 'Please provide a valid mobile number'],     
     },
     profilePhoto: {
         type: String,
@@ -33,8 +33,8 @@ const UserInfoSchema = new mongoose.Schema({
     },
     amountSpend: {
         type: Number,
-        required: true,
         min: 0, 
+        default: 0,
     },
     languages: {
         type: [String], // Store languages as an array (e.g., ["English", "Spanish"])
@@ -56,10 +56,6 @@ const UserInfoSchema = new mongoose.Schema({
         type: String,
         maxlength: 255, 
     },
-    bookingHistory: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Booking', // Booking model for reference
-    }],
     subscriptionStatus: {
         type: String,
         enum: ['active', 'inactive', 'pending'],
@@ -68,6 +64,7 @@ const UserInfoSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 
+UserInfoSchema.index({mobile: 1})
 // Model creation
 const UserInfoModel = mongoose.model('userinfo', UserInfoSchema);
 module.exports = UserInfoModel;

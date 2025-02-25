@@ -1,7 +1,7 @@
 const createCoachDto = (data) => {
     const { 
         firstName,
-	lastName,
+	    lastName,
         specialization, 
         mobile, 
         profilePhoto, 
@@ -17,10 +17,10 @@ const createCoachDto = (data) => {
     } = data;
 
     return {
-        firstName,
-	lastName,
+	firstName: '' || firstName.toLowerCase(),
+	lastName : '' || lastName.toLowerCase(),
         specialization, // Array of ObjectIds referencing the specialization schema
-        mobile,
+        mobile : mobile.replace('+',''),
         profilePhoto,
         experienceYear,
         bio,
@@ -42,17 +42,17 @@ const validateCreateCoachDto = (data) => {
         errors.firstName = "coachName must be a valid string and at least 2 characters long.";
     }
 
-    if (data.lastName || typeof data.lastName !== 'string' || data.lastName.trim().length < 2) {
-        errors.lastName = "coachName must be a valid string and at least 2 characters long.";
+    if (data.lastName && typeof data.lastName !== 'string' && data.lastName.trim().length < 2) {
+        errors.lastName = "lastName must be a valid string and at least 2 characters long.";
     }
 
     // Validate specialization (array of ObjectIds referencing the specialization model)
-    if (!Array.isArray(data.specialization) || data.specialization.length === 0 || data.specialization.some(id => typeof id !== 'string' || id.trim().length < 2)) {
+    if (!Array.isArray(data.specialization) || data.specialization.length === 0) {
         errors.specialization = "specialization is needed !!";
     }
 
     // Validate mobile (phone number)
-    const isValidPhone = (phone) => /^\+?[1-9]\d{1,14}$/.test(phone);
+    const isValidPhone = (phone) => /^[1-9]\d{1,14}$/.test(phone);
     if (!data.mobile || !isValidPhone(data.mobile)) {
         errors.mobile = "mobile must be a valid phone number.";
     }

@@ -2,11 +2,11 @@ const bcrypt = require("bcrypt");
 const { sendEmail } = require("../Helpers/helpersNotification");
 const logger = require("../Helpers/loggerFunction");
 const { saltRounds, html, forgothtml } = require("../Helpers/helpers.constant");
-const { createUserDto, validateCreateUserDto } = require("../DTOs/userInfo.dto");
-const { createCoachDto, validateCreateCoachDto } = require('../DTOs/coachInfo.dto');
+const { createUserDto, validateCreateUserDto, getUserProfileDto } = require("../DTOs/userInfo.dto");
+const { createCoachDto, validateCreateCoachDto, getCoachProfileDto } = require('../DTOs/coachInfo.dto');
 const { sendResponse, generateToken, generateOTP } = require("../Helpers/helpers.commonFunc");
-const { createUserInfoServices, getUserInfoServices, getUserInfoByIdServices, updateUserInfoServices } = require("../Services/services.userInfo");
-const { createCoachInfoServices, getCoachInfoServices, getCoachInfoByIdServices, updateCoachInfoServices } = require('../Services/services.coachInfo');
+const { createUserInfoServices, getUserInfoServices, getUserInfoByIdServices, userExistsByMobileServices, getUserInfoByMobileServices } = require("../Services/services.userInfo");
+const { createCoachInfoServices, getCoachInfoServices, getCoachInfoByIdServices, coachExistsByMobileServices, getCoachInfoByMobileServices } = require('../Services/services.coachInfo');
 const { createUserCoachAuthService, getUserCoachDetailsByEmailService, getUserCoachAuthDetailsByEmailService, getUserCoachDetailsByIdService, updateUserCoachDetailsByIdService } = require('../Services/services.authUserCoach');
 require('dotenv').config(); 
 
@@ -17,11 +17,13 @@ const loginUserController = async (req, res) => {
         
         // Fetch user by email
         const user = await getUserCoachDetailsByEmailService(email.toLowerCase());
+        console.log(user);
         if (!user) {
             return sendResponse(res, null, 400, false, "Invalid credentials");
         }
+        console.log(user.isActive);
         // Check if the user is verified
-        if (!user.isVerified) {
+        if (!user.isActive) {
             return sendResponse(res, null, 400, false, "User not verified");
         }
         // Check if the password matches
@@ -39,7 +41,7 @@ const loginUserController = async (req, res) => {
             isVerified: user.isVerified,
         });
         let response_data = {token: accessToken};
-        for (let ref of user.references[0]){
+        for (let ref of user.references){
             if (ref.referenceType === 'coachinfo'){
                 response_data[ref.referenceType] = getCoachProfileDto(ref.reference)
             }else{
@@ -48,6 +50,7 @@ const loginUserController = async (req, res) => {
         }
         sendResponse(res, null, 200, true, "Login successful", response_data);
     } catch (err) {
+        console.log(err);
         sendResponse(res, err);
     }
 };
@@ -57,26 +60,25 @@ const createUserController = async (req, res) => {
         console.log("Request received:", req.body);
         // Validate request body
         let data_coach = {};
-        let errors = {};
         if (!req.body.user_type){
             sendResponse(res, null, 422, false, 'Error Invaild user type!');
             return
         }
 
         let data_user = createUserDto(req.body);
-        errors = validateCreateUserDto(data);
+        let errors = validateCreateUserDto(data_user);
 
-        if (req.body.user_type == 'coach'){
+        if (req.body.user_type.includes('coach')){
             data_coach = createCoachDto(req.body)
-            errors = validateCreateCoachDto(data);
+            errors = validateCreateCoachDto(data_coach);
         }
         if (Object.keys(errors).length > 0){
             sendResponse(res, null, 422, false, errors);
             return
         }
-
-        let userDetails = await getUserCoachDetailsByEmailService(data.email);
+        let userDetails = await getUserCoachDetailsByEmailService(data_user.email);
         console.log("User details fetched:", userDetails);
+        let userExists = await userExistsByMobileServices(data_user.mobile)
 
         if (userDetails) {
             if (userDetails.isVerified) {
@@ -101,7 +103,7 @@ const createUserController = async (req, res) => {
 
                 await updateUserCoachDetailsByIdService(userDetails._id, { emailOtp });
                 console.log("User details updated with OTP:", userDetails._id);
-
+                console.log(html(emailOtp));
                 sendEmail(userDetails.email, "login otp", html(emailOtp));
                 console.log("Email sent to:", userDetails.email);
 
@@ -117,25 +119,33 @@ const createUserController = async (req, res) => {
 
             const emailOtp = generateOTP();
             console.log("Generated OTP for new user:", emailOtp);
-            if (req.body.user_type.includes('coach')){
-
+            let references = [];
+            if (!userExists){
+                userDetails = await createUserInfoServices(data_user);
+            }else{
+                console.log('fetching data from user')
+                userDetails = await getUserInfoByMobileServices(data_user.mobile);
+                console.log(userDetails)
             }
-            references = [];
-
-            userDetails = await createUserInfoServices(data_user);
-
+            console.log(userDetails._id);
             references.push({
                 reference: userDetails._id, 
                 referenceType: 'userinfo',
             });
+            
             if (req.body.user_type == 'coach'){
-                userDetails = await createCoachInfoServices(data_coach);
+                let coachExists = await coachExistsByMobileServices(data_coach.mobile);
+                if (!coachExists){
+                    userDetails = await createCoachInfoServices(data_coach);
+                }else{
+                    userDetails = await getCoachInfoByMobileServices(data_coach.mobile)
+                }
                 references.push({
                     reference: userDetails._id,
                     referenceType: 'coachinfo'
                 });
             }
-
+            console.log(references);
             const authDetails = await createUserCoachAuthService({
                 email: data_user.email, 
                 password: hashedPassword,

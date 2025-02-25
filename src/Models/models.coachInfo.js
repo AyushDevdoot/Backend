@@ -18,7 +18,7 @@ const coachInfoSchema = new mongoose.Schema({
         type: String,
         maxlength: 15,
         required: true,
-        match: [/^\+?[1-9]\d{1,14}$/, 'Please provide a valid mobile number'],
+        match: [/^[1-9]\d{1,14}$/, 'Please provide a valid mobile number'],
     },
     profilePhoto: {
         type: String,
@@ -64,10 +64,6 @@ const coachInfoSchema = new mongoose.Schema({
         required: true,
         default: false,
     },
-    bookingHistory: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Booking', // Reference to Booking model
-    }],
     currency: {
         type: String,
         default: 'INR'
@@ -80,6 +76,8 @@ const coachInfoSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+
+coachInfoSchema.index({mobile: 1})
 const CoachInfoModel = mongoose.model('coachinfo', coachInfoSchema);
 
 module.exports = CoachInfoModel;

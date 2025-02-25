@@ -1,4 +1,4 @@
-const { createCoachInfoController, getCoachInfoController, getCoachInfoByIdController, updateCoachInfoController } = require('../Controllers/controller.coachInfo');
+const { createCoachInfoController, getCoachInfoController, getCoachInfoByIdController, updateCoachInfoController } = require('../Controllers/coaches/controller.coachInfo');
 const { verifyUserMiddleware } = require('../Middleware/userAuth');
 
 const coachInfoRouter = require('express').Router();

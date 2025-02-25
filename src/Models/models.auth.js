@@ -20,14 +20,14 @@ const AuthSchema = new mongoose.Schema({
     references:[
         {
             reference: {
-                type: Schema.Type.ObjectId,
+                type: Schema.Types.ObjectId,
                 required: true,
                 refPath: 'referenceType'
             },
             referenceType: {
                 type: String,
                 required: true,
-                enum: ['coachInfo', 'userInfo'] 
+                enum: ['coachinfo', 'userinfo'] 
             }
         }
     ],

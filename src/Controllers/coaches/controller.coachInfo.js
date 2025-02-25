@@ -1,17 +1,19 @@
-const { createCoachDto, validateCreateCoachDto, getCoachesListDto } = require("../DTOs/coachInfo.dto");
-const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { createCoachInfoServices, getCoachInfoServices, getCoachInfoByIdServices } = require("../Services/services.coachInfo");
-
+const { createCoachDto, validateCreateCoachDto, getCoachesListDto } = require("../../DTOs/coachInfo.dto");
+const { sendResponse } = require("../../Helpers/helpers.commonFunc");
+const { createCoachInfoServices, getCoachInfoServices, getCoachInfoByIdServices } = require("../../Services/services.coachInfo");
 
 const createCoachInfoController = async (req, res) => {
     try {
+        //specialization id should be object id 
         const coachInfo = createCoachDto(req.body);
         const errors = validateCreateCoachDto(coachInfo);
         if (Object.keys(errors).length > 0) {
             sendResponse(res, null, 400, false, errors);
             return
         }
-        await createCoachInfoServices({ ...coachInfo, createdBy: req.user._id });
+        console.log(coachInfo)
+
+        await createCoachInfoServices(coachInfo);
         sendResponse(res, null, 201, true, "Coach info created successfully");
         return
     } catch (err) {

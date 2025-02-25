@@ -1,7 +1,7 @@
 const createUserDto = (data) => {
     const { 
         firstName,
-	lastName,
+	    lastName,
         mobile, 
         email, 
         profilePhoto, 
@@ -14,9 +14,9 @@ const createUserDto = (data) => {
     } = data;
     
     return {
-	firstName: firstName.toLowerCase(),
+	firstName: '' || firstName.toLowerCase(),
 	lastName : '' || lastName.toLowerCase(),
-	mobile: mobile.replaceAll(),
+	mobile: mobile.replaceAll('+',''),
 	email: email.toLowerCase(),
         profilePhoto,
         bio,
@@ -54,7 +54,7 @@ const validateCreateUserDto = (data) => {
         errors.firstName = "First name is required and must be at least 2 characters long.";
     }
 
-    if (!lastName || typeof lastName !== 'string' || lastName.trim().length < 2) {
+    if (lastName || typeof lastName !== 'string' || lastName.trim().length < 2) {
         errors.lastName = "Last name is required and must be at least 2 characters long.";
     }
 

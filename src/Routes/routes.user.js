@@ -1,4 +1,4 @@
-const { createUserController, getUserDetailsController, loginUserController, verifyOtpController, forgetPasswordController, resendOtpToEmail, changePasswordController } = require('../Controllers/controllers.user');
+const { createUserController, getUserDetailsController, loginUserController, verifyOtpController, forgetPasswordController, resendOtpToEmail, changePasswordController } = require('../Controllers/controller.authUserCoach');
 const { verifyUserMiddleware, verifytUserOtpMiddleware } = require('../Middleware/userAuth');
 
 const userRouter = require('express').Router();

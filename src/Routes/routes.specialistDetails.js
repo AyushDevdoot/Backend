@@ -8,7 +8,7 @@ specialistDetailsRouter.post('/', verifyUserMiddleware, createSpecialistDetailsC
 specialistDetailsRouter.get('/', verifyUserMiddleware, getSpecialistDetailsController);
 
 //specialistDetailsRouter.get('/create', createSpecializations);
-specialistDetailsRouter.get('/search-all',  verifyUserMiddleware, allSpecialization);
-specialistDetailsRouter.get('/search-by-id', verifyUserMiddleware, searchSpecializationsById);
+specialistDetailsRouter.get('/search-all', allSpecialization);
+specialistDetailsRouter.get('/search-by-id', searchSpecializationsById);
 
 module.exports = specialistDetailsRouter;
