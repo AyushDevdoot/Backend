@@ -5,23 +5,20 @@ const { saltRounds, html, forgothtml } = require("../Helpers/helpers.constant");
 const { createUserDto, validateCreateUserDto, getUserProfileDto } = require("../DTOs/userInfo.dto");
 const { createCoachDto, validateCreateCoachDto, getCoachProfileDto } = require('../DTOs/coachInfo.dto');
 const { sendResponse, generateToken, generateOTP } = require("../Helpers/helpers.commonFunc");
-const { createUserInfoServices, getUserInfoServices, getUserInfoByIdServices, userExistsByMobileServices, getUserInfoByMobileServices } = require("../Services/services.userInfo");
-const { createCoachInfoServices, getCoachInfoServices, getCoachInfoByIdServices, coachExistsByMobileServices, getCoachInfoByMobileServices } = require('../Services/services.coachInfo');
-const { createUserCoachAuthService, getUserCoachDetailsByEmailService, getUserCoachAuthDetailsByEmailService, getUserCoachDetailsByIdService, updateUserCoachDetailsByIdService } = require('../Services/services.authUserCoach');
+const { createUserInfoServices,  userExistsByMobileServices, getUserInfoByMobileServices } = require("../Services/services.userInfo");
+const { createCoachInfoServices, coachExistsByMobileServices, getCoachInfoByMobileServices } = require('../Services/services.coachInfo');
+const { createUserCoachAuthService, getUserCoachAuthDetailsByEmailService, updateUserCoachAuthDetailsByIdService } = require('../Services/services.authUserCoach');
 require('dotenv').config(); 
 
 const loginUserController = async (req, res) => {
     try {
-        console.log(req.body)
         const { email, password } = req.body;
         
         // Fetch user by email
-        const user = await getUserCoachDetailsByEmailService(email.toLowerCase());
-        console.log(user);
-        if (!user) {
+        const user = await getUserCoachAuthDetailsByEmailService(email.toLowerCase());
+        if (!user || user.isDisabled) {
             return sendResponse(res, null, 400, false, "Invalid credentials");
         }
-        console.log(user.isActive);
         // Check if the user is verified
         if (!user.isActive) {
             return sendResponse(res, null, 400, false, "User not verified");
@@ -57,7 +54,6 @@ const loginUserController = async (req, res) => {
 
 const createUserController = async (req, res) => {
     try {
-        console.log("Request received:", req.body);
         // Validate request body
         let data_coach = {};
         if (!req.body.user_type){
@@ -76,13 +72,12 @@ const createUserController = async (req, res) => {
             sendResponse(res, null, 422, false, errors);
             return
         }
-        let userDetails = await getUserCoachDetailsByEmailService(data_user.email);
+        let userDetails = await getUserCoachAuthDetailsByEmailService(data_user.email);
         console.log("User details fetched:", userDetails);
         let userExists = await userExistsByMobileServices(data_user.mobile)
 
         if (userDetails) {
             if (userDetails.isVerified) {
-                console.log("User already verified:", userDetails);
                 sendResponse(res, null, 400, false, "User already exists");
                 return;
             } else {
@@ -99,11 +94,8 @@ const createUserController = async (req, res) => {
                     },
                     isVerified: false,
                 });
-                console.log("Generated token:", token);
-
-                await updateUserCoachDetailsByIdService(userDetails._id, { emailOtp });
+                await updateUserCoachAuthDetailsByIdService(userDetails._id, { emailOtp });
                 console.log("User details updated with OTP:", userDetails._id);
-                console.log(html(emailOtp));
                 sendEmail(userDetails.email, "login otp", html(emailOtp));
                 console.log("Email sent to:", userDetails.email);
 
@@ -115,10 +107,7 @@ const createUserController = async (req, res) => {
 
             // Encrypt the password
             const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
-            console.log("Password hashed.");
 
-            const emailOtp = generateOTP();
-            console.log("Generated OTP for new user:", emailOtp);
             let references = [];
             if (!userExists){
                 userDetails = await createUserInfoServices(data_user);
@@ -151,6 +140,11 @@ const createUserController = async (req, res) => {
                 password: hashedPassword,
                 references: references
             });
+
+            const emailOtp = generateOTP();
+            console.log("Generated OTP for new user:", emailOtp);
+
+            await updateUserCoachAuthDetailsByIdService(userDetails._id, { emailOtp });
 
             sendEmail(authDetails.email, "login otp", html(emailOtp));
             console.log("Email sent to new user:", userDetails.email);
@@ -193,7 +187,7 @@ const getUserDetailsController = async (req, res) => {
 // write a controller to verify Otp
 const verifyOtpController = async (req, res) => {
     try {
-        const userDetails = await getUserDetailsByIdService(req.user._id);
+        const userDetails = await getUserCoachAuthDetailsByIdService(req.user._id);
         if (!userDetails) {
             return sendResponse(res, null, 400, false, "user not found");
         } else {
@@ -207,7 +201,7 @@ const verifyOtpController = async (req, res) => {
                         },
                         isVerified: true
                     });
-                    await updateUserDetailsByIdService(userDetails._id, { isVerified: true });
+                    await updateUserCoachAuthDetailsByIdService(userDetails._id, { isVerified: true });
                     return sendResponse(res, null, 200, true, "user verified successfully", { token });
                 } else {
                     return sendResponse(res, null, 400, false, "invalid otp");
@@ -223,7 +217,7 @@ const verifyOtpController = async (req, res) => {
                         },
                         isVerified: true
                     });
-                    await updateUserDetailsByIdService(userDetails._id, { isVerified: true });
+                    await updateUserCoachAuthDetailsByIdService(userDetails._id, { isVerified: true });
                     sendResponse(res, null, 200, true, "otp verified successfully", { token });
                     return
                 } else {
@@ -240,7 +234,7 @@ const verifyOtpController = async (req, res) => {
 
 const resendOtpToEmail = async (req, res) => {
     try {
-        const user = await getUserDetailsByEmailService(req.body.email?.toLowerCase());
+        const user = await getUserCoachAuthDetailsByEmailService(req.body.email?.toLowerCase());
         if (!user) {
             sendResponse(res, null, 400, false, "User not found");
             return
@@ -316,7 +310,7 @@ const changePasswordController = async (req, res) => {
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
      
-        const isUpdated = await updateUserDetailsByIdService(userId, { password: hashedPassword });
+        const isUpdated = await updateUserCoachAuthDetailsByIdService(userId, { password: hashedPassword });
 
         if (!isUpdated) {
             return sendResponse(res, null, 500, false, "Password update failed");

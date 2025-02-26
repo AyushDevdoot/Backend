@@ -35,7 +35,11 @@ const AuthSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: true
-    }
+    },
+    isDisabled: {
+        type: Boolean,
+        default: false,
+    },
 }, { timestamps: true });
 
 

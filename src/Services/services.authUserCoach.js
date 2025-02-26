@@ -5,28 +5,22 @@ const createUserCoachAuthService = async (body) => {
     return await finalBody.save()
 }
 
-const getUserCoachDetailsByEmailService = async (email) => {
+const getUserCoachAuthDetailsByEmailService = async (email) => {
     return await AuthModel
         .findOne({ email }).populate({ path: 'references', populate: { path: 'reference'}});
 };
 
-const getUserCoachDetailsByIdService = async (userId) => {
+const getUserCoachAuthDetailsByIdService = async (userId) => {
     return await AuthModel.findOne({ _id: userId }).populate('references.reference');
 }
 
 
-const getUserCoachAuthDetailsByIdService = async (userId) => {
-    return await AuthModel.findOne({ _id: userId });
-}
-
-
-const updateUserCoachDetailsByIdService = async (userId, body) => {
+const updateUserCoachAuthDetailsByIdService = async (userId, body) => {
     return await AuthModel.findOneAndUpdate({ _id: userId }, body)
 }
 module.exports = {
     	createUserCoachAuthService,
-    	getUserCoachDetailsByEmailService,
-    	getUserCoachDetailsByIdService,
-	getUserCoachAuthDetailsByIdService,
-    	updateUserCoachDetailsByIdService
+    	getUserCoachAuthDetailsByEmailService,
+	    getUserCoachAuthDetailsByIdService,
+    	updateUserCoachAuthDetailsByIdService
 }
