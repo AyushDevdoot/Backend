@@ -22,7 +22,7 @@ const AuthSchema = new mongoose.Schema({
             reference: {
                 type: Schema.Types.ObjectId,
                 required: true,
-                refPath: 'referenceType'
+                refPath: 'references.referenceType'
             },
             referenceType: {
                 type: String,

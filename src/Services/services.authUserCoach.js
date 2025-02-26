@@ -7,7 +7,7 @@ const createUserCoachAuthService = async (body) => {
 
 const getUserCoachDetailsByEmailService = async (email) => {
     return await AuthModel
-		.findOne({ email }).populate('references.reference');
+        .findOne({ email }).populate({ path: 'references', populate: { path: 'reference'}});
 };
 
 const getUserCoachDetailsByIdService = async (userId) => {
