@@ -81,6 +81,7 @@ const createUserController = async (req, res) => {
                 sendResponse(res, null, 400, false, "User already exists");
                 return;
             } else {
+                //note to Self Remeber to remove it 
                 console.log("User exists but not verified:", userDetails);
 
                 const emailOtp = generateOTP();
