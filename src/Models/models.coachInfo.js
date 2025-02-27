@@ -73,7 +73,6 @@ const coachInfoSchema = new mongoose.Schema({
         enum: ['active', 'inactive', 'pending'],
         default: 'inactive',
     },
-
 }, { timestamps: true });
 
 
