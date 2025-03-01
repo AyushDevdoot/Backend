@@ -142,7 +142,7 @@ const createUserController = async (req, res) => {
             });
             console.log("Generated token for new user:", token);
 
-            sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", { token: token, user: getUserDto(user) });
+            sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", { token: token, user:userDetails });
             return;
         }
     } catch (err) {
