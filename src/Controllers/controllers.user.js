@@ -94,7 +94,7 @@ const createUserController = async (req, res) => {
                 sendEmail(userDetails.email, "login otp", html(emailOtp));
                 console.log("Email sent to:", userDetails.email);
 
-                sendResponse(res, null, 200, true, "OTP sent successfully on email", { token,user: getUserDto(user) });
+                sendResponse(res, null, 200, true, "OTP sent successfully on email",{ token });
                 return;
             }
         } else {
@@ -142,7 +142,7 @@ const createUserController = async (req, res) => {
             });
             console.log("Generated token for new user:", token);
 
-            sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", { token });
+            sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", { token: token, user: getUserDto(user) });
             return;
         }
     } catch (err) {
