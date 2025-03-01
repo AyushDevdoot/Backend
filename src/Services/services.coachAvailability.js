@@ -12,8 +12,13 @@ const getCoachAvailabilityOfDayServices = async (coachId, day) => {
     return await CoachAvailabilityModel.findOne({ coachId, day })
 }
 
+const updateCoachAvailabilityOfDayServices = async (search, update) => {
+    return await CoachAvailabilityModel.findOneAndUpdate(search, { $set: update }, { new: true })
+}
+
 module.exports = {
     createCoachAvailabilityServices,
     getCoachAllAvailabilityServices,
-    getCoachAvailabilityOfDayServices
+    getCoachAvailabilityOfDayServices,
+    updateCoachAvailabilityOfDayServices
 }
