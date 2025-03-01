@@ -94,7 +94,7 @@ const createUserController = async (req, res) => {
                 sendEmail(userDetails.email, "login otp", html(emailOtp));
                 console.log("Email sent to:", userDetails.email);
 
-                sendResponse(res, null, 200, true, "OTP sent successfully on email",{ token });
+                sendResponse(res, null, 200, true, "OTP sent successfully on email",{ token,user:userDetails});
                 return;
             }
         } else {
