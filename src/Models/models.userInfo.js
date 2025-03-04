@@ -56,6 +56,10 @@ const UserInfoSchema = new mongoose.Schema({
         type: String,
         maxlength: 255, 
     },
+    timeZone: {
+        type: String,
+        default: 'utc'
+    },
     subscriptionStatus: {
         type: String,
         enum: ['active', 'inactive', 'pending'],

@@ -51,7 +51,11 @@ const coachInfoSchema = new mongoose.Schema({
     },
     languages: {
         type: [String],
+    },    address: {
+        type: String,
+        maxlength: 255, 
     },
+
     countryCode: {
         type: String,
         maxlength: 4,
@@ -67,6 +71,14 @@ const coachInfoSchema = new mongoose.Schema({
     currency: {
         type: String,
         default: 'INR'
+    },
+    address: {
+        type: String,
+        maxlength: 255, 
+    },
+    timeZone: {
+        type: String,
+        default: 'utc'
     },
     subscriptionStatus: {
         type: String,

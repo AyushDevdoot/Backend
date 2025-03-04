@@ -1,15 +1,17 @@
 const bcrypt = require("bcrypt");
-const { sendEmail } = require("../Helpers/helpersNotification");
 const logger = require("../Helpers/loggerFunction");
+const { createAuthDto, validateAuthDto } = require('../DTOs/auth.dto');
+const { sendEmail } = require("../Helpers/helpersNotification");
 const { saltRounds, html, forgothtml } = require("../Helpers/helpers.constant");
 const { createUserDto, validateCreateUserDto, getUserProfileDto } = require("../DTOs/userInfo.dto");
 const { createCoachDto, validateCreateCoachDto, getCoachProfileDto } = require('../DTOs/coachInfo.dto');
 const { sendResponse, generateToken, generateOTP } = require("../Helpers/helpers.commonFunc");
 const { createUserInfoServices,  userExistsByMobileServices, getUserInfoByMobileServices } = require("../Services/services.userInfo");
 const { createCoachInfoServices, coachExistsByMobileServices, getCoachInfoByMobileServices } = require('../Services/services.coachInfo');
-const { createUserCoachAuthService, getUserCoachAuthDetailsByEmailService, updateUserCoachAuthDetailsByIdService } = require('../Services/services.authUserCoach');
+const { createUserCoachAuthService, getAuthDetailsByEmailService, getUserCoachAuthDetailsByEmailService, updateUserCoachAuthDetailsByIdService } = require('../Services/services.authUserCoach');
 require('dotenv').config(); 
 
+//TODO: Reminder about timeZone 
 const loginUserController = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -52,17 +54,22 @@ const loginUserController = async (req, res) => {
     }
 };
 
-const createUserController = async (req, res) => {
+const createAccountController = async (req, res) => {
     try {
         // Validate request body
         let data_coach = {};
+        let errors = {};
         if (!req.body.user_type){
             sendResponse(res, null, 422, false, 'Error Invaild user type!');
             return
         }
-
+        errors = validateAuthDto(req.body);
+        if (Object.keys(errors).length > 0){
+            sendResponse(res, null, 422, false, errors);
+            return
+        }
         let data_user = createUserDto(req.body);
-        let errors = validateCreateUserDto(data_user);
+        errors = validateCreateUserDto(data_user);
 
         if (req.body.user_type.includes('coach')){
             data_coach = createCoachDto(req.body)
@@ -72,7 +79,7 @@ const createUserController = async (req, res) => {
             sendResponse(res, null, 422, false, errors);
             return
         }
-        let userDetails = await getUserCoachAuthDetailsByEmailService(data_user.email);
+        let userDetails = await getAuthDetailsByEmailService(req.body.email);
         console.log("User details fetched:", userDetails);
         let userExists = await userExistsByMobileServices(data_user.mobile)
 
@@ -81,7 +88,7 @@ const createUserController = async (req, res) => {
                 sendResponse(res, null, 400, false, "User already exists");
                 return;
             } else {
-                //note to Self Remeber to remove it 
+                //TODO:note to Self Remeber to remove it 
                 console.log("User exists but not verified:", userDetails);
 
                 const emailOtp = generateOTP();
@@ -137,7 +144,7 @@ const createUserController = async (req, res) => {
             }
             console.log(references);
             const authDetails = await createUserCoachAuthService({
-                email: data_user.email, 
+                email: req.body.email, 
                 password: hashedPassword,
                 references: references
             });
@@ -327,7 +334,7 @@ const changePasswordController = async (req, res) => {
 
 
 module.exports = {
-    createUserController,
+    createAccountController,
     getUserDetailsController,
     loginUserController,
     verifyOtpController,

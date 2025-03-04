@@ -1,9 +1,8 @@
 const createUserDto = (data) => {
     const { 
         firstName,
-	    lastName,
+        lastName,
         mobile, 
-        email, 
         profilePhoto, 
         bio, 
         languages, 
@@ -12,16 +11,15 @@ const createUserDto = (data) => {
         address, 
         subscriptionStatus 
     } = data;
-    
+
     return {
-	firstName: '' || firstName.toLowerCase(),
-	lastName : '' || lastName.toLowerCase(),
-	mobile: mobile.replaceAll('+',''),
-	email: email.toLowerCase(),
+        firstName: firstName?.toLowerCase() || '',
+        lastName : lastName?.toLowerCase() || '',
+        mobile: mobile?.replaceAll('+',''),
         profilePhoto,
         bio,
-	    languages: languages.map( language => language.toLowerCase() ),  // Default empty array if not provided
-	countryCode: countryCode.toUpperCase(),
+        languages: languages?.map( language => language?.toLowerCase() || '' ),  // Default empty array if not provided
+        countryCode: countryCode?.toUpperCase(),
         currency: currency || 'INR',  // Default INR if not provided
         address: address || "",  // Default empty string if not provided
         subscriptionStatus: subscriptionStatus || 'inactive',  // Default inactive if not provided
@@ -62,10 +60,6 @@ const validateCreateUserDto = (data) => {
         errors.mobile = "A valid mobile number is required.";
     }
 
-    if (!email || !isValidEmail(email)) {
-        errors.email = "A valid email is required.";
-    }
-
     if (!profilePhoto || typeof profilePhoto !== 'string' || profilePhoto.trim().length < 2) {
         errors.profilePhoto = "Profile photo URL is required and must be a valid string.";
     }
@@ -101,35 +95,35 @@ const validateCreateUserDto = (data) => {
 
 const getUserProfileDto = (data) => {
     const { _id, 
-	    firstName, 
-	    lastName, 
-	    mobile, 
-	    email, 
-	    profilePhoto, 
-	    bio, 
-	    rating, 
-	    languages, 
-	    countryCode,
-	    amountSpend,
-	    currency,
-	    subscriptionStatus,
-	    isVerified 
+        firstName, 
+        lastName, 
+        mobile, 
+        email, 
+        profilePhoto, 
+        bio, 
+        rating, 
+        languages, 
+        countryCode,
+        amountSpend,
+        currency,
+        subscriptionStatus,
+        isVerified 
     } = data;
     return {
-	    _id,
-	    firstName, 
-	    lastName, 
-	    mobile, 
-	    email, 
-	    profilePhoto, 
-	    bio, 
-	    rating, 
-	    languages, 
-	    countryCode,
-	    amountSpend,
-	    currency,
-	    subscriptionStatus,
-	    isVerified 
+        _id,
+        firstName, 
+        lastName, 
+        mobile, 
+        email, 
+        profilePhoto, 
+        bio, 
+        rating, 
+        languages, 
+        countryCode,
+        amountSpend,
+        currency,
+        subscriptionStatus,
+        isVerified 
     }
 }
 

@@ -63,10 +63,8 @@ const createUserController = async (req, res) => {
 
         // Normalize email and check for existing user
         const email = req.body.email.toLowerCase();
-        console.log("Validated email:", email);
 
         let userDetails = await getUserDetailsByEmailService(email);
-        console.log("User details fetched:", userDetails);
 
         if (userDetails) {
             if (userDetails.isVerified) {

@@ -14,11 +14,11 @@ const availabilitySchema = new Schema({
         enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     },
     startTime: {
-        type: String,
+        type: String, // 24 hour format
         required: true,
     },
     endTime: {
-        type: String,
+        type: String, //24 hour format
         required: true,
     },
     isAvailable: {
@@ -27,6 +27,7 @@ const availabilitySchema = new Schema({
     }
 }, { timestamps: true });
 
+availabilitySchema.index({coachId : 1, day: 1, startTime: 1, endTime: 1})
 const CoachAvailabilityModel = mongoose.model('coachAvailability', availabilitySchema);
 
 module.exports = CoachAvailabilityModel;

@@ -1,9 +1,9 @@
-const { createUserController, getUserDetailsController, loginUserController, verifyOtpController, forgetPasswordController, resendOtpToEmail, changePasswordController } = require('../Controllers/controller.authUserCoach');
+const { createAccountController, getUserDetailsController, loginUserController, verifyOtpController, forgetPasswordController, resendOtpToEmail, changePasswordController } = require('../Controllers/controller.authUserCoach');
 const { verifyUserMiddleware, verifytUserOtpMiddleware } = require('../Middleware/userAuth');
 
 const userRouter = require('express').Router();
 
-userRouter.post('/signup', createUserController);
+userRouter.post('/signup', createAccountController);
 userRouter.post('/login', loginUserController);
 userRouter.get('/details', verifyUserMiddleware, getUserDetailsController);
 userRouter.post('/otp', verifytUserOtpMiddleware, verifyOtpController);

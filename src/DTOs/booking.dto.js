@@ -1,12 +1,12 @@
+
 const { parse, isValid, format } = require('date-fns');
 
 
 function hour_24_format(time) {
-
     // Try to parse the time string in the format 'h:mm a' (e.g. '9:00 AM')
     const parsedTime = parse(time, 'h:mm a', new Date());
 	if (isNaN(parsedTime)){
-		return '';
+		return null;
 	}
     // Check if the parsed time is valid
 	return format(parsedTime, 'HH:mm');
@@ -31,42 +31,41 @@ function isValidTime(time) {
 }
 
 
-const createCoachAvailabilityDto = (data) => {
-	const {
-		coachId,
-		day,
-		startTime,
-		endTime,
-		isAvailable,
-	} = data;
+const createBookingDto = (data) => {
+  const {
+    coachId,
+    userId,
+    startTime,
+    endTime,
+    description,
+    status = 'pending',
+    updatedBy = 'user',
+    paymentStatus
+  } = data;
 
-	return {
-		coachId,
-		day,
-		startTime: hour_24_format(startTime),
-		endTime: hour_24_format(endTime),
-		isAvailable: isAvailable === undefined || isAvailable? true : false,
-	};
+  return {
+    coachId,
+    userId,
+    startTime: hour_24_format(startTime), // Assuming hour_24_format returns a valid Date/24-hour time format
+    endTime: hour_24_format(endTime),
+    description,
+    status,
+    updatedBy,
+    paymentStatus: paymentStatus === undefined ? false : paymentStatus,
+  };
 };
 
-
-function validateCoachAvailability(data) {
+function validateCreateBookingDto(data) {
 	const errors = {};
-	const vaildDays = { 'Monday': 1, 'Tuesday': 1, 'Wednesday': 1, 'Thursday': 1, 'Friday': 1, 'Saturday': 1, 'Sunday': 1 };
-
 	// coachId validation
 	if (!data.coachId || typeof data.coachId !== 'string' || !data.coachId.length == 24) {
-		console.log(data.coachId)
 		errors.coachId = "coachId must be a valid ObjectId string.";
 	}
 
-	// date validation
-	if (!data.day || typeof data.day !== 'string' || !vaildDays[data.day]) {
-		errors.day = "day must be a valid Day.";
+	if (!data.userId || typeof data.userId !== 'string' || !data.userId.length == 24) {
+		errors.userId = "userId must be a valid ObjectId string.";
 	}
-	
-	console.log(data.startTime, isValidTime(data.startTime));
-	// time validation (new format: "HH:MM AM/PM - HH:MM AM/PM")
+
 	if (
 		!data.startTime ||
 		typeof data.startTime !== 'string' ||
@@ -75,6 +74,9 @@ function validateCoachAvailability(data) {
 		errors.startTime = "startTime must be in the format 'HH:MM AM/PM - HH:MM AM/PM'.";
 	}
 
+    if (data.description && typeof data.description !== 'string'){
+        errors.description = "Description should be string";
+    }
 
 	if (
 		!data.endTime ||
@@ -82,18 +84,18 @@ function validateCoachAvailability(data) {
 		!isValidTime(data.endTime)
 
 	) {
-		errors.endTime = "endtime must be in the format 'HH:MM AM/PM OR HH:MM'.";
+		errors.endTime = "endtime must be in the format 'HH:MM AM/PM - HH:MM AM/PM'.";
 	}
 
-	if (! typeof data.isAvailable === 'boolean'){
-		errors.isAvailable = "Availability should be a boolean";
+	if (! typeof data.paymentStatus === 'boolean'){
+		errors.paymentStatus = "paymentStatus should be a boolean";
 	}
 
 	return errors;
 }
 
 
-const getCoachAvailabilityDto = (data) => {
+const getAppointmentsByCoachIdDto = (data) => {
 	const {
 		coachId,
 	} = data;
@@ -103,7 +105,19 @@ const getCoachAvailabilityDto = (data) => {
 	};
 };
 
-const validateGetCoachAvailabilityDto = (data) => {
+
+const getAppointmentsByUserIdDto = (data) => {
+	const {
+		userId,
+	} = data;
+
+	return {
+		userId,
+	};
+};
+
+
+const validateGetCoachAppointmentsDto = (data) => {
 	let errors = {};
 
 	if (!data.coachId || typeof data.coachId !== 'string' || !data.coachId.match(/^[a-f\d]{24}$/i)) {
@@ -113,6 +127,18 @@ const validateGetCoachAvailabilityDto = (data) => {
 	return errors
 
 };
+
+const validateGetUserAppointmentsDto = (data) => {
+	let errors = {};
+
+	if (!data.userId || typeof data.userId !== 'string' || !data.userId.match(/^[a-f\d]{24}$/i)) {
+		errors.userId = "coachId must be a valid ObjectId string.";
+	}
+
+	return errors
+
+};
+
 
 
 const updateCoachAvailabilityDto = (data) => {
@@ -180,11 +206,13 @@ const vaildateUpdateCoachAvailabilityDto = (data) =>{
 
 
 module.exports = {
-	createCoachAvailabilityDto,
-	validateCoachAvailability,
-	getCoachAvailabilityDto,
+	createBookingDto,
+	validateCreateBookingDto,
+	getAppointmentsByCoachIdDto,
 	updateCoachAvailabilityDto,
 	vaildateUpdateCoachAvailabilityDto,
-	validateGetCoachAvailabilityDto
+	validateGetCoachAppointmentsDto,
+    validateGetUserAppointmentsDto,
+    getAppointmentsByUserIdDto
 };
 

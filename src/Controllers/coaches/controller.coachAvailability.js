@@ -1,27 +1,27 @@
 const { createCoachAvailabilityServices, getCoachAllAvailabilityServices, getCoachAvailabilityOfDayServices, updateCoachAvailabilityOfDayServices} = require("../../Services/services.coachAvailability");
+const { sendResponse } = require("../../Helpers/helpers.commonFunc");
 const { createCoachAvailabilityDto, validateCoachAvailability, getCoachAvailabilityDto, validateGetCoachAvailabilityDto, updateCoachAvailabilityDto, vaildateUpdateCoachAvailability } = require('../../DTOs/coachAvailability.dto');
 
 const addCoachAvailabilityController = async (req, res) => {
+    // supports both adding new and updating old
     try {
         if (! Array.isArray(req.body.availability)){
             sendResponse(res, null, 400, false, 'Invalid data');
         }
         let availability = [];
         let errors = {};
-        let coachId = req.body.id
-
+        let coachId = req.body.coachId
         for (let data of req.body.availability){
             const availability_data = createCoachAvailabilityDto({...data, coachId });
             errors = validateCoachAvailability(availability_data);
+		if (Object.keys(errors).length > 0){
+		    sendResponse(res, null, 400, false, errors);
+		    return
+		}
             availability.push(availability_data)
         }
-        if (Object.keys(errors).length > 0){
-            sendResponse(res, null, 400, false, '');
-            return
-        }
 
-        let result = await createCoachAvailabilityServices(availability);
-        console.log(result);
+        const result = await createCoachAvailabilityServices(availability);
         sendResponse(res, null, 201, true, 'successfully added',result);
     }catch (err) {
         console.log(err);
@@ -33,17 +33,23 @@ const addCoachAvailabilityController = async (req, res) => {
 
 const getCoachAllAvailabilityController = async (req, res) => {
     try {
-        const id = req.params.id;
-        const availability_data = createCoachAvailabilityDto({ coachId: id });
+        const id = req.query.id;
+        const availability_data = getCoachAvailabilityDto({ coachId: id });
         const errors = validateGetCoachAvailabilityDto(availability_data);
         if (Object.keys(errors).length > 0){
-            sendResponse(res, null, 400, false, '');
+            sendResponse(res, null, 400, false, errors);
             return
         }
-
+        console.log(availability_data);
         let result = await getCoachAllAvailabilityServices(availability_data);
-        sendResponse(res, null, 201, true, 'success',result);
+        let available = result.map((data)=>{
+            if (data.isAvailable){
+                return data
+            }
+        });
+        sendResponse(res, null, 201, true, 'success', available);
     }catch (err) {
+        console.log(err)
         sendResponse(res, err, 500);
     }
 
@@ -56,7 +62,7 @@ const updateCoachAvailabilityController = async (req, res) =>{
         const availability_data = updateCoachAvailabilityDto(req.body);
         const errors = vaildateUpdateCoachAvailability(availability_data);
         if (Object.keys(errors).length > 0){
-            sendResponse(res, null, 400, false, '');
+            sendResponse(res, null, 400, false, errors);
             return
         }
 

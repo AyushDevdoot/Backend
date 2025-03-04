@@ -1,4 +1,5 @@
 const createCoachDto = (data) => {
+    console.log(data)
     const { 
         firstName,
 	    lastName,
@@ -17,10 +18,10 @@ const createCoachDto = (data) => {
     } = data;
 
     return {
-	firstName: '' || firstName.toLowerCase(),
-	lastName : '' || lastName.toLowerCase(),
+	firstName: firstName?.toLowerCase() || '',
+	lastName : lastName?.toLowerCase() || '',
         specialization, // Array of ObjectIds referencing the specialization schema
-        mobile : mobile.replace('+',''),
+        mobile : mobile?.replace('+',''),
         profilePhoto,
         experienceYear,
         bio,
@@ -36,9 +37,9 @@ const createCoachDto = (data) => {
 
 const validateCreateCoachDto = (data) => {
     const errors = {};
-
     // Validate coachName
     if (!data.firstName || typeof data.firstName !== 'string' || data.firstName.trim().length < 2) {
+        console.log(firstName);
         errors.firstName = "coachName must be a valid string and at least 2 characters long.";
     }
 
