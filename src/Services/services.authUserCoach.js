@@ -10,6 +10,9 @@ const getUserCoachAuthDetailsByEmailService = async (email) => {
         .findOne({ email }).populate({ path: 'references', populate: { path: 'reference'}});
 };
 
+const getAuthDetailsByEmailService = async (email) => {
+    return await AuthModel.findOne({ email });
+};
 const getUserCoachAuthDetailsByIdService = async (userId) => {
     return await AuthModel.findOne({ _id: userId }).populate('references.reference');
 }
@@ -19,8 +22,9 @@ const updateUserCoachAuthDetailsByIdService = async (userId, body) => {
     return await AuthModel.findOneAndUpdate({ _id: userId }, body)
 }
 module.exports = {
-    	createUserCoachAuthService,
-    	getUserCoachAuthDetailsByEmailService,
-	    getUserCoachAuthDetailsByIdService,
-    	updateUserCoachAuthDetailsByIdService
+    createUserCoachAuthService,
+    getAuthDetailsByEmailService,
+    getUserCoachAuthDetailsByEmailService,
+    getUserCoachAuthDetailsByIdService,
+    updateUserCoachAuthDetailsByIdService
 }
