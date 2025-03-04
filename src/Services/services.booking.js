@@ -1,42 +1,26 @@
+const bookingModel = require("../Models/models.booking");
 
-const CoachAvailabilityModel = require("../Models/models.coachAvailability");
+const createBookingServices = async (booking) => {
+	return await bookingModel(booking).save();
+};
 
-const createCoachAvailabilityServices = async (availability) => {
+const getBookingByIdService = async ( _id ) => {
+	return await bookingModel.findOne(_id) 
 
-	const bulkOperations = availability.map(data => ({
-		updateOne: {
-			filter: {
-				coachId: data.coachId,
-				day: data.day,
-			}, // find fields
-			update: {
-				$set: { 
-					isAvailable: data.isAvailable,
-					startTime: data.startTime,
-					endTime: data.endTime,
-				}  // Set the fields to update
-			},
-			upsert: true // If the document doesn't exist, insert a new one
-		}
-	}));
-	return await CoachAvailabilityModel.bulkWrite(bulkOperations);
-}
+};
 
-const getCoachAllAvailabilityServices = async (coachId) => {
+const getCoachBookingHistoryServices = async (coachId) => {
+	// get all bookings of the coach, will be used for history
 	return await CoachAvailabilityModel.find(coachId);
 }
 
-const getCoachAvailabilityOfDayServices = async (coachId, day) => {
-	return await CoachAvailabilityModel.findOne({ coachId, day })
-}
-
-const updateCoachAvailabilityOfDayServices = async (search, update) => {
-	return await CoachAvailabilityModel.findOneAndUpdate(search, { $set: update }, { new: true })
+const getUserBookingHistoryServices = async (userId) => {
+	return await CoachAvailabilityModel.findOne(userId)
 }
 
 module.exports = {
-	createCoachAvailabilityServices,
-	getCoachAllAvailabilityServices,
-	getCoachAvailabilityOfDayServices,
-	updateCoachAvailabilityOfDayServices
+	createBookingServices,
+	getBookingByIdService,
+	getCoachBookingHistoryServices,
+	getUserBookingHistoryServices
 }
