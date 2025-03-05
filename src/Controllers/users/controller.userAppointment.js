@@ -2,7 +2,9 @@ const { createBookingServices, getBookingByIdService, getUserBookingHistoryServi
 const { createBookingDto, validateCreateBookingDto, getAppointmentsByUserIdDto } = require('../../DTOs/booking.dto');
 
 const createAppointmentController = async (req, res) =>{
+	// data in Am pm format  in utc time, will be converted to utc 24 hour format
 	try{
+		
 		let booking_data = createBookingDto(req.body);
 		let errors = validateCreateBookingDto(booking_data);
 
