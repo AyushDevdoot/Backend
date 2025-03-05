@@ -1,28 +1,38 @@
-
 const { parse, isValid, format } = require('date-fns');
-
+const moment = require('moment-timezone');
 
 function hour_24_format(time) {
-    // Try to parse the time string in the format 'h:mm a' (e.g. '9:00 AM')
-    const parsedTime = parse(time, 'h:mm a', new Date());
-	if (isNaN(parsedTime)){
-		return null;
-	}
-    // Check if the parsed time is valid
-	return format(parsedTime, 'HH:mm');
+	// also converts it to utc
+    // First, try parsing the time in 12-hour format (e.g., '9:00 AM')
+    const parsed12HrTime = parse(time, 'h:mm a', new Date());
+    
+    // If parsing the 12-hour format is successful
+    if (isValid(parsed12HrTime)) {
+        // Convert to 24-hour format (HH:mm) and attach current date
+        return format(parsed12HrTime, 'yyyy-MM-dd HH:mm');
+    }
+
+    // If it's already a 24-hour format time, try parsing it directly
+    const parsed24HrTime = parse(time, 'HH:mm', new Date());
+    
+    // If the 24-hour format parsing is valid, return the time with the current date
+    if (isValid(parsed24HrTime)) {
+        return format(parsed24HrTime, 'yyyy-MM-dd HH:mm');
+    }
+
+    return null;
 }
 
 function isValidTime(time) {
-	const time24 = parse(time, 'HH:mm', new Date());
-    
-    if (isValid(time24)) {
+    // Check if the time is in valid 24-hour format (HH:mm)
+    const parsed24Hr = parse(time, 'HH:mm', new Date());
+    if (isValid(parsed24Hr)) {
         return true; // Valid 24-hour time
     }
 
-    // Try parsing the time for 12-hour format 'h:mm a' (e.g., '9:00 AM')
-    const time12 = parse(time, 'h:mm a', new Date());
-
-    if (isValid(time12)) {
+    // Check if the time is in valid 12-hour format (h:mm a)
+    const parsed12Hr = parse(time, 'h:mm a', new Date());
+    if (isValid(parsed12Hr)) {
         return true; // Valid 12-hour time
     }
 
@@ -30,13 +40,13 @@ function isValidTime(time) {
     return false;
 }
 
-
 const createBookingDto = (data) => {
   const {
     coachId,
     userId,
     startTime,
     endTime,
+    timeZone,
     description,
     status = 'pending',
     updatedBy = 'user',
@@ -46,8 +56,9 @@ const createBookingDto = (data) => {
   return {
     coachId,
     userId,
-    startTime: hour_24_format(startTime), // Assuming hour_24_format returns a valid Date/24-hour time format
-    endTime: hour_24_format(endTime),
+    startTime: hour_24_format(startTime), // Convert start time to 24-hour format with date
+    endTime: hour_24_format(endTime),     // Convert end time to 24-hour format with date
+    timeZone,
     description,
     status,
     updatedBy,
@@ -57,38 +68,35 @@ const createBookingDto = (data) => {
 
 function validateCreateBookingDto(data) {
 	const errors = {};
-	// coachId validation
-	if (!data.coachId || typeof data.coachId !== 'string' || !data.coachId.length == 24) {
+
+	// Validate coachId
+	if (!data.coachId || typeof data.coachId !== 'string' || data.coachId.length !== 24) {
 		errors.coachId = "coachId must be a valid ObjectId string.";
 	}
 
-	if (!data.userId || typeof data.userId !== 'string' || !data.userId.length == 24) {
+	// Validate userId
+	if (!data.userId || typeof data.userId !== 'string' || data.userId.length !== 24) {
 		errors.userId = "userId must be a valid ObjectId string.";
 	}
 
-	if (
-		!data.startTime ||
-		typeof data.startTime !== 'string' ||
-		!isValidTime(data.startTime)
-	) {
-		errors.startTime = "startTime must be in the format 'HH:MM AM/PM - HH:MM AM/PM'.";
+	// Validate startTime format
+	if (!data.startTime || typeof data.startTime !== 'string' || !isValidTime(data.startTime)) {
+		errors.startTime = "startTime must be in the format 'HH:MM AM/PM' or 'HH:MM'.";
 	}
 
-    if (data.description && typeof data.description !== 'string'){
-        errors.description = "Description should be string";
-    }
-
-	if (
-		!data.endTime ||
-		typeof data.endTime !== 'string' ||
-		!isValidTime(data.endTime)
-
-	) {
-		errors.endTime = "endtime must be in the format 'HH:MM AM/PM - HH:MM AM/PM'.";
+	// Validate description
+	if (data.description && typeof data.description !== 'string') {
+		errors.description = "Description should be a string.";
 	}
 
-	if (! typeof data.paymentStatus === 'boolean'){
-		errors.paymentStatus = "paymentStatus should be a boolean";
+	// Validate endTime format
+	if (!data.endTime || typeof data.endTime !== 'string' || !isValidTime(data.endTime)) {
+		errors.endTime = "endTime must be in the format 'HH:MM AM/PM' or 'HH:MM'.";
+	}
+
+	// Validate paymentStatus
+	if (typeof data.paymentStatus !== 'boolean') {
+		errors.paymentStatus = "paymentStatus should be a boolean.";
 	}
 
 	return errors;
@@ -212,7 +220,7 @@ module.exports = {
 	updateCoachAvailabilityDto,
 	vaildateUpdateCoachAvailabilityDto,
 	validateGetCoachAppointmentsDto,
-    validateGetUserAppointmentsDto,
-    getAppointmentsByUserIdDto
+    	validateGetUserAppointmentsDto,
+    	getAppointmentsByUserIdDto
 };
 
