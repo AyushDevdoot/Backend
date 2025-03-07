@@ -26,6 +26,10 @@ const coachBankDetailsSchema = new mongoose.Schema({
     upiId:{
         type:String,
         required:true
+    },
+    routingNumber:{
+        type:Number,
+        required:false
     }
 
 })
