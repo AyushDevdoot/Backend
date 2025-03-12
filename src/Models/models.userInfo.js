@@ -17,16 +17,13 @@ const UserInfoSchema = new mongoose.Schema({
     },
     profilePhoto: {
         type: String,
-        required: true,
     },
     bio: {
         type: String,
-        required: true,
         maxlength: 500, 
     },
     rating: {
         type: Number,
-        required: true,
         default: 0,
         min: 0, 
         max: 5, 
@@ -38,7 +35,6 @@ const UserInfoSchema = new mongoose.Schema({
     },
     languages: {
         type: [String], // Store languages as an array (e.g., ["English", "Spanish"])
-        required: true,
     },
     countryCode: {
         type: String,
@@ -50,7 +46,8 @@ const UserInfoSchema = new mongoose.Schema({
     },
     currency: {
         type: String,
-        default: 'INR', // Standardize currency code (ISO 4217)
+        enum: ['USD', 'INR'],
+        default: 'USD', // Standardize currency code (ISO 4217)
     },
     address: {
         type: String,

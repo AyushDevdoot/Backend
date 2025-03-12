@@ -8,7 +8,7 @@ const { createCoachDto, validateCreateCoachDto, getCoachProfileDto } = require('
 const { sendResponse, generateToken, generateOTP } = require("../Helpers/helpers.commonFunc");
 const { createUserInfoServices,  userExistsByMobileServices, getUserInfoByMobileServices } = require("../Services/services.userInfo");
 const { createCoachInfoServices, coachExistsByMobileServices, getCoachInfoByMobileServices } = require('../Services/services.coachInfo');
-const { createUserCoachAuthService, getAuthDetailsByEmailService, getUserCoachAuthDetailsByEmailService, updateUserCoachAuthDetailsByIdService } = require('../Services/services.authUserCoach');
+const { createUserCoachAuthService, getAuthDetailsByEmailService, getAuthDetailsByIdService,getUserCoachAuthDetailsByEmailService, updateAuthDetailsByIdService } = require('../Services/services.authUserCoach');
 require('dotenv').config(); 
 
 //TODO: Reminder about timeZone 
@@ -22,7 +22,7 @@ const loginUserController = async (req, res) => {
             return sendResponse(res, null, 400, false, "Invalid credentials");
         }
         // Check if the user is verified
-        if (!user.isActive) {
+        if (!user.isVerified) {
             return sendResponse(res, null, 400, false, "User not verified");
         }
         // Check if the password matches
@@ -54,9 +54,232 @@ const loginUserController = async (req, res) => {
     }
 };
 
+const createUserAccountController = async (req, res) => {
+    try {
+        let data_user = {};
+        let errors = {};
+
+        // Validate user_type (only allow 'user' type here)
+        if (!req.body.user_type || req.body.user_type !== 'user') {
+            return sendResponse(res, null, 422, false, 'Error: Invalid user type!');
+        }
+
+        // Validate the authentication data (email, password)
+        errors = validateAuthDto(req.body);
+        if (Object.keys(errors).length > 0) {
+            return sendResponse(res, null, 422, false, errors);
+        }
+
+        // Create the user DTO (data transfer object) and validate user-specific data
+        data_user = createUserDto(req.body);
+        errors = validateCreateUserDto(data_user);
+        if (Object.keys(errors).length > 0) {
+            return sendResponse(res, null, 422, false, errors);
+        }
+
+        let userExistsByMobile = await userExistsByMobileServices(data_user.mobile);
+
+        // Check if a user with the same email exists in the auth model
+        let accountDetails = await getAuthDetailsByEmailService(req.body.email);
+
+        if (accountDetails) {
+            // Check if the user exists as a 'coach' or 'user'
+            const existingUserType = accountDetails.references[0].referenceType;
+
+            if (existingUserType === 'userinfo' && req.body.user_type !== 'user') {
+                // User exists as a 'user', cannot create as a 'coach'
+                return sendResponse(res, null, 400, false, 'Account already exists as a user. Cannot switch to coach.');
+            }
+
+            if (existingUserType === 'coachinfo' && req.body.user_type !== 'coach') {
+                // User exists as a 'coach', cannot create as a 'user'
+                return sendResponse(res, null, 400, false, 'Account already exists as a coach. Cannot switch to user.');
+            }
+
+            // If user is verified but mobile already exists, we return an error
+            if (accountDetails.isVerified && userExistsByMobile) {
+                return sendResponse(res, null, 400, false, "User already exists with the same mobile number.");
+            }
+
+            // If user is not verified, send OTP for email verification
+            if (!accountDetails.isVerified) {
+                const emailOtp = generateOTP();
+                const token = await generateToken({
+                    user: {
+                        _id: accountDetails._id,
+                        userType: existingUserType,
+                        email: accountDetails.email,
+                    },
+                    isVerified: false,
+                });
+
+                await updateAuthDetailsByIdService(accountDetails._id, { emailOtp });
+                sendEmail(accountDetails.email, "login otp", html(emailOtp));
+
+                return sendResponse(res, null, 200, true, "OTP sent successfully on email for verification", { token });
+            }
+
+            return;
+        } else {
+            // If the user does not exist in the auth model, create a new user
+            if (userExistsByMobile) {
+                return sendResponse(res, null, 422, false, 'User is already registered with this mobile number.');
+            }
+
+            // Encrypt the password and create a new user account
+            const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+
+            // Create new user info entry
+            const newUserInfo = await createUserInfoServices(data_user);
+
+            // Create the authentication details for the user
+            const accountDetails = await createUserCoachAuthService({
+                email: req.body.email,
+                password: hashedPassword,
+                references: [{ reference: newUserInfo._id, referenceType: 'userinfo' }]
+            });
+
+            // Generate OTP and send it to the email for verification
+            const emailOtp = generateOTP();
+            await updateAuthDetailsByIdService(accountDetails._id, { emailOtp });
+            sendEmail(accountDetails.email, "login otp", html(emailOtp));
+
+            const token = await generateToken({
+                user: {
+                    _id: accountDetails._id,
+                    userType: 'user', // Setting 'user' as the default type
+                    email: accountDetails.email,
+                },
+                isVerified: false,
+            });
+
+            let response_data = { 'token': token };
+            response_data.userId = getUserProfileDto(accountDetails._id)._id;
+
+            return sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", response_data);
+        }
+    } catch (err) {
+        console.error("Error in createUserAccountController:", err);
+        return sendResponse(res, err);
+    }
+};
+
+// coach - account creation
+
+const createCoachAccountController = async (req, res) => {
+    try {
+        let data_coach = {};
+        let errors = {};
+
+        // Validate user_type (only allow 'coach' type here)
+        if (!req.body.user_type || req.body.user_type !== 'coach') {
+            return sendResponse(res, null, 422, false, 'Error: Invalid user type!');
+        }
+
+        // Validate the authentication data (email, password)
+        errors = validateAuthDto(req.body);
+        if (Object.keys(errors).length > 0) {
+            return sendResponse(res, null, 422, false, errors);
+        }
+
+        // Create the coach DTO (data transfer object) and validate coach-specific data
+        data_coach = createCoachDto(req.body);
+        errors = validateCreateCoachDto(data_coach);
+        if (Object.keys(errors).length > 0) {
+            return sendResponse(res, null, 422, false, errors);
+        }
+
+        let coachExists = await coachExistsByMobileServices(data_coach.mobile);
+
+        // Check if a coach with the same email exists in the auth model
+        let accountDetails = await getAuthDetailsByEmailService(req.body.email);
+
+        if (accountDetails) {
+            // Check for existing user type (user or coach)
+            const existingAccountType = accountDetails.references[0].referenceType;
+
+            // If it's already a user account, prevent creating a coach with the same email
+            if (existingAccountType === 'userinfo' && req.body.user_type === 'coach') {
+                return sendResponse(res, null, 400, false, 'Mobile is already associated with a user account. Cannot create a coach account.');
+            }
+
+            // If it's already a coach account, prevent creating another coach with the same email
+            if (existingAccountType === 'coachinfo' && req.body.user_type === 'coach') {
+                if (coachExists) {
+                    return sendResponse(res, null, 400, false, 'Coach already exists with this email.');
+                }
+                return;
+            }
+
+            // If the account exists and is not verified, send OTP
+            if (!accountDetails.isVerified) {
+                const emailOtp = generateOTP();
+                const token = await generateToken({
+                    user: {
+                        _id: accountDetails._id,
+                        userType: accountDetails.references[0].referenceType,
+                        email: accountDetails.email,
+                    },
+                    isVerified: false,
+                });
+
+                await updateAuthDetailsByIdService(accountDetails._id, { emailOtp });
+                sendEmail(accountDetails.email, "login otp", html(emailOtp));
+
+                return sendResponse(res, null, 200, true, "OTP sent successfully on email", { token });
+            }
+
+            return;
+        } else {
+            // If coach doesn't exist yet, proceed with registration
+            if (coachExists) {
+                return sendResponse(res, null, 422, false, 'Coach is already registered with this mobile number.');
+            }
+
+            // Encrypt the password and create a new coach account
+            const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+
+            // Create the coach info and link it to the user's references
+            let coachInfo = await createCoachInfoServices(data_coach);
+            let references = [{
+                reference: coachInfo._id,
+                referenceType: 'coachinfo'
+            }];
+
+            // Create the auth details for the coach
+            const authDetails = await createUserCoachAuthService({
+                email: req.body.email,
+                password: hashedPassword,
+                references: references
+            });
+
+            // Generate OTP and send it to the email for verification
+            const emailOtp = generateOTP();
+            await updateAuthDetailsByIdService(authDetails._id, { emailOtp });
+            sendEmail(authDetails.email, "login otp", html(emailOtp));
+
+            const token = await generateToken({
+                user: {
+                    _id: authDetails._id,
+                    userType: 'coach',
+                    email: authDetails.email,
+                },
+                isVerified: false,
+            });
+
+            let response_data = { 'token': token };
+            response_data.coachId = getCoachProfileDto(coachInfo._id)._id;
+
+            return sendResponse(res, null, 201, true, "Coach account created successfully. OTP sent on email for verification", response_data);
+        }
+    } catch (err) {
+        console.error("Error in createCoachAccountController:", err);
+        return sendResponse(res, err);
+    }
+};
+
 const createAccountController = async (req, res) => {
     try {
-        // Validate request body
         let data_coach = {};
         let errors = {};
         if (!req.body.user_type){
@@ -79,13 +302,25 @@ const createAccountController = async (req, res) => {
             sendResponse(res, null, 422, false, errors);
             return
         }
-        let userDetails = await getAuthDetailsByEmailService(req.body.email);
-        console.log("User details fetched:", userDetails);
-        let userExists = await userExistsByMobileServices(data_user.mobile)
 
+        let userDetails = await getAuthDetailsByEmailService(req.body.email);
         if (userDetails) {
             if (userDetails.isVerified) {
-                sendResponse(res, null, 400, false, "User already exists");
+
+                if (req.body.user_type == 'user'){
+                    let userExists = await userExistsByMobileServices(data_user.mobile);
+                    if (userExists){
+                        sendResponse(res, null, 400, false, "User already exists");
+                        return
+                    }
+                }else{
+                    let coachExists = await coachExistsByMobileServices(data_user.mobile);
+                    if (coachExists){
+                        sendResponse(res, null, 400, false, "User already exists");
+                        return
+                    }
+                }
+
                 return;
             } else {
                 //TODO:note to Self Remeber to remove it 
@@ -102,7 +337,7 @@ const createAccountController = async (req, res) => {
                     },
                     isVerified: false,
                 });
-                await updateUserCoachAuthDetailsByIdService(userDetails._id, { emailOtp });
+                await updateAuthDetailsByIdService(userDetails._id, { emailOtp });
                 console.log("User details updated with OTP:", userDetails._id);
                 sendEmail(userDetails.email, "login otp", html(emailOtp));
                 console.log("Email sent to:", userDetails.email);
@@ -111,38 +346,38 @@ const createAccountController = async (req, res) => {
                 return;
             }
         } else {
+            if (req.body.user_type == 'user'){
+                let userExists = await userExistsByMobileServices(data_user.mobile);
+                if (userExists){
+                    sendResponse(res, null, 422, false, 'User is registered with Mobile number');
+                    return
+                }
+            }else{
+                let coachExists = await coachExistsByMobileServices(data_user.mobile);
+                if (coachExists){
+                    sendResponse(res, null, 422, false, 'coach is registered with Mobile number');
+                    return
+                }
+            }
             console.log("User does not exist. Creating a new user.");
 
             // Encrypt the password
             const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
 
             let references = [];
-            if (!userExists){
-                userDetails = await createUserInfoServices(data_user);
-            }else{
-                console.log('fetching data from user')
-                userDetails = await getUserInfoByMobileServices(data_user.mobile);
-                console.log(userDetails)
-            }
-            console.log(userDetails._id);
+            userDetails = await createUserInfoServices(data_user);
+            console.log(userDetails);
             references.push({
                 reference: userDetails._id, 
                 referenceType: 'userinfo',
             });
-            
             if (req.body.user_type == 'coach'){
-                let coachExists = await coachExistsByMobileServices(data_coach.mobile);
-                if (!coachExists){
-                    userDetails = await createCoachInfoServices(data_coach);
-                }else{
-                    userDetails = await getCoachInfoByMobileServices(data_coach.mobile)
-                }
+                userDetails = await createCoachInfoServices(data_coach);
                 references.push({
                     reference: userDetails._id,
                     referenceType: 'coachinfo'
                 });
             }
-            console.log(references);
             const authDetails = await createUserCoachAuthService({
                 email: req.body.email, 
                 password: hashedPassword,
@@ -152,22 +387,27 @@ const createAccountController = async (req, res) => {
             const emailOtp = generateOTP();
             console.log("Generated OTP for new user:", emailOtp);
 
-            await updateUserCoachAuthDetailsByIdService(userDetails._id, { emailOtp });
+            await updateAuthDetailsByIdService(userDetails._id, { emailOtp });
 
             sendEmail(authDetails.email, "login otp", html(emailOtp));
-            console.log("Email sent to new user:", userDetails.email);
 
             const token = await generateToken({
                 user: {
-                    _id: userDetails._id,
+                    _id: authDetails._id,
                     userType: userDetails.userType,
-                    email: userDetails.email,
+                    email: authDetails.email,
                 },
                 isVerified: false,
             });
-            console.log("Generated token for new user:", token);
-
-            sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", { token });
+            let response_data = {'token': token};
+            for (let ref of authDetails.references){
+                if (ref.referenceType === 'coachinfo'){
+                    response_data[ref.referenceType] = getCoachProfileDto(ref.reference);
+                }else{
+                    response_data[ref.referenceType] = getUserProfileDto(ref.reference);
+                }
+            }
+            sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", response_data);
             return;
         }
     } catch (err) {
@@ -179,7 +419,7 @@ const createAccountController = async (req, res) => {
 
 const getUserDetailsController = async (req, res) => {
     try {
-        const user = await getUserDetailsByIdService(req.user._id);
+        const user = await getAuthDetailsByIdService(req.user._id);
         if (!user) {
             sendResponse(res, null, 400, false, "user not found");
             return
@@ -195,7 +435,8 @@ const getUserDetailsController = async (req, res) => {
 // write a controller to verify Otp
 const verifyOtpController = async (req, res) => {
     try {
-        const userDetails = await getUserCoachAuthDetailsByIdService(req.user._id);
+        const userDetails = await getAuthDetailsByIdService(req.user._id);
+        const response_data = {}
         if (!userDetails) {
             return sendResponse(res, null, 400, false, "user not found");
         } else {
@@ -204,12 +445,20 @@ const verifyOtpController = async (req, res) => {
                     const token = await generateToken({
                         user: {
                             _id: userDetails._id,
-                            userType: userDetails.userType,
+                            userType: req.userType,
                             email: userDetails.email,
                         },
                         isVerified: true
                     });
-                    await updateUserCoachAuthDetailsByIdService(userDetails._id, { isVerified: true });
+                    response_data['token'] = token;
+
+                    for (let ref of userDetails.references){
+                        if (ref.referenceType.includes(req.user)){
+                            response_data[req.user+'Id'] = getCoachProfileDto(ref.reference);
+                            break;
+                        }
+                    }
+                    await updateAuthDetailsByIdService(userDetails._id, { isVerified: true });
                     return sendResponse(res, null, 200, true, "user verified successfully", { token });
                 } else {
                     return sendResponse(res, null, 400, false, "invalid otp");
@@ -225,7 +474,7 @@ const verifyOtpController = async (req, res) => {
                         },
                         isVerified: true
                     });
-                    await updateUserCoachAuthDetailsByIdService(userDetails._id, { isVerified: true });
+                    await updateAuthDetailsByIdService(userDetails._id, { isVerified: true });
                     sendResponse(res, null, 200, true, "otp verified successfully", { token });
                     return
                 } else {
@@ -250,7 +499,7 @@ const resendOtpToEmail = async (req, res) => {
        
         const emailOtp = generateOTP();
 
-        await updateUserDetailsByIdService(user._id, { emailOtp });
+        await updateAuthDetailsByIdService(user._id, { emailOtp });
         sendEmail(user.email, "login otp", html(emailOtp));
         sendResponse(res, null, 200, true, "OTP sent successfully on email");
         return
@@ -318,7 +567,7 @@ const changePasswordController = async (req, res) => {
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
      
-        const isUpdated = await updateUserCoachAuthDetailsByIdService(userId, { password: hashedPassword });
+        const isUpdated = await updateAuthDetailsByIdService(userId, { password: hashedPassword });
 
         if (!isUpdated) {
             return sendResponse(res, null, 500, false, "Password update failed");
@@ -335,6 +584,8 @@ const changePasswordController = async (req, res) => {
 
 module.exports = {
     createAccountController,
+    createCoachAccountController,
+    createUserAccountController,
     getUserDetailsController,
     loginUserController,
     verifyOtpController,

@@ -1,6 +1,8 @@
 const v1Router = require('express').Router();
 const express = require('express');
+
 const userRouter = require('./routes.user');
+const accountRouter = require('./routes.account');
 const medicalEquipmentRouter = require('./routes.medicalEquipment');
 const customerInfoRouter = require('./routes.customerInfo');
 const rentalTransactionRouter = require('./routes.rentalTransaction');
@@ -36,6 +38,8 @@ const coachTimeSlotRouter = require('./routes.coachTimeSlot');
 const coachAvailabilityRouter = require('./routes.coachAvailability');
 
 
+
+v1Router.use("/api", accountRouter)
 v1Router.use("/api/user", userRouter)
 v1Router.use("/api/medicalequipment", medicalEquipmentRouter)
 v1Router.use("/api/customer", customerInfoRouter)

@@ -31,10 +31,9 @@ const AuthSchema = new mongoose.Schema({
             }
         }
     ],
-    isActive: {
+    isVerified: {
         type: Boolean,
-        required: true,
-        default: true
+        default: false
     },
     isDisabled: {
         type: Boolean,

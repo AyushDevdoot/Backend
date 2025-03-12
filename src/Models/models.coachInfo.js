@@ -22,21 +22,17 @@ const coachInfoSchema = new mongoose.Schema({
     },
     profilePhoto: {
         type: String,
-        required: true
     },
     experienceYear: {
         type: Number,
-        required: true,
         min: 0,
         max: 90,
     },
     bio: {
         type: String,
-        required: true
     },
     rating: {
         type: Number,
-        required: true,
         default: 0,
         min: 0,
         max: 5,
@@ -51,11 +47,7 @@ const coachInfoSchema = new mongoose.Schema({
     },
     languages: {
         type: [String],
-    },    address: {
-        type: String,
-        maxlength: 255, 
     },
-
     countryCode: {
         type: String,
         maxlength: 4,
@@ -65,12 +57,12 @@ const coachInfoSchema = new mongoose.Schema({
     },
     isVerified: {
         type: Boolean,
-        required: true,
         default: false,
     },
     currency: {
         type: String,
-        default: 'INR'
+        enum: ['USD', 'INR'],
+        default: 'USD'
     },
     address: {
         type: String,

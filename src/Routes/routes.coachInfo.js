@@ -4,7 +4,7 @@ const { verifyUserMiddleware } = require('../Middleware/userAuth');
 const coachInfoRouter = require('express').Router();
 
 coachInfoRouter.post('/', verifyUserMiddleware, createCoachInfoController);
-coachInfoRouter.get('/', verifyUserMiddleware, getCoachInfoByIdController);
+coachInfoRouter.get('/:coachId',  getCoachInfoByIdController);
 coachInfoRouter.get('/search', getCoachInfoController);
 coachInfoRouter.patch('/:coachId', updateCoachInfoController);
 

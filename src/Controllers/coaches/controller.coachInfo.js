@@ -11,7 +11,6 @@ const createCoachInfoController = async (req, res) => {
             sendResponse(res, null, 400, false, errors);
             return
         }
-        console.log(coachInfo)
 
         await createCoachInfoServices(coachInfo);
         sendResponse(res, null, 201, true, "Coach info created successfully");
@@ -47,8 +46,8 @@ const getCoachInfoController = async (req, res) => {
 
 const getCoachInfoByIdController = async (req, res) => {
     try {
-        console.log(req.user._id);
-        const query = req.user._id;
+        console.log(req.params.coachId);
+        const query = req.params.coachId;
         console.log(query);
         const coachInfo = await getCoachInfoByIdServices(query);
         console.log(coachInfo)
