@@ -153,8 +153,8 @@ const createUserAccountController = async (req, res) => {
                 isVerified: false,
             });
 
-            let response_data = { 'token': token };
-            response_data.userId = getUserProfileDto(accountDetails._id)._id;
+            let response_data = { 'token': token, 'data': newUserInfo };
+            response_data.userId = getUserProfileDto(newUserInfo._id)._id;
 
             return sendResponse(res, null, 201, true, "User created successfully. OTP sent on email for verification", response_data);
         }
@@ -267,7 +267,7 @@ const createCoachAccountController = async (req, res) => {
                 isVerified: false,
             });
 
-            let response_data = { 'token': token };
+            let response_data = { 'token': token, 'data': coachInfo };
             response_data.coachId = getCoachProfileDto(coachInfo._id)._id;
 
             return sendResponse(res, null, 201, true, "Coach account created successfully. OTP sent on email for verification", response_data);
