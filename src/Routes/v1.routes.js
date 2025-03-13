@@ -34,7 +34,9 @@ const coachInfoRouter = require('./routes.coachInfo');
 const coachSearchRouter = require('./routes.coachSearch');
 const coachTimeSlotRouter = require('./routes.coachTimeSlot');
 const coachAppointmentRouter = require('./routes.coachAppointment');
-
+const reproWellCategoriesRouter = require('./routes.reproWellCategories');
+const reproWellExpertRouter = require('./routes.reproWellExpert');
+const reproWellFormRouter = require('./routes.reproWellForm');
 
 
 v1Router.use("/api/user", userRouter)
@@ -71,6 +73,8 @@ v1Router.use("/api/coach", coachSearchRouter)
 v1Router.use("/api/coach-info", coachInfoRouter)
 v1Router.use("/api/coach-timeslot", coachTimeSlotRouter)
 v1Router.use("/api/coach-appointment", coachAppointmentRouter)
-
+v1Router.use("/api/repro-well-categories", reproWellCategoriesRouter);
+v1Router.use("/api/repro-well-experts", reproWellExpertRouter);
+v1Router.use("/api/repro-well-form",reproWellFormRouter);
 
 module.exports = v1Router;
