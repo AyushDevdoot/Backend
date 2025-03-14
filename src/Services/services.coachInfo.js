@@ -19,10 +19,10 @@ const getCoachInfoByIdServices = async (coachId) => {
     return await CoachInfoModel.findOne({ _id: coachId });
 };
 
-const updateCoachInfoServices = async (coachId, updateData) => {
+const updateCoachInfoServices = async (userId, updateData) => {
     try {
-        const updatedCoach = await CoachInfoModel.findByIdAndUpdate(
-            coachId,
+        const updatedCoach = await CoachInfoModel.findOneAndUpdate(
+            { createdBy: userId },
             { $set: updateData },
             { new: true, runValidators: true }
         );
