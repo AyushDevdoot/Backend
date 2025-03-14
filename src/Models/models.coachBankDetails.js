@@ -13,7 +13,7 @@ const coachBankDetailsSchema = new mongoose.Schema({
     },
     bankIFSC:{
         type:String,
-        required:true
+        required:false
     },
     bankSwiftCode:{
         type:String,
@@ -21,11 +21,11 @@ const coachBankDetailsSchema = new mongoose.Schema({
     },
     bankAccountNumber:{
         type:Number,
-        required:true
+        required:false
     },
     upiId:{
         type:String,
-        required:true
+        required:false
     },
     routingNumber:{
         type:Number,
