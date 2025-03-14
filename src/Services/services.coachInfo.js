@@ -1,6 +1,12 @@
 const CoachInfoModel = require("../Models/models.coachInfo");
 
 const createCoachInfoServices = async (coachInfo) => {
+    const existingCoach = await CoachInfoModel.findOne({ createdBy: coachInfo.createdBy });
+
+    if (existingCoach) {
+        throw new Error("You have already created a coach profile.");
+    }
+
     const finalBody = new CoachInfoModel(coachInfo);
     return await finalBody.save();
 };

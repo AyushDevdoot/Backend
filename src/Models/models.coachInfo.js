@@ -65,7 +65,7 @@ const coachInfoSchema = new mongoose.Schema({
     },
     certification :{
         type: String,
-        required: true,
+        required: false,
         validate: {
             validator: isValidGoogleDriveLink,
             message: 'Certification link must be a valid Google Drive link.'
