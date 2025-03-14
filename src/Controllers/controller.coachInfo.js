@@ -45,19 +45,34 @@ const getCoachInfoController = async (req, res) => {
 
 const updateCoachInfoController = async (req, res) => {
     try {
-        const coachInfo = req.user._id
-        if (!coachInfo) {
-            sendResponse(res, null, 400, false, "Coach info not found");
-            return
-        } else {
-            // const coachInfoBody = updateCoachInfoDto(req.body, coachInfo);
-            await updateCoachInfoServices(coachInfo,req.body);
-            sendResponse(res, null, 200, true, "Coach info updated successfully");
-            return
+        const coachId = req.user._id;
+        if (!coachId) {
+            return sendResponse(res, null, 400, false, "Coach ID not found");
         }
+        const updateData = updateCoachInfoDto(req.body);
+        
+        if (Object.keys(updateData).length === 0) {
+            return sendResponse(res, null, 400, false, "No valid update fields provided");
+        }
+        
+        const validationErrors = validateUpdateCoachDto(updateData);
+        
+        if (Object.keys(validationErrors).length > 0) {
+            return sendResponse(res, null, 400, false, validationErrors);
+        }
+        console.log("Updating coach with ID:", coachId);
+        console.log("Update data:", updateData);
+        
+        const updatedCoach = await updateCoachInfoServices(coachId, updateData);
+        
+        if (!updatedCoach) {
+            return sendResponse(res, null, 404, false, "Coach not found or update failed");
+        }
+        
+        return sendResponse(res, null, 200, true, "Coach info updated successfully");
     } catch (err) {
-        sendResponse(res, err);
-        return
+        console.log("Update coach error:", err);
+        return sendResponse(res, err, 500, false, "Internal server error during update");
     }
 };
 
