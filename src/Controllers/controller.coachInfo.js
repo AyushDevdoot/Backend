@@ -1,6 +1,6 @@
-const { createCoachDto, validateCreateCoachDto, getCoachesListDto } = require("../DTOs/coachInfo.dto");
+const { createCoachDto, validateCreateCoachDto, getCoachesListDto, validateUpdateCoachDto, updateCoachInfoDto} = require("../DTOs/coachInfo.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { createCoachInfoServices, getCoachInfoServices,updateCoachInfoServices ,getCoachProfileServices, deleteCoachProfileServices} = require("../Services/services.coachInfo");
+const { createCoachInfoServices, getCoachInfoServices, updateCoachInfoServices ,getCoachProfileServices, deleteCoachProfileServices} = require("../Services/services.coachInfo");
 
 const createCoachInfoController = async (req, res) => {
     try {
