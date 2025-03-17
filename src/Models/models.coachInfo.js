@@ -38,6 +38,7 @@ const coachInfoSchema = new mongoose.Schema({
             "Work-Life Balance Coach",
             "Workplace Stress Coach"
           ]
+          
           ,
         required: true
     },
