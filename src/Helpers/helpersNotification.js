@@ -3,10 +3,10 @@ require('dotenv').config();
 
 // SMTP configuration
 const smtpConfig = {
-    host: 'mail.smtp2go.com', // Hardcoded SMTP server host
+    host: 'smtp.titan.email', // Hardcoded SMTP server host
     port: 587, // Hardcoded SMTP server port
     auth: {
-        user: 'ayushdeb@devdoot.org', // Hardcoded email address
+        user: 'no-reply@devdoot.org', // Hardcoded email address
         pass: process.env.EMAIL_PASSWORD, // Hardcoded email address
     },
     requireTLS: true, // Ensure the connection uses TLS
