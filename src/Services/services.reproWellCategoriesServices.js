@@ -1,4 +1,4 @@
-const reproWellCategoryModel = require('../Models/model.reproWellCategory.js');
+const reproWellCategoryModel = require('../Models/models.reproWellCategory.js');
 
 const reproWellCategoriesServices = async () => {
     return await reproWellCategoryModel.find();

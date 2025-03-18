@@ -1,6 +1,6 @@
 const { createFirstAidTrainingDto, validateFirstAidTrainingFields } = require("../DTOs/firstAid.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { createFirstAidTrainingServices } = require("../Services/services.firstAidTraining");
+const { createFirstAidTrainingServices, getFirstAidTrainingServices } = require("../Services/services.firstAidTraining");
 
 const createFirstAidTrainingController = async (req, res) => {
     try {

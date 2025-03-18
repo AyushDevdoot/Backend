@@ -1,6 +1,5 @@
 const { sendResponse } = require('../Helpers/helpers.commonFunc');
-
-const reproWellExpertService = require('../Services/service.reproWellExpertService.js');
+const reproWellExpertService = require('../Services/services.reproWellExpertService.js');
 
 const reproWellExpertController = async (req,res) => {
     try {

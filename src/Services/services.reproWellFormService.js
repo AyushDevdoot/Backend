@@ -1,4 +1,4 @@
-const reproWellFormModel = require('../Models/model.reproWellForm.js');
+const reproWellFormModel = require('../Models/models.reproWellForm.js');
 
 const reproWellFormService = async (formData) => {
     return await reproWellFormModel.create(formData);
