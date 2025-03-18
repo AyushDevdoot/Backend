@@ -10,8 +10,8 @@ const createFirstAidTrainingController = async (req, res) => {
             sendResponse(res, null, 400, false, errors);
             return
         }
-        await createFirstAidTrainingServices({ ...firstAidTraining, createdBy: req.user._id });
-        sendResponse(res, null, 201, true, "First aid training created successfully");
+        const firstAidTrainingData = await createFirstAidTrainingServices({ ...firstAidTraining, createdBy: req.user._id });
+        sendResponse(res, null, 201, true, "First aid training created successfully", firstAidTrainingData);
         return
     } catch (err) {
         console.log(err);

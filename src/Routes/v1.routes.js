@@ -37,7 +37,7 @@ const coachAppointmentRouter = require('./routes.coachAppointment');
 const reproWellCategoriesRouter = require('./routes.reproWellCategories');
 const reproWellExpertRouter = require('./routes.reproWellExpert');
 const reproWellFormRouter = require('./routes.reproWellForm');
-
+const girlCareFormRouter = require('../Routes/routes.girlCare');
 
 v1Router.use("/api/user", userRouter)
 v1Router.use("/api/medicalequipment", medicalEquipmentRouter)
@@ -76,5 +76,6 @@ v1Router.use("/api/coach-appointment", coachAppointmentRouter)
 v1Router.use("/api/repro-well-categories", reproWellCategoriesRouter);
 v1Router.use("/api/repro-well-experts", reproWellExpertRouter);
 v1Router.use("/api/repro-well-form",reproWellFormRouter);
+v1Router.use("/api/girl-care-form",girlCareFormRouter);
 
 module.exports = v1Router;
