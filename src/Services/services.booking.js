@@ -14,6 +14,15 @@ const getCoachBookingHistoryServices = async (coachId) => {
 	return await CoachAvailabilityModel.find(coachId);
 }
 
+
+const getCoachBookingsByDateServices = async (coachId, startTime, endTime) => {
+	return await CoachAvailabilityModel.find({ 
+		coachId,
+		startTime: {$gte: startTime},
+		endTime: {$lte: endTime},
+	});
+}
+
 const getUserBookingHistoryServices = async (userId) => {
 	return await CoachAvailabilityModel.findOne(userId)
 }
@@ -22,5 +31,6 @@ module.exports = {
 	createBookingServices,
 	getBookingByIdService,
 	getCoachBookingHistoryServices,
-	getUserBookingHistoryServices
+	getUserBookingHistoryServices,
+	getCoachBookingsByDateServices
 }

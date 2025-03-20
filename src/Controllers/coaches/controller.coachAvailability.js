@@ -1,4 +1,5 @@
 const { createCoachAvailabilityServices, getCoachAllAvailabilityServices, getCoachAvailabilityOfDayServices, updateCoachAvailabilityOfDayServices} = require("../../Services/services.coachAvailability");
+const { getCoachBookingsByDateServices } = require("../../Services/services.booking");
 const { sendResponse } = require("../../Helpers/helpers.commonFunc");
 const { createCoachAvailabilityDto, validateCoachAvailability, getCoachAvailabilityDto, validateGetCoachAvailabilityDto, updateCoachAvailabilityDto, vaildateUpdateCoachAvailability } = require('../../DTOs/coachAvailability.dto');
 
@@ -32,15 +33,19 @@ const addCoachAvailabilityController = async (req, res) => {
 
 
 const getCoachAllAvailabilityController = async (req, res) => {
-    try {
+	// coachid in query, start time and end time with date in req body
+	try {
         const id = req.query.id;
         const availability_data = getCoachAvailabilityDto({ coachId: id });
         const errors = validateGetCoachAvailabilityDto(availability_data);
+	const { startTime, endTime } = getBookingByDateDto(req.body);
         if (Object.keys(errors).length > 0){
             sendResponse(res, null, 400, false, errors);
             return
         }
+	//TODO: create dto for startTime endTime and coachId
         console.log(availability_data);
+	let booked_sloat = await getCoachBookingsByDateServices(coachId, startTime, endTime);
         let result = await getCoachAllAvailabilityServices(availability_data);
         let available = result.map((data)=>{
             if (data.isAvailable){
