@@ -1,6 +1,6 @@
-const { getProfilePictureService } = require("../services/services.profilePicture.js");
+const { getProfilePictureService } = require("../Services/services.profilePicture.js");
 const userModel = require("../Models/models.user");
-const profilePicModel = require("../models/models.profilePicture");
+const profilePicModel = require("../Models/models.profilePicture");
 
 
 // Upload Profile Picture
