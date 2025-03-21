@@ -25,6 +25,30 @@ const uploadProfilePicController = async (req, res) => {
   }
 };
 
+// Update Profile Picture
+const updateProfilePicController = async (req, res) => {
+  try {
+    const fileObj = req.file;
+    if (!fileObj) return res.status(400).json({ error: "No file uploaded" });
+
+    const user = await userModel.findOne({ _id: req.user._id });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const updatedProfilePic = await profilePicModel.findOneAndUpdate(
+      { userId: user._id },
+      { imageUrl: fileObj.path },
+      { new: true }
+    );
+
+    if (!updatedProfilePic) {
+      return res.status(404).json({ error: "Profile picture not found" });
+    }
+
+    res.json({ message: "Profile picture updated successfully", updatedProfilePic });
+  } catch (error) {
+    res.status(500).json({ error: "Update failed", details: error.message });
+  }
+};
 
 // Get Profile Picture
 const getProfilePicController = async (req, res) => {
@@ -39,4 +63,4 @@ const getProfilePicController = async (req, res) => {
 };
 
 
-module.exports = { uploadProfilePicController, getProfilePicController };
+module.exports = { uploadProfilePicController, updateProfilePicController, getProfilePicController };

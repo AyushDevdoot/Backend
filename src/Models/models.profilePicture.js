@@ -4,7 +4,8 @@ const profilePictureSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users', // Reference to the User model
-        required: true
+        required: true,
+        unique: true,
     },
     name: {
         type: String,
