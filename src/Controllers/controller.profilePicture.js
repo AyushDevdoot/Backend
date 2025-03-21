@@ -1,38 +1,42 @@
+const { getProfilePictureService } = require("../services/services.profilePicture.js");
 const userModel = require("../Models/models.user");
-const profilePicModel = require('../Models/models.profilePicture.js');
-const { uploadProfilePicService } = require("../Services/services.profilePicture");
+const profilePicModel = require("../models/models.profilePicture");
+
 
 // Upload Profile Picture
 const uploadProfilePicController = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    const fileObj = req.file;
+    if (!fileObj) return res.status(400).json({ error: "No file uploaded" });
 
-    const imageUrl = await uploadProfilePicService(req.file, "profile-pics");
+    const user = await userModel.findOne({ _id: req.user._id });
 
-    const user = await userModel.findById({_id: ObjectId(req.user._id)});
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-    if (!user) return res.status(404).json({message: "User not found."});
+    const folder = req.file.mimetype.includes("pdf") ? "pdfs" : "profile-pictures";
 
-    const userProfilePic = await profilePicModel.create({userId: user._id, name: `${user.firstName} ${user.lastName}`, pictureUrl: imageUrl });
+    console.log({ fileUrl: fileObj.path });
+    
+    const userProfilePicture = await profilePicModel.create({ userId: user._id, name: `${user.firstName} ${user.lastName}`, imageUrl: fileObj.path });
 
-    res.json({ message: "Profile picture uploaded", userProfilePic });
+    res.json({ message: "File uploaded successfully", userProfilePicture });
   } catch (error) {
-    res.status(500).json({ error: "Upload failed", details: error.message });
+    res.status(500).json({ error: "Upload failed", details: error });
   }
 };
 
 
-const getProfilePictureController = async (req, res) => {
+// Get Profile Picture
+const getProfilePicController = async (req, res) => {
   try {
-    const user = await profilePicModel.findById(req.params.userId);
-    if (!user || !user.pictureUrl) return res.status(404).json({ error: "Profile picture not found" });
-
-    res.status(200).json({ user });
+    const userProfilePic = await getProfilePictureService(req.params.userId);
+    if (!userProfilePic) return res.status(404).json({ message: "Profile picture not found." });
+    
+    res.json({ userProfilePic });
   } catch (error) {
-    res.status(500).json({ error: "Server error", details: error.message });
+    res.status(500).json({ error: "Failed to fetch profile picture", details: error.message });
   }
 };
 
 
-
-module.exports = { uploadProfilePicController, getProfilePictureController };
+module.exports = { uploadProfilePicController, getProfilePicController };

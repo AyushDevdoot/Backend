@@ -10,7 +10,7 @@ const profilePictureSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    pictureUrl: {
+    imageUrl: {
         type: String,
         required: true,
     },
