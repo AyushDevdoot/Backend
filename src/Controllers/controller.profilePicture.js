@@ -9,7 +9,7 @@ const uploadProfilePicController = async (req, res) => {
 
     const imageUrl = await uploadProfilePicService(req.file, "profile-pics");
 
-    const user = await userModel.findById(req.user._id);
+    const user = await userModel.findById({_id: ObjectId(req.user._id)});
 
     if (!user) return res.status(404).json({message: "User not found."});
 
