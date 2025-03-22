@@ -14,6 +14,10 @@ const medicalDocSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    uploadedAt: {
+        type: Date,
+        default: Date.now
+    }
 }, {timestamps: true});
 
 module.exports = mongoose.model('medicalDocuments', medicalDocSchema);
