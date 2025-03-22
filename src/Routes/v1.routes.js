@@ -39,7 +39,7 @@ const reproWellCategoriesRouter = require('./routes.reproWellCategories');
 const reproWellExpertRouter = require('./routes.reproWellExpert');
 const reproWellFormRouter = require('./routes.reproWellForm');
 const girlCareFormRouter = require('../Routes/routes.girlCare');
-
+const medicalWalletRouter = require('../Routes/routes.medicalWallet');
 
 v1Router.use("/api/user", userRouter)
 v1Router.use("/api/profile-picture", profilePictureRouter);
@@ -80,5 +80,6 @@ v1Router.use("/api/repro-well-categories", reproWellCategoriesRouter);
 v1Router.use("/api/repro-well-experts", reproWellExpertRouter);
 v1Router.use("/api/repro-well-form", reproWellFormRouter);
 v1Router.use("/api/girl-care-form", girlCareFormRouter);
+v1Router.use("/api/medical-wallet", medicalWalletRouter);
 
 module.exports = v1Router;
