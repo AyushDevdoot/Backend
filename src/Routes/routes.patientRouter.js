@@ -3,7 +3,7 @@ const { verifyUserMiddleware } = require('../Middleware/userAuth');
 const { createPatientDetailsController, getPatientDetailsController } = require('../Controllers/controllers.patient');
 
 
-patientRouter.post('/store-user-details', verifyUserMiddleware, createPatientDetailsController);
+patientRouter.post('/store-patient-details', verifyUserMiddleware, createPatientDetailsController);
 
 
 patientRouter.get('/get-patient-details/:id', verifyUserMiddleware, getPatientDetailsController);
