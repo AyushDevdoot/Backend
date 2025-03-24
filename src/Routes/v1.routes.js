@@ -40,13 +40,14 @@ const reproWellExpertRouter = require('./routes.reproWellExpert');
 const reproWellFormRouter = require('./routes.reproWellForm');
 const girlCareFormRouter = require('../Routes/routes.girlCare');
 const medicalWalletRouter = require('../Routes/routes.medicalWallet');
+const uploadPrescribeRouter = require('../Routes/routes.uploadPrescrib');
 
 v1Router.use("/api/user", userRouter)
 v1Router.use("/api/profile-picture", profilePictureRouter);
-v1Router.use("/api/medicalequipment", medicalEquipmentRouter)
-v1Router.use("/api/customer", customerInfoRouter)
-v1Router.use("/api/rentaltransaction", rentalTransactionRouter)
-v1Router.use("/api/emergencycontact", emergencyContactRouter)
+v1Router.use("/api/medicalequipment", medicalEquipmentRouter);
+v1Router.use("/api/customer", customerInfoRouter);
+v1Router.use("/api/transaction", rentalTransactionRouter);
+v1Router.use("/api/emergencycontact", emergencyContactRouter);
 v1Router.use("/api/hospital", hospitalRouter)
 v1Router.use("/api/corporatehealth", corporateHealthRouter)
 v1Router.use("/api/girlsafety", girlSafteyRouter)
@@ -81,5 +82,6 @@ v1Router.use("/api/repro-well-experts", reproWellExpertRouter);
 v1Router.use("/api/repro-well-form", reproWellFormRouter);
 v1Router.use("/api/girl-care-form", girlCareFormRouter);
 v1Router.use("/api/medical-wallet", medicalWalletRouter);
+v1Router.use("/api/upload-prescription", uploadPrescribeRouter);
 
 module.exports = v1Router;
