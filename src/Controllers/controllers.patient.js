@@ -4,8 +4,8 @@ const { createPatientInfoServices, getPatientInfoByIdService } = require("../Ser
 
 const createPatientDetailsController = async (req, res) => {
     const patientInfo = patientInfoDto(req.body);
-    const patient =  createPatientInfoServices({ ...patientInfo, createdBy: req.user._id });
-    sendResponse(res, patient, 201, true, "Patient Info Successfully Created");
+    const patient =  await createPatientInfoServices({ ...patientInfo, createdBy: req.user._id });
+    sendResponse(res, patient, 201, true, "Patient Info Successfully Created",patient);
 };
 
 const getPatientDetailsController = async (req, res) => {
@@ -19,7 +19,7 @@ const getPatientDetailsController = async (req, res) => {
         }
 
         
-        sendResponse(res, patientDetails, 200, true, "Patient info fetched successfully");
+        sendResponse(res,null, 200, true, "Patient info fetched successfully",patientDetails);
     } catch (error) {
         console.error("Error fetching patient details:", error);
         sendResponse(res, null, 500, false, "Internal server error");
