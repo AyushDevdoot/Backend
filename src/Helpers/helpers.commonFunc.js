@@ -2,7 +2,6 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const logger = require('./loggerFunction');
 
-// Utility function to send response
 const sendResponse = (res, error = null, statusCode = 500, success = false, message = "internal server error", data = undefined) => {
     if (error) {
         logger.error(error);
@@ -14,7 +13,15 @@ const sendResponse = (res, error = null, statusCode = 500, success = false, mess
     });
 };
 
-// Function to generate an OTP of specified length
+const sendHospitalResponse = (res, data, statusCode = 200, success = true, message = '', additionalData = null) => {
+    return res.status(statusCode).json({
+        success,
+        message,
+        data,
+        ...(additionalData && { additionalData })
+    });
+};
+
 const generateOTP = (length = 6) => {
     const digits = '0123456789';
     let otp = '';
@@ -36,6 +43,7 @@ const generateToken = async (body, key = process.env.JWT_SECRET_KEY, expiry = 60
 
 module.exports = {
     sendResponse,
+    sendHospitalResponse,
     generateToken,
     generateOTP
 };

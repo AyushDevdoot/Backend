@@ -1,5 +1,5 @@
 const hospitalService = require('../Services/services.hospital');
-const { sendResponse } = require('../Helpers/helpers.commonFunc');
+const { sendHospitalResponse } = require('../Helpers/helpers.commonFunc');
 
 const getNearbyHospitalsController = async (req, res) => {
     try {
@@ -16,13 +16,13 @@ const getNearbyHospitalsController = async (req, res) => {
         });
 
         if (hospitals.length === 0) {
-            return sendResponse(res, null, 200, false, 'No hospitals found in the specified area');
+            return sendHospitalResponse(res, null, 200, false, 'No hospitals found in the specified area');
         }
 
-        return sendResponse(res, hospitals, 200, true, 'Hospitals fetched successfully');
+        return sendHospitalResponse(res, hospitals, 200, true, 'Hospitals fetched successfully');
     } catch (error) {
         console.error('Error in getNearbyHospitalsController:', error.message);
-        return sendResponse(res, error, 500, false, 'Error fetching hospitals');
+        return sendHospitalResponse(res, error, 500, false, 'Error fetching hospitals');
     }
 };
 

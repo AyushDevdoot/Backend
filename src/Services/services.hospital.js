@@ -71,7 +71,6 @@ class HospitalService {
     }
 
     formatAddress(tags) {
-        // Format the address based on available tags
         const addressParts = [
             tags['addr:housenumber'],
             tags['addr:street'],
@@ -81,7 +80,6 @@ class HospitalService {
             tags['addr:country']
         ];
 
-        // Filter out undefined or null values and join them with commas
         return addressParts.filter((part) => part).join(', ') || 'Address not available';
     }
 
@@ -124,14 +122,13 @@ class HospitalService {
     }
 
     calculateRating(tags) {
-        // Placeholder for rating calculation logic
         return tags.rating ? parseFloat(tags.rating) : 0;
     }
 
     calculateDistance(lat1, lon1, lat2, lon2) {
         if (!lat1 || !lon1 || !lat2 || !lon2) return null;
 
-        const R = 6371; // Earth's radius in km
+        const R = 6371; 
         const dLat = this.deg2rad(lat2 - lat1);
         const dLon = this.deg2rad(lon2 - lon1);
         const a =
@@ -139,7 +136,7 @@ class HospitalService {
             Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c; // Distance in km
+        const distance = R * c;
         return Number(distance.toFixed(2));
     }
 
