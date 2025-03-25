@@ -1,5 +1,7 @@
 const axios = require('axios');
 const NodeCache = require('node-cache');
+
+
 const hospitalCache = new NodeCache({ stdTTL: 3600 });
 
 class HospitalService {
@@ -18,82 +20,36 @@ class HospitalService {
 
     async fetchNearbyHospitals(params) {
         try {
-            const {
-                latitude,
-                longitude,
-                radius = 5000,
-                specialization,
-                sortBy = 'distance',
-                type,
-                minRating
-            } = params;
-
-            const cacheKey = `hospitals_${latitude}_${longitude}_${radius}_${specialization}_${sortBy}_${type}_${minRating}`;
-            
-            const cachedData = hospitalCache.get(cacheKey);
-            if (cachedData) {
-                return cachedData;
-            }
+            const { latitude, longitude, radius = 5000 } = params;
 
             const overpassUrl = 'https://overpass-api.de/api/interpreter';
-            const query = this.buildOverpassQuery(latitude, longitude, radius, specialization);
+            const query = `
+                [out:json][timeout:25];
+                (
+                    node["amenity"="hospital"](around:${radius},${latitude},${longitude});
+                    way["amenity"="hospital"](around:${radius},${latitude},${longitude});
+                    relation["amenity"="hospital"](around:${radius},${latitude},${longitude});
+                );
+                out body;
+                >;
+                out skel qt;
+            `;
 
-            const response = await axios.get(overpassUrl, {
-                params: { data: query },
-                timeout: 30000
-            });
+            const response = await axios.get(overpassUrl, { params: { data: query } });
 
             if (!response.data || !response.data.elements) {
                 throw new Error('Invalid response from Overpass API');
             }
 
-            let hospitals = response.data.elements
-                .filter(element => element.tags && element.tags.name)
-                .map(element => this.mapHospitalData(element, latitude, longitude));
-
-            // Apply filters and sorting
-            hospitals = this.filterAndSortHospitals(hospitals, {
-                specialization,
-                sortBy,
-                type,
-                minRating
-            });
-
-            // Cache the results
-            hospitalCache.set(cacheKey, hospitals);
+            const hospitals = response.data.elements
+                .filter((element) => element.tags && element.tags.name)
+                .map((element) => this.mapHospitalData(element, latitude, longitude));
 
             return hospitals;
-
         } catch (error) {
-            console.error('Error fetching hospitals:', error);
+            console.error('Error fetching hospitals:', error.message);
             throw new Error(`Failed to fetch hospitals: ${error.message}`);
         }
-    }
-
-    buildOverpassQuery(latitude, longitude, radius, specialization) {
-        let query = `
-            [out:json][timeout:25];
-            (
-                node["amenity"="hospital"](around:${radius},${latitude},${longitude});
-                way["amenity"="hospital"](around:${radius},${latitude},${longitude});
-                relation["amenity"="hospital"](around:${radius},${latitude},${longitude});
-        `;
-
-        if (specialization === this.SPECIALIZATIONS.VETERINARY) {
-            query += `
-                node["amenity"="veterinary"](around:${radius},${latitude},${longitude});
-                way["amenity"="veterinary"](around:${radius},${latitude},${longitude});
-            `;
-        }
-
-        query += `
-            );
-            out body;
-            >;
-            out skel qt;
-        `;
-
-        return query;
     }
 
     mapHospitalData(element, userLat, userLon) {
@@ -112,6 +68,21 @@ class HospitalService {
             distance: this.calculateDistance(userLat, userLon, lat, lon),
             googleMapsUrl: this.getGoogleMapsUrl(lat, lon)
         };
+    }
+
+    formatAddress(tags) {
+        // Format the address based on available tags
+        const addressParts = [
+            tags['addr:housenumber'],
+            tags['addr:street'],
+            tags['addr:city'],
+            tags['addr:state'],
+            tags['addr:postcode'],
+            tags['addr:country']
+        ];
+
+        // Filter out undefined or null values and join them with commas
+        return addressParts.filter((part) => part).join(', ') || 'Address not available';
     }
 
     determineSpecialization(tags) {
@@ -152,30 +123,9 @@ class HospitalService {
         return 'Unknown';
     }
 
-    filterAndSortHospitals(hospitals, { specialization, sortBy, type, minRating }) {
-        // Filter by specialization
-        if (specialization) {
-            hospitals = hospitals.filter(hospital => hospital.specialization === specialization);
-        }
-
-        // Filter by type
-        if (type) {
-            hospitals = hospitals.filter(hospital => hospital.type.toLowerCase() === type.toLowerCase());
-        }
-
-        // Filter by minimum rating
-        if (minRating) {
-            hospitals = hospitals.filter(hospital => hospital.rating >= minRating);
-        }
-
-        // Sort by distance or rating
-        if (sortBy === 'distance') {
-            hospitals.sort((a, b) => a.distance - b.distance);
-        } else if (sortBy === 'rating') {
-            hospitals.sort((a, b) => b.rating - a.rating);
-        }
-
-        return hospitals;
+    calculateRating(tags) {
+        // Placeholder for rating calculation logic
+        return tags.rating ? parseFloat(tags.rating) : 0;
     }
 
     calculateDistance(lat1, lon1, lat2, lon2) {
@@ -184,17 +134,17 @@ class HospitalService {
         const R = 6371; // Earth's radius in km
         const dLat = this.deg2rad(lat2 - lat1);
         const dLon = this.deg2rad(lon2 - lon1);
-        const a = 
-            Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const distance = R * c; // Distance in km
         return Number(distance.toFixed(2));
     }
 
     deg2rad(deg) {
-        return deg * (Math.PI/180);
+        return deg * (Math.PI / 180);
     }
 
     getGoogleMapsUrl(latitude, longitude) {
