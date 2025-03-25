@@ -13,7 +13,7 @@ const bookingProcessingSchema = new mongoose.Schema({
 
 
 // Set a TTL index on lockTimestamp field
-bookingSchema.index({ lockTimestamp: 1 }, { expireAfterSeconds: 30 }); // Lock expires after 30 seconds
+bookingProcessingSchema.index({ lockTimestamp: 1 }, { expireAfterSeconds: 30 }); // Lock expires after 30 seconds
 
 const BookingProcessing = mongoose.model('BookingProcessing', bookingProcessingSchema);
 module.exports = BookingProcessing;
