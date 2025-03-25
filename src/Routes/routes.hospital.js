@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getNearbyHospitalsController } = require('../Controllers/hospital.controller');
+const { getNearbyHospitalsController } = require('../Controllers/controller.hospital');
 const { validateRequest } = require('../Middlewares/validateRequest');
 const { hospitalSearchDTO } = require('../DTOs/hospital.dto');
 
