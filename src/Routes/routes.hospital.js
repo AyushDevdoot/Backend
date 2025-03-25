@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { getNearbyHospitalsController } = require('../controllers/hospital.controller');
-const { validateRequest } = require('../middlewares/validateRequest');
-const { hospitalSearchDTO } = require('../dto/hospital.dto');
+const { getNearbyHospitalsController } = require('../Controllers/hospital.controller');
+const { validateRequest } = require('../Middlewares/validateRequest');
+const { hospitalSearchDTO } = require('../DTOs/hospital.dto');
 
 router.get(
     '/hospitals/nearby',
