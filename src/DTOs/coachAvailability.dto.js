@@ -107,7 +107,7 @@ const getCoachAvailabilityDto = (data) => {
 const validateGetCoachAvailabilityDto = (data) => {
 	let errors = {};
 
-	if (!data.coachId || typeof data.coachId !== 'string' || !isValidObjectId(coachId)) {
+	if (!data.coachId || typeof data.coachId !== 'string' || !isValidObjectId(data.coachId)) {
 		errors.coachId = "coachId must be a valid ObjectId string.";
 	}
 
