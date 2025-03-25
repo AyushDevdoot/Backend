@@ -26,6 +26,36 @@ const createCoachDto = (data) => {
     };
 };
 
+const validateSpecialization = (specialization) => {
+    const validSpecializations = [
+        "Addiction Recovery Coach",
+        "Arthritis and Joint Health Coach",
+        "Ayurveda Consultant",
+        "Cardiovascular Health Coach",
+        "Chronic Pain Management Coach",
+        "Dermatologist Consultant",
+        "Detox and Clean Eating Coach",
+        "Diabetes Management Coach",
+        "Health & Fitness Coach",
+        "Holistic Wellness Coach",
+        "Immunity Coach for Kids",
+        "Lifestyle Transformation Coach",
+        "Mental Health Support Coach",
+        "Parenting Wellness Coach",
+        "Post-Surgery Recovery Coach",
+        "Relationship and Couples Coach",
+        "Reproductive Health Coach",
+        "Skin and Beauty Wellness Coach",
+        "Sleep Wellness Coach",
+        "Therapeutic Coach",
+        "Weight Management Coach",
+        "Women's Health Coach",
+        "Work-Life Balance Coach",
+        "Workplace Stress Coach"
+    ];
+    return validSpecializations.includes(specialization);
+};
+
 const updateCoachInfoDto = (data) => {
     const updateData = {};
     
@@ -48,8 +78,8 @@ const validateCreateCoachDto = (data) => {
         errors.coachName = "coachName must be a valid string and at least 2 characters long.";
     }
 
-    if (!['health-fitness', 'chronic-diseases', 'sleep-wellness', 'holistic-wellness', 'stem-skills', 'parenting', 'worklife-balance', 'immunity-coach'].includes(data.specialization)) {
-        errors.specialization = "specialization must be one of the following values: health-fitness, chronic-diseases, sleep-wellness, holistic-wellness, stem-skills, parenting, worklife-balance, immunity-coach";
+    if (!data.specialization || !validateSpecialization(data.specialization)) {
+        errors.specialization = "Invalid specialization value";
     }
 
     if (!data.contactInfo || typeof data.contactInfo !== 'string' || data.contactInfo.trim().length < 2) {
