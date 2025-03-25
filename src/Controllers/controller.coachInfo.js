@@ -23,7 +23,7 @@ const getCoachInfoController = async (req, res) => {
     try {
         let query = {}
         if (req.query?.type !== "all") {
-            query.specialization = req.query.type?.toString().toLowerCase();
+            query.specialization = req.query.type; // Remove toLowerCase() as specializations are case-sensitive
         }
         const coachInfo = await getCoachInfoServices(query);
         if (coachInfo.length === 0) {
