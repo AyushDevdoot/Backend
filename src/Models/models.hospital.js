@@ -43,8 +43,16 @@ const HospitalSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    position: {
-        type: String,
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number], // [longitude, latitude]
+            required: true
+        }
     },
     hospitalType: {
         type: String,
@@ -113,9 +121,9 @@ const HospitalSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-})
+}, { timestamps: true });
 
-
+HospitalSchema.index({ location: '2dsphere' });
 
 const HospitalModel = mongoose.model("hospital", HospitalSchema);
 

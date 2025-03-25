@@ -1,11 +1,16 @@
-const { createHospitalController, updateHospitalController, getHospitalDetailsController, getHospitalController, hospitalQuerySearchController } = require('../Controllers/controller.hospital');
+const express = require('express');
+const router = express.Router();
+const {
+    createHospitalController,
+    searchHospitalsController,
+    getHospitalDetailsController,
+    updateHospitalController
+} = require('../Controllers/controllers.hospital');
 
-const hospitalRouter = require('express').Router();
+// Create new hospital
+router.post('/hospitals', createHospitalController);
+router.get('/hospitals/search', searchHospitalsController);
+router.get('/hospitals/:hospitalId', getHospitalDetailsController);
+router.put('/hospitals/:hospitalId', updateHospitalController);
 
-hospitalRouter.post('/', createHospitalController);
-hospitalRouter.patch('/:hospitalId', updateHospitalController);
-hospitalRouter.get('/search', hospitalQuerySearchController);
-hospitalRouter.get('/:hospitalId', getHospitalDetailsController);
-hospitalRouter.get('/', getHospitalController);
-
-module.exports = hospitalRouter;
+module.exports = router;

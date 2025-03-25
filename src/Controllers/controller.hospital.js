@@ -1,109 +1,108 @@
 const { createHospitalDto, validateHospitalFields, updateHospitalDto } = require("../DTOs/hospital.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { createHospitalServices, getHospitalServices, getHospitalByIdServices, updateHospitalServices, getHospitalByQueryServices } = require("../Services/services.hospital");
+const { 
+    createHospitalServices, 
+    getHospitalByQueryServices, 
+    getHospitalByIdServices, 
+    updateHospitalServices 
+} = require("../Services/services.hospital");
 
 const createHospitalController = async (req, res) => {
     try {
-        const hospitalBody = createHospitalDto(req.body);
-        const errors = validateHospitalFields(hospitalBody);
+        const hospitalData = createHospitalDto(req.body);
+        const errors = validateHospitalFields(hospitalData);
+        
         if (Object.keys(errors).length > 0) {
-            sendResponse(res, null, 400, false, errors);
-            return
+            return sendResponse(res, null, 400, false, errors);
         }
-        await createHospitalServices(hospitalBody);
-        sendResponse(res, null, 201, true, "Hospital created successfully");
-        return;
+
+        const hospital = await createHospitalServices(hospitalData);
+        return sendResponse(res, null, 201, true, "Hospital created successfully", hospital);
     } catch (err) {
-        sendResponse(res, err);
-        return
+        console.error("Create hospital error:", err);
+        return sendResponse(res, err, 500, false, "Error creating hospital");
     }
 };
 
-const getHospitalController = async (req, res) => {
+const searchHospitalsController = async (req, res) => {
     try {
-        const hospital = await getHospitalServices();
-        if (hospital.length === 0) {
-            sendResponse(res, null, 400, false, "Hospital not found");
-            return
-        } else {
-            sendResponse(res, null, 200, true, "Hospital fetched successfully", hospital);
-            return
+        const {
+            latitude,
+            longitude,
+            category,
+            type: hospitalType,
+            search: searchTerm,
+            sortBy,
+            maxDistance
+        } = req.query;
+
+        if (!latitude || !longitude) {
+            return sendResponse(res, null, 400, false, "Latitude and longitude are required");
         }
+
+        const searchParams = {
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude),
+            category,
+            hospitalType,
+            searchTerm,
+            sortBy,
+            maxDistance: maxDistance ? parseFloat(maxDistance) * 1000 : undefined
+        };
+
+        const hospitals = await getHospitalByQueryServices(searchParams);
+
+        if (hospitals.length === 0) {
+            return sendResponse(res, null, 200, false, "No hospitals found in the specified area");
+        }
+
+        return sendResponse(res, null, 200, true, "Hospitals fetched successfully", hospitals);
     } catch (err) {
-        sendResponse(res, err);
-        return
+        console.error("Search hospitals error:", err);
+        return sendResponse(res, err, 500, false, "Error searching hospitals");
     }
 };
 
 const getHospitalDetailsController = async (req, res) => {
     try {
         const hospital = await getHospitalByIdServices(req.params.hospitalId);
+        
         if (!hospital) {
-            sendResponse(res, null, 400, false, "Hospital not found");
-            return
-        } else {
-            sendResponse(res, null, 200, true, "Hospital fetched successfully", hospital);
-            return
+            return sendResponse(res, null, 404, false, "Hospital not found");
         }
+
+        return sendResponse(res, null, 200, true, "Hospital details fetched successfully", hospital);
     } catch (err) {
-        sendResponse(res, err);
-        return
+        console.error("Get hospital details error:", err);
+        return sendResponse(res, err, 500, false, "Error fetching hospital details");
     }
 };
 
 const updateHospitalController = async (req, res) => {
     try {
-        const hospital = await getHospitalByIdServices(req.params.hospitalId);
-        if (!hospital) {
-            sendResponse(res, null, 400, false, "Hospital not found");
-            return
-        } else {
-            const hospitalBody = updateHospitalDto(req.body, hospital);
-            await updateHospitalServices(hospital._id, hospitalBody);
-            sendResponse(res, null, 200, true, "Hospital updated successfully");
-            return
+        const hospitalId = req.params.hospitalId;
+        const updateData = updateHospitalDto(req.body);
+
+        if (Object.keys(updateData).length === 0) {
+            return sendResponse(res, null, 400, false, "No valid update fields provided");
         }
+
+        const updatedHospital = await updateHospitalServices(hospitalId, updateData);
+
+        if (!updatedHospital) {
+            return sendResponse(res, null, 404, false, "Hospital not found");
+        }
+
+        return sendResponse(res, null, 200, true, "Hospital updated successfully", updatedHospital);
     } catch (err) {
-        sendResponse(res, err);
-        return
+        console.error("Update hospital error:", err);
+        return sendResponse(res, err, 500, false, "Error updating hospital");
     }
 };
 
-const hospitalQuerySearchController = async (req, res) => {
-    try {
-        // hospitalType,hospitalName
-        let query = {}
-        if (req.query?.type) {
-            if (req.query?.type != "all") {
-                query.hospitalType = req.query.type.toString().toLowerCase();
-            }
-        }
-        if (req.query?.name) {
-            query.hospitalName = new RegExp(req.query.name.toString().toLowerCase(), 'i');
-        }
-
-        if (req.query?.category) {
-            query.category = req.query.category.toString().toLowerCase();
-        }
-
-        const hospital = await getHospitalByQueryServices(query);
-        if (hospital.length === 0) {
-            sendResponse(res, null, 200, false, "Hospital not found");
-            return
-        } else {
-            sendResponse(res, null, 200, true, "Hospital fetched successfully", hospital);
-            return
-        }
-    } catch (err) {
-        console.log(err);
-        sendResponse(res, err);
-        return
-    }
-};
 module.exports = {
     createHospitalController,
+    searchHospitalsController,
     getHospitalDetailsController,
-    updateHospitalController,
-    getHospitalController,
-    hospitalQuerySearchController
+    updateHospitalController
 };
