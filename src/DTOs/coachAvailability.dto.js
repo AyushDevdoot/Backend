@@ -56,7 +56,7 @@ function validateCoachAvailability(data) {
 	const vaildDays = { 'Monday': 1, 'Tuesday': 1, 'Wednesday': 1, 'Thursday': 1, 'Friday': 1, 'Saturday': 1, 'Sunday': 1 };
 
 	// coachId validation
-	if (!data.coachId || typeof data.coachId !== 'string' || !isValidObjectId(coachId)) {
+	if (!data.coachId || typeof data.coachId !== 'string' || !isValidObjectId(data.coachId)) {
 		console.log(data.coachId)
 		errors.coachId = "coachId must be a valid ObjectId string.";
 	}
@@ -145,7 +145,7 @@ const vaildateUpdateCoachAvailabilityDto = (data) =>{
 		errors.id = "coachId and day  or id is needed !";
 	}
 	// coachId validation
-	if (!data.coachId || typeof data.coachId !== 'string' || !isValidObjectId(coachId)) {
+	if (!data.coachId || typeof data.coachId !== 'string' || !isValidObjectId(data.coachId)) {
 		errors.coachId = "coachId must be a valid ObjectId string.";
 	}
 
