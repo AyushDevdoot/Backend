@@ -1,4 +1,4 @@
-const hospitalService = require('../Services/hospital.service');
+const hospitalService = require('../Services/services.hospital');
 const { sendResponse } = require('../Helpers/helpers.commonFunc');
 
 const getNearbyHospitalsController = async (req, res) => {
