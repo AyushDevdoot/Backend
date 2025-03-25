@@ -5,7 +5,7 @@ const medicalEquipmentRouter = require('./routes.medicalEquipment');
 const customerInfoRouter = require('./routes.customerInfo');
 const rentalTransactionRouter = require('./routes.rentalTransaction');
 const emergencyContactRouter = require('./routes.emergencyContact');
-// const hospitalRouter = require('./routes.hospital');
+const hospitalRouter = require('./routes.hospital');
 const corporateHealthRouter = require('./routes.corporateHealth');
 const girlSafteyRouter = require('./routes.girlSaftey');
 const healthCheckupPackageRouter = require('./routes.healthCheckupPackage');
@@ -35,7 +35,7 @@ const coachSearchRouter = require('./routes.coachSearch');
 const coachTimeSlotRouter = require('./routes.coachTimeSlot');
 const coachAppointmentRouter = require('./routes.coachAppointment');
 const patientRouter = require('./routes.patientRouter')
-const hospitalRouter = require('./routes.nearbyHospitals')
+// const hospitalRouter = require('./routes.nearbyHospitals')
 
 
 v1Router.use("/api/user", userRouter)
@@ -43,7 +43,7 @@ v1Router.use("/api/medicalequipment", medicalEquipmentRouter)
 v1Router.use("/api/customer", customerInfoRouter)
 v1Router.use("/api/rentaltransaction", rentalTransactionRouter)
 v1Router.use("/api/emergencycontact", emergencyContactRouter)
-// v1Router.use("/api/hospital", hospitalRouter)
+v1Router.use("/api/hospital", hospitalRouter)
 v1Router.use("/api/corporatehealth", corporateHealthRouter)
 v1Router.use("/api/girlsafety", girlSafteyRouter)
 v1Router.use("/api/healthpackage", healthCheckupPackageRouter)
@@ -73,7 +73,7 @@ v1Router.use("/api/coach-info", coachInfoRouter)
 v1Router.use("/api/coach-timeslot", coachTimeSlotRouter)
 v1Router.use("/api/coach-appointment", coachAppointmentRouter)
 v1Router.use("/api/patient", patientRouter)
-v1Router.use("/api/hospital",hospitalRouter)
+//v1Router.use("/api/hospital",hospitalRouter)
 
 
 module.exports = v1Router;
