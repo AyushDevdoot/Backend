@@ -20,34 +20,10 @@ const createCoachInfoController = async (req, res) => {
     }
 };
 
-const getExchangeRateController = async (req, res) => {
+const getExchangeRateByCurrencyController = async (req, res) => {
     try {
-        let query = {}
-        if (req.query?.type !== "all") {
-            query.specialization = req.query.type?.toString().toLowerCase();
-        }
-        const coachInfo = await getCoachInfoServices(query);
-        if (coachInfo.length === 0) {
-            sendResponse(res, null, 200, false, "Coach info not found");
-            return
-        } else {
-            const coachListFormattedData = coachInfo.map(coach => {
-                return getCoachesListDto(coach)
-            });
-            sendResponse(res, null, 200, true, "Coach info fetched successfully", coachListFormattedData);
-            return
-        }
-    } catch (err) {
-        sendResponse(res, err);
-        return
-    }
-};
+        const query = req.params.currency;
 
-const getCoachInfoByIdController = async (req, res) => {
-    try {
-        console.log(req.params.coachId);
-        const query = req.params.coachId;
-        console.log(query);
         const coachInfo = await getCoachInfoByIdServices(query);
         console.log(coachInfo)
         sendResponse(res, null, 200, true, "Coach info fetched successfully", coachInfo);

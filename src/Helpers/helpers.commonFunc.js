@@ -1,6 +1,12 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const logger = require('./loggerFunction');
+
+
+const isValidObjectId = (id) => {
+	return mongoose.Types.ObjectId.isValid(id);
+};
 
 // Utility function to send response
 const sendResponse = (res, error = null, statusCode = 500, success = false, message = "internal server error", data = undefined) => {
@@ -37,5 +43,6 @@ const generateToken = async (body, key = process.env.JWT_SECRET_KEY, expiry = 60
 module.exports = {
     sendResponse,
     generateToken,
-    generateOTP
+    generateOTP,
+	isValidObjectId
 };

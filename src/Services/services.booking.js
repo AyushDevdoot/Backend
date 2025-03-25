@@ -27,10 +27,45 @@ const getUserBookingHistoryServices = async (userId) => {
 	return await CoachAvailabilityModel.findOne(userId)
 }
 
+const updatePaymentStatusBookingServices = async (_id, paymentStatus) => {
+	const updateObj = {
+		$set: {
+			paymentStatus: paymentStatus === 'rejected'? 'rejected': paymentStatus,
+			updatedBy: 'user',
+		},
+	}
+
+	if (paymentStatus === 'failed'){
+		updateObj = 'canceled';
+	}
+	return await bookingModel.updateOne({ _id: _id }, updateObj);
+};
+
+const updateBookingServices = async (updateData) =>{
+	const booking = await bookingModel.findOne(_id);
+	const oldAuditData = {
+		status: booking.status,
+		startTime: booking.startTime,
+		endTime: booking.endTime,
+		paymentStatus: booking.paymentStatus,
+		updatedBy: booking.updatedBy,
+		updatedAt: booking.updatedAt
+	}
+	booking.auditHistory.push(oldAuditData);
+	for (const key in updateData){
+		if (updateData.hasOwnProperty(key)){
+			booking[key] = updateData[key]
+		}
+	}
+	return await booking.save();
+}
+
 module.exports = {
 	createBookingServices,
 	getBookingByIdService,
 	getCoachBookingHistoryServices,
 	getUserBookingHistoryServices,
-	getCoachBookingsByDateServices
+	getCoachBookingsByDateServices,
+	updateBookingServices,
+	updatePaymentStatusBookingServices
 }

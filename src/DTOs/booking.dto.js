@@ -1,5 +1,11 @@
 const { parse, isValid, format } = require('date-fns');
+const { isValidObjectId } = require('../Helpers/helpers.commonFunc');
 const moment = require('moment-timezone');
+
+
+const validStatus = new Set(['pending', 'confirmed', 'rescheduled', 'rejected', 'canceled', 'completed', 'timed-out', 'reschedule-request'])
+const valideUser = new Set(['user', 'coach', 'system'])
+
 
 function hour_24_format(time) {
 	// also converts it to utc
@@ -113,6 +119,11 @@ const getAppointmentsByCoachIdDto = (data) => {
 	};
 };
 
+const getAppointmentByIdDto = (data) => {
+	const { id } = data;
+	return { _id: id }
+};
+
 
 const getAppointmentsByUserIdDto = (data) => {
 	const {
@@ -128,7 +139,7 @@ const getAppointmentsByUserIdDto = (data) => {
 const validateGetCoachAppointmentsDto = (data) => {
 	let errors = {};
 
-	if (!data.coachId || typeof data.coachId !== 'string' || !data.coachId.match(/^[a-f\d]{24}$/i)) {
+	if (!data.coachId || typeof data.coachId !== 'string' || !isValidObjectId(data.coachId)) {
 		errors.coachId = "coachId must be a valid ObjectId string.";
 	}
 
@@ -139,7 +150,7 @@ const validateGetCoachAppointmentsDto = (data) => {
 const validateGetUserAppointmentsDto = (data) => {
 	let errors = {};
 
-	if (!data.userId || typeof data.userId !== 'string' || !data.userId.match(/^[a-f\d]{24}$/i)) {
+	if (!data.userId || typeof data.userId !== 'string' || !isValidObjectId(data.userId)) {
 		errors.userId = "coachId must be a valid ObjectId string.";
 	}
 
@@ -213,6 +224,79 @@ const vaildateUpdateCoachAvailabilityDto = (data) =>{
 }
 
 
+const updateStatusDto = (data) => {
+	const {
+		id,
+		coachId,
+		userId,
+		paymentStatus,
+		startTime,
+		endTime,
+		status,
+		updatedBy,
+		isPaid,
+	} = data;
+
+	return {
+		id,
+		coachId,
+		userId,
+		paymentStatus,
+		startTime :hour_24_format(startTime),
+		endTime :hour_24_format(endTime),
+		status,
+		updatedBy,
+		isPaid
+	};
+};
+
+
+const ValidateStatusDto = (data) => {
+	const errors = {};
+
+	if (data.id || !isValidObjectId(id)){
+		errors.id = "coachId and day  or id is needed !";
+	}
+	// coachId validation
+	if (!data.userId || typeof data.userId !== 'string' || !isValidObjectId(data.userId)) {
+		errors.userId = "userId must be a valid ObjectId string.";
+	}
+
+	if (!data.paymentStatus || !typeof data.paymentStatus === 'string'){
+		errors.paymentStatus = "payment Status not availale";
+	}
+
+	if (data.startTime|| !typeof data.startTime || !isValidTime(data.startTime)){
+		errors.startTime = "startTime error invalid format"
+	}
+
+	if (data.endTime || !isValidTime(data.endTime)){
+		errors.endTime = "invalid endTime format";
+
+	}
+
+	if (data.coachId || !typeof data.coachId !== 'string' || !isValidObjectId(data.coachId) ){
+		errors.coachId = 'invalid coachId';
+
+	}
+
+	if (data.status || !typeof data.status !== 'string' || data.status in validStatus){
+		errors.status = 'invalid Status';
+
+	}
+
+	if (data.updateBy || !typeof data.updateBy !== 'string' || data.updatedBy in valideUser){
+		errors.updatedBy = 'invalide updatedBy data';
+	}
+	if (data.isPaid || !typeof data.isPaid !== 'boolean'){
+		errors.isPaid = ' invalid isPaid param expected boolean';
+	}
+
+	return errors;
+};
+
+
+
 module.exports = {
 	createBookingDto,
 	validateCreateBookingDto,
@@ -221,6 +305,8 @@ module.exports = {
 	vaildateUpdateCoachAvailabilityDto,
 	validateGetCoachAppointmentsDto,
     	validateGetUserAppointmentsDto,
-    	getAppointmentsByUserIdDto
+    	getAppointmentsByUserIdDto,
+	updateStatusDto,
+	ValidateStatusDto
 };
 

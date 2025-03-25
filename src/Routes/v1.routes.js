@@ -2,6 +2,7 @@ const v1Router = require('express').Router();
 const express = require('express');
 
 const userRouter = require('./routes.user');
+const bookingRouter = require('./routes.booking');
 const accountRouter = require('./routes.account');
 const medicalEquipmentRouter = require('./routes.medicalEquipment');
 const customerInfoRouter = require('./routes.customerInfo');
@@ -42,6 +43,7 @@ const coachAvailabilityRouter = require('./routes.coachAvailability');
 v1Router.use("/api", accountRouter)
 v1Router.use("/api/user", userRouter)
 v1Router.use("/api/medicalequipment", medicalEquipmentRouter)
+
 v1Router.use("/api/customer", customerInfoRouter)
 v1Router.use("/api/rentaltransaction", rentalTransactionRouter)
 v1Router.use("/api/emergencycontact", emergencyContactRouter)
@@ -74,5 +76,6 @@ v1Router.use("/api/coach", coachSearchRouter)
 v1Router.use("/api/coach-info", coachInfoRouter)
 v1Router.use("/api/coach-timeslot", coachTimeSlotRouter)
 v1Router.use("/api/coach-availability", coachAvailabilityRouter)
+v1Router.use("/api/booking", bookingRouter)
 
 module.exports = v1Router;
