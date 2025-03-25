@@ -1,16 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const {
-    createHospitalController,
-    searchHospitalsController,
-    getHospitalDetailsController,
-    updateHospitalController
-} = require('../Controllers/controllers.hospital');
+const { getNearbyHospitalsController } = require('../controllers/hospital.controller');
+const { validateRequest } = require('../middlewares/validateRequest');
+const { hospitalSearchDTO } = require('../dto/hospital.dto');
 
-// Create new hospital
-router.post('/hospitals', createHospitalController);
-router.get('/hospitals/search', searchHospitalsController);
-router.get('/hospitals/:hospitalId', getHospitalDetailsController);
-router.put('/hospitals/:hospitalId', updateHospitalController);
+router.get(
+    '/hospitals/nearby',
+    validateRequest(hospitalSearchDTO),
+    getNearbyHospitalsController
+);
 
 module.exports = router;

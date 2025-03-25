@@ -1,130 +1,35 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const HospitalSchema = new mongoose.Schema({
-    hospitalName: {
-        type: String,
-        required: true,
-        trim: true,
-        minlength: 2,
-    },
-    contactNumber: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    streetAddress: {
-        type: String,
-        required: true,
-        trim: true,
-        minlength: 5,
-    },
-    area: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    district: {
-        type: String,
-        required: true,
-    },
-    city: {
-        type: String,
-        required: true
-    },
-    state: {
-        type: String,
-        required: true
-    },
-    country: {
-        type: String,
-        required: true
-    },
-    pincode: {
-        type: String,
-        required: true
-    },
-    location: {
-        type: {
+const hospitalSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        latitude: { type: Number, required: true },
+        longitude: { type: Number, required: true },
+        address: { type: String, default: 'Not available' },
+        type: { type: String, enum: ['private', 'government'], default: 'private' },
+        specialization: {
             type: String,
-            enum: ['Point'],
-            default: 'Point'
+            enum: [
+                'Critical Care & Emergency',
+                'Specialty & Super-Specialty',
+                'Maternal & Child Care Centers',
+                'Mental Health & Rehabilitation',
+                'Burn and Trauma Centers',
+                'Veterinary & Animal Hospitals',
+                'Geriatric Care & Senior Living',
+                'Plastic Surgery & Reconstructive'
+            ],
+            default: 'General'
         },
-        coordinates: {
-            type: [Number], // [longitude, latitude]
-            required: true
-        }
+        rating: { type: Number, default: 0 },
+        emergency: { type: Boolean, default: false },
+        phone: { type: String, default: 'Not available' },
+        website: { type: String, default: 'Not available' },
+        wheelchair: { type: String, default: 'Unknown' },
+        distance: { type: Number, default: 0 },
+        googleMapsUrl: { type: String, default: '' }
     },
-    hospitalType: {
-        type: String,
-        enum: ["government", "private"],
-        required: true
-    },
-    doctors: {
-        type: [
-            {
-                name: {
-                    type: String,
-                    required: true
-                },
-                speciality: {
-                    type: String,
-                    required: true
-                },
-                experience: {
-                    type: String,
-                    required: true
-                },
-                doctorId: {
-                    type: String,
-                    ref: "doctor"
-                },
-                _id: false
-            }
-        ]
-    },
-    category: {
-        type: String,
-        enum: ["critical-care", "surgery", "maternity", "speciality", "mental-health", "burn", "veterinary", "geriatric-care"],
-        required: true
-    },
-    specialitiesOffered: {
-        type: [String],
-        required: true
-    },
-    servicesOffered: {
-        type: [String],
-        required: true
-    },
-    packages: {
-        type: [String]
-    },
-    review: {
-        type: Number,
-        default: 0
-    },
-    email: {
-        type: String,
-        required: true
-    },
-    website: {
-        type: String,
-        required: true
-    },
-    faq: {
-        type: [String],
-    },
-    opdTimings: {
-        type: String,
-        required: true
-    },
-    ambulanceCount: {
-        type: Number,
-        required: true
-    },
-}, { timestamps: true });
+    { timestamps: true }
+);
 
-HospitalSchema.index({ location: '2dsphere' });
-
-const HospitalModel = mongoose.model("hospital", HospitalSchema);
-
-module.exports = HospitalModel;
+module.exports = mongoose.model('Hospital', hospitalSchema);
