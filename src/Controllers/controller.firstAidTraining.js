@@ -1,6 +1,6 @@
 const { createFirstAidTrainingDto, validateFirstAidTrainingFields } = require("../DTOs/firstAid.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { createFirstAidTrainingServices } = require("../Services/services.firstAidTraining");
+const { createFirstAidTrainingServices, getFirstAidTrainingServices } = require("../Services/services.firstAidTraining");
 
 const createFirstAidTrainingController = async (req, res) => {
     try {
@@ -10,8 +10,8 @@ const createFirstAidTrainingController = async (req, res) => {
             sendResponse(res, null, 400, false, errors);
             return
         }
-        await createFirstAidTrainingServices({ ...firstAidTraining, createdBy: req.user._id });
-        sendResponse(res, null, 201, true, "First aid training created successfully");
+        const firstAidTrainingData = await createFirstAidTrainingServices({ ...firstAidTraining, createdBy: req.user._id });
+        sendResponse(res, null, 201, true, "First aid training created successfully", firstAidTrainingData);
         return
     } catch (err) {
         console.log(err);
