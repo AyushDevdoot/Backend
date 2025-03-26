@@ -1,6 +1,6 @@
 const { validateEmergencyContact, createEmergencyContactDto, updateEmergencyContactDto } = require("../DTOs/emergencyContact.dto");
 const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { createEmergencyContactServices, getEmergencyContactServices, getEmergencyContactByIdServices, updateEmergencyContactServices } = require("../Services/services.emergencyContact");
+const { createEmergencyContactServices, getEmergencyContactServices, getEmergencyContactByIdServices, updateEmergencyContactServices, deleteEmergencyContactServices } = require("../Services/services.emergencyContact");
 
 const addEmergencyContactController = async (req, res) => {
     try {
@@ -70,9 +70,28 @@ const updateEmergencyContactController = async (req, res) => {
     }
 };
 
+const deleteEmergencyContactController = async (req, res) => {
+    try {
+        const emergencyContact = await getEmergencyContactByIdServices(req.params.contactId, req.user._id);
+        if (!emergencyContact) {
+            sendResponse(res, null, 400, false, "Emergency contact not found");
+            return
+        } else {
+            await deleteEmergencyContactServices(req.params.contactId, req.user._id);
+            sendResponse(res, null, 200, true, "Emergency contact deleted successfully");
+            return
+        }
+    } catch (err) {
+        console.log(err);
+        sendResponse(res, err);
+        return
+    }
+};
+
 module.exports = {
     addEmergencyContactController,
     getEmergencyContactController,
     updateEmergencyContactController,
-    getEmergencyContactDetailsController
+    getEmergencyContactDetailsController,
+    deleteEmergencyContactController
 };
