@@ -12,9 +12,7 @@ const uploadMedicalWalletController = async (req, res) => {
 
         if (!user) return res.status(404).json({ error: "User not found"});
 
-        const folder = req.file.mimetype.includes("pdf") ? "pdfs" : unknown;
-
-        const documents = await uploadMedicalWalletService({userId: user._id, documentName: req.body.documentName, pdfUrl: fileObj.path});
+        const documents = await uploadMedicalWalletService({userId: user._id, documentName: req.body.documentName, uploadType: req.body.uploadType , pdfUrl: fileObj.path});
 
         sendResponse(res, null, 200, true, "document uploaded successfully", documents);
     } catch (error) {
