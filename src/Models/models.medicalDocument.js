@@ -14,6 +14,11 @@ const medicalDocSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    uploadType: {
+        type: String,
+        required: true,
+        enum: ['medical-wallet'],
+    },
     uploadedAt: {
         type: Date,
         default: Date.now
