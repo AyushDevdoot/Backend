@@ -13,13 +13,11 @@ const uploadProfilePicController = async (req, res) => {
 
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    const folder = req.file.mimetype.includes("pdf") ? "pdfs" : "profile-pictures";
-
     console.log({ fileUrl: fileObj.path });
     
-    const userProfilePicture = await profilePicModel.create({ userId: user._id, name: `${user.firstName} ${user.lastName}`, imageUrl: fileObj.path });
+    const userProfilePicture = await profilePicModel.create({ userId: user._id, name: `${user.firstName} ${user.lastName}`, uploadType: req.body.uploadType, imageUrl: fileObj.path });
 
-    res.json({ message: "File uploaded successfully", userProfilePicture });
+    res.status(200).json({ message: "File uploaded successfully", userProfilePicture });
   } catch (error) {
     res.status(500).json({ error: "Upload failed", details: error });
   }
