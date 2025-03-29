@@ -124,9 +124,8 @@ const validateUpdateCoachDto = (data) => {
         errors.experienceYear = "experienceYear must be a positive number.";
     }
 
-    if (data.specialization !== undefined && 
-        !['health-fitness', 'chronic-diseases', 'sleep-wellness', 'holistic-wellness', 'stem-skills', 'parenting', 'worklife-balance', 'immunity-coach'].includes(data.specialization)) {
-        errors.specialization = "specialization must be one of the following values: health-fitness, chronic-diseases, sleep-wellness, holistic-wellness, stem-skills, parenting, worklife-balance, immunity-coach";
+    if (!data.specialization || !validateSpecialization(data.specialization)) {
+        errors.specialization = "Invalid specialization value";
     }
 
     if (data.pricePerMinute !== undefined && (typeof data.pricePerMinute !== 'number' || data.pricePerMinute <= 0)) {

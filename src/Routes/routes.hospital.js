@@ -1,11 +1,13 @@
-const { createHospitalController, updateHospitalController, getHospitalDetailsController, getHospitalController, hospitalQuerySearchController } = require('../Controllers/controller.hospital');
+const express = require('express');
+const router = express.Router();
+const { getNearbyHospitalsController } = require('../Controllers/controller.hospital');
+const { validateRequest } = require('../Middleware/validateRequest');
+const { hospitalSearchDTO } = require('../DTOs/hospital.dto');
 
-const hospitalRouter = require('express').Router();
+router.get(
+    '/hospitals/nearby',
+    validateRequest(hospitalSearchDTO),
+    getNearbyHospitalsController
+);
 
-hospitalRouter.post('/', createHospitalController);
-hospitalRouter.patch('/:hospitalId', updateHospitalController);
-hospitalRouter.get('/search', hospitalQuerySearchController);
-hospitalRouter.get('/:hospitalId', getHospitalDetailsController);
-hospitalRouter.get('/', getHospitalController);
-
-module.exports = hospitalRouter;
+module.exports = router;
