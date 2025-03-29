@@ -15,6 +15,11 @@ const profilePictureSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    uploadType: {
+        type: String,
+        required: true,
+        enum: ['profile-picture'],
+    }
 }, {timestamps: true});
 
 module.exports = mongoose.model('profilePictures', profilePictureSchema);
