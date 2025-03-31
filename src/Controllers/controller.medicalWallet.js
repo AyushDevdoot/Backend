@@ -1,4 +1,4 @@
-const UserModel = require("../Models/models.user");
+const UserModel = require("../Models/models.userInfo.js");
 const { sendResponse } = require('../Helpers/helpers.commonFunc');
 const { uploadMedicalWalletService, getMedicalWalletService } = require('../Services/services.medicalWallet.js');
 

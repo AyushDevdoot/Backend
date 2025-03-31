@@ -1,5 +1,5 @@
 const { getProfilePictureService } = require("../Services/services.profilePicture.js");
-const userModel = require("../Models/models.user");
+const userModel = require("../Models/models.userInfo.js");
 const profilePicModel = require("../Models/models.profilePicture");
 
 

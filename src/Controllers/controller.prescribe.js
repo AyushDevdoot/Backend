@@ -1,4 +1,4 @@
-const userModel = require("../Models/models.user");
+const userModel = require("../Models/models.userInfo.js");
 const prescribeDocModel = require("../Models/models.prescribeDoc");
 
 
