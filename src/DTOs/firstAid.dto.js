@@ -4,8 +4,12 @@ const createFirstAidTrainingDto = (data) => {
         currentLocation,
         trainingType,
         previousTraining,
-        mobile,
         medicalCondition,
+        certificateStatus,
+        mobileNumber,
+        trainingMode,
+        medicalConditions,
+        medicalConditionsDetails
     } = data;
 
     return {
@@ -13,8 +17,12 @@ const createFirstAidTrainingDto = (data) => {
         currentLocation,
         trainingType,
         previousTraining,
-        mobile,
         medicalCondition,
+        certificateStatus,
+        mobileNumber,
+        trainingMode,
+        medicalConditions,
+        medicalConditionsDetails
     };
 };
 
@@ -41,14 +49,38 @@ function validateFirstAidTrainingFields(data) {
         errors.previousTraining = "previousTraining must be a valid string.";
     }
 
-    // mobile validation
-    if (!data.mobile || typeof data.mobile !== 'string' || data.mobile.trim().length < 2) {
-        errors.mobile = "mobile must be at least 2 characters long and a valid string.";
-    }
-
     // medicalCondition validation
     if (!data.medicalCondition || typeof data.medicalCondition !== 'string' || data.medicalCondition.trim().length < 2) {
         errors.medicalCondition = "medicalCondition must be at least 2 characters long and a valid string.";
+    }
+
+    // certificateStatus validation
+    if (!data.certificateStatus || typeof data.certificateStatus !== 'string' || 
+        !['Active', 'Expired', 'Renewal Required', 'Pending Certification', 'No Certification'].includes(data.certificateStatus)) {
+        errors.certificateStatus = "Invalid certificate status";
+    }
+
+    // mobileNumber validation
+    if (!data.mobileNumber || !data.mobileNumber.match(/^\+?\d{10,15}$/)) {
+        errors.mobileNumber = "Please enter a valid mobile number";
+    }
+
+    // trainingMode validation
+    if (!data.trainingMode || typeof data.trainingMode !== 'string' || 
+        !['Virtual', 'Physical'].includes(data.trainingMode)) {
+        errors.trainingMode = "Training mode must be either Virtual or Physical";
+    }
+
+    // medicalConditions validation
+    if (!data.medicalConditions || typeof data.medicalConditions !== 'string' || 
+        !['Yes', 'No', 'Not Aware'].includes(data.medicalConditions)) {
+        errors.medicalConditions = "Medical conditions must be Yes, No, or Not Aware";
+    }
+
+    // medicalConditionsDetails validation
+    if (data.medicalConditions === 'Yes' && (!data.medicalConditionsDetails || 
+        typeof data.medicalConditionsDetails !== 'string')) {
+        errors.medicalConditionsDetails = "Medical conditions details required when medical conditions is Yes";
     }
 
     return errors;
