@@ -38,6 +38,13 @@ const coachSearchRouter = require('./routes.coachSearch');
 const coachTimeSlotRouter = require('./routes.coachTimeSlot');
 const coachAvailabilityRouter = require('./routes.coachAvailability');
 
+const profilePictureRouter = require('../Routes/routes.profilePicture');
+const reproWellCategoriesRouter = require('./routes.reproWellCategories');
+const reproWellExpertRouter = require('./routes.reproWellExpert');
+const reproWellFormRouter = require('./routes.reproWellForm');
+const girlCareFormRouter = require('../Routes/routes.girlCare');
+const medicalWalletRouter = require('../Routes/routes.medicalWallet');
+const uploadPrescribeRouter = require('../Routes/routes.uploadPrescrib');
 
 
 v1Router.use("/api", accountRouter)
@@ -77,5 +84,13 @@ v1Router.use("/api/coach-info", coachInfoRouter)
 v1Router.use("/api/coach-timeslot", coachTimeSlotRouter)
 v1Router.use("/api/coach-availability", coachAvailabilityRouter)
 v1Router.use("/api/booking", bookingRouter)
+
+v1Router.use("/api/profile-picture", profilePictureRouter);
+v1Router.use("/api/repro-well-categories", reproWellCategoriesRouter);
+v1Router.use("/api/repro-well-experts", reproWellExpertRouter);
+v1Router.use("/api/repro-well-form", reproWellFormRouter);
+v1Router.use("/api/girl-care-form", girlCareFormRouter);
+v1Router.use("/api/medical-wallet", medicalWalletRouter);
+v1Router.use("/api/upload-prescription", uploadPrescribeRouter);
 
 module.exports = v1Router;
