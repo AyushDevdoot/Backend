@@ -5,6 +5,11 @@ const createFirstAidTrainingServices = async (firstAidTraining) => {
     return await finalBody.save();
 }
 
+const getFirstAidTrainingServices = async () => {
+    return await FirstAidTrainingModel.find();
+}
+
 module.exports = {
-    createFirstAidTrainingServices
+    createFirstAidTrainingServices,
+    getFirstAidTrainingServices
 }

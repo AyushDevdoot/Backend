@@ -53,9 +53,43 @@ const specialistEnums = [
     "hairloss",
     "nutrition",
 ]
+
+const trainingTypeEnums = [
+    "Basic First Aid", 
+    "CPR & AED Training", 
+    "Workplace First Aid",
+    "Pediatric First Aid", 
+    "Sports First Aid", 
+    "Emergency First Aid",
+    "Advanced First Aid", 
+    "Wilderness First Aid", 
+    "Mental Health First Aid",
+    "Disaster Response First Aid"
+]
+
+const previousTrainingEnums = [
+        "Basic First Aid", 
+        "CPR & AED Training", 
+        "Workplace First Aid",
+        "Pediatric First Aid", 
+        "Sports First Aid", 
+        "Emergency First Aid",
+        "Advanced First Aid", 
+        "Wilderness First Aid", 
+        "Mental Health First Aid",
+        "Disaster Response First Aid", 
+        "Fire Safety and First Aid",
+        "First Responder Training", 
+        "Community First Aid Training",
+        "Roadside Emergency First Aid", 
+        "Other (Specify)"
+    ]
+
 module.exports = {
     saltRounds,
     html,
     specialistEnums,
+    trainingTypeEnums,
+    previousTrainingEnums,
     forgothtml
 };

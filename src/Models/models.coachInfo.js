@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
 
+const isValidGoogleDriveLink = (url) => {
+    const driveRegex = /^https?:\/\/(drive\.google\.com\/(?:file\/d\/|open\?id=))[a-zA-Z0-9_-]+/;
+    return driveRegex.test(url);
+};
+
 const coachInfoSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -7,6 +12,37 @@ const coachInfoSchema = new mongoose.Schema({
     },
     lastName: {
         type: String,
+<<<<<<< HEAD
+=======
+        enum:[
+            "Addiction Recovery Coach",
+            "Arthritis and Joint Health Coach",
+            "Ayurveda Consultant",
+            "Cardiovascular Health Coach",
+            "Chronic Pain Management Coach",
+            "Dermatologist Consultant",
+            "Detox and Clean Eating Coach",
+            "Diabetes Management Coach",
+            "Health & Fitness Coach",
+            "Holistic Wellness Coach",
+            "Immunity Coach for Kids",
+            "Lifestyle Transformation Coach",
+            "Mental Health Support Coach",
+            "Parenting Wellness Coach",
+            "Post-Surgery Recovery Coach",
+            "Relationship and Couples Coach",
+            "Reproductive Health Coach",
+            "Skin and Beauty Wellness Coach",
+            "Sleep Wellness Coach",
+            "Therapeutic Coach",
+            "Weight Management Coach",
+            "Women’s Health Coach",
+            "Work-Life Balance Coach",
+            "Workplace Stress Coach"
+          ]
+          
+          ,
+>>>>>>> origin/main
         required: true
     },
     specialization: [{
@@ -77,6 +113,14 @@ const coachInfoSchema = new mongoose.Schema({
         enum: ['active', 'inactive', 'pending'],
         default: 'inactive',
     },
+    certification :{
+        type: String,
+        required: false,
+        validate: {
+            validator: isValidGoogleDriveLink,
+            message: 'Certification link must be a valid Google Drive link.'
+        }
+    }
 }, { timestamps: true });
 
 
