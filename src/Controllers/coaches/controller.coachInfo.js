@@ -1,12 +1,6 @@
-<<<<<<< HEAD:src/Controllers/coaches/controller.coachInfo.js
 const { createCoachDto, validateCreateCoachDto, getCoachesListDto } = require("../../DTOs/coachInfo.dto");
 const { sendResponse } = require("../../Helpers/helpers.commonFunc");
 const { createCoachInfoServices, getCoachInfoServices, getCoachInfoByIdServices } = require("../../Services/services.coachInfo");
-=======
-const { createCoachDto, validateCreateCoachDto, getCoachesListDto, validateUpdateCoachDto, updateCoachInfoDto} = require("../DTOs/coachInfo.dto");
-const { sendResponse } = require("../Helpers/helpers.commonFunc");
-const { createCoachInfoServices, getCoachInfoServices, updateCoachInfoServices ,getCoachProfileServices, deleteCoachProfileServices} = require("../Services/services.coachInfo");
->>>>>>> origin/main:src/Controllers/controller.coachInfo.js
 
 const createCoachInfoController = async (req, res) => {
     try {

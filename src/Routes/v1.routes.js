@@ -45,7 +45,7 @@ const reproWellFormRouter = require('./routes.reproWellForm');
 const girlCareFormRouter = require('../Routes/routes.girlCare');
 const medicalWalletRouter = require('../Routes/routes.medicalWallet');
 const uploadPrescribeRouter = require('../Routes/routes.uploadPrescrib');
-const coachAppointmentRouter = require('./routes.coachAppointment');
+//const coachAppointmentRouter = require('./routes.coachAppointment');
 const patientRouter = require('./routes.patientRouter')
 // const hospitalRouter = require('./routes.nearbyHospitals')
 
