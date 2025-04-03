@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config(); 
@@ -9,8 +8,9 @@ const app = express();
 const mongoUri = process.env.MONGODB_URL;
 const port = process.env.PORT || 3000; 
 
-app.use(bodyParser.json());
-app.use(cors());
+app.disable('x-powered-by');
+app.use(express.json());
+//app.use(cors());
 
 mongoose
   .connect(mongoUri, {
