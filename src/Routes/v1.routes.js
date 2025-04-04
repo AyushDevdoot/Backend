@@ -45,7 +45,9 @@ const reproWellFormRouter = require('./routes.reproWellForm');
 const girlCareFormRouter = require('../Routes/routes.girlCare');
 const medicalWalletRouter = require('../Routes/routes.medicalWallet');
 const uploadPrescribeRouter = require('../Routes/routes.uploadPrescrib');
-
+//const coachAppointmentRouter = require('./routes.coachAppointment');
+const patientRouter = require('./routes.patientRouter')
+// const hospitalRouter = require('./routes.nearbyHospitals')
 
 v1Router.use("/api", accountRouter)
 v1Router.use("/api/user", userRouter)
@@ -92,5 +94,7 @@ v1Router.use("/api/repro-well-form", reproWellFormRouter);
 v1Router.use("/api/girl-care-form", girlCareFormRouter);
 v1Router.use("/api/medical-wallet", medicalWalletRouter);
 v1Router.use("/api/upload-prescription", uploadPrescribeRouter);
+v1Router.use("/api/patient", patientRouter)
+//v1Router.use("/api/hospital",hospitalRouter)
 
 module.exports = v1Router;

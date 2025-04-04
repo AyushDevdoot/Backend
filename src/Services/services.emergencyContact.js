@@ -17,9 +17,14 @@ const updateEmergencyContactServices = async (emergencyContactId, emergencyConta
     return await EmergencyContactModel.findByIdAndUpdate(emergencyContactId, emergencyContactBody);
 };
 
+const deleteEmergencyContactServices = async (emergencyContactId, userId) => {
+    return await EmergencyContactModel.findOneAndDelete({ _id: emergencyContactId, userId });
+};
+
 module.exports = {
     createEmergencyContactServices,
     getEmergencyContactServices,
     updateEmergencyContactServices,
-    getEmergencyContactByIdServices
+    getEmergencyContactByIdServices,
+    deleteEmergencyContactServices
 };

@@ -25,7 +25,7 @@ const getCoachInfoController = async (req, res) => {
     try {
         let query = {}
         if (req.query?.type !== "all") {
-            query.specialization = req.query.type?.toString().toLowerCase();
+            query.specialization = req.query.type; // Remove toLowerCase() as specializations are case-sensitive
         }
         const coachInfo = await getCoachInfoServices(query);
         if (coachInfo.length === 0) {
@@ -63,21 +63,63 @@ const getCoachInfoByIdController = async (req, res) => {
 
 const updateCoachInfoController = async (req, res) => {
     try {
-        const coachInfo = await getCoachInfoByIdServices(req.params.coachId);
-        if (!coachInfo) {
-            sendResponse(res, null, 400, false, "Coach info not found");
-            return
-        } else {
-            const coachInfoBody = updateCoachInfoDto(req.body, coachInfo);
-            await updateCoachInfoServices(coachInfo._id, coachInfoBody);
-            sendResponse(res, null, 200, true, "Coach info updated successfully");
-            return
+        const coachId = req.user._id;
+        if (!coachId) {
+            return sendResponse(res, null, 400, false, "Coach ID not found");
         }
+        const updateData = updateCoachInfoDto(req.body);
+        
+        if (Object.keys(updateData).length === 0) {
+            return sendResponse(res, null, 400, false, "No valid update fields provided");
+        }
+        
+        const validationErrors = validateUpdateCoachDto(updateData);
+        
+        if (Object.keys(validationErrors).length > 0) {
+            return sendResponse(res, null, 400, false, validationErrors);
+        }
+        console.log("Updating coach with ID:", coachId);
+        console.log("Update data:", updateData);
+        
+        const updatedCoach = await updateCoachInfoServices(coachId, updateData);
+        
+        if (!updatedCoach) {
+            return sendResponse(res, null, 404, false, "Coach not found or update failed");
+        }
+        
+        return sendResponse(res, null, 200, true, "Coach info updated successfully");
     } catch (err) {
-        sendResponse(res, err);
-        return
+        console.log("Update coach error:", err);
+        return sendResponse(res, err, 500, false, "Internal server error during update");
     }
 };
+
+const getProfileController = async(req,res) => {
+    try {
+        const coachProfile = await getCoachProfileServices(req.user._id)
+        console.log(coachProfile)
+        if (!coachProfile) {
+            return sendResponse(res, null, 404, false, "Coach profile not found");
+        }
+
+        sendResponse(res, null, 200, true, "Coach profile fetched successfully",coachProfile);
+        return
+    } catch (error) {
+        sendResponse(res, error, 500, false, "Error fetching coach profile");
+    }
+}
+
+const deleteCoachInfoController = async (req, res) => {
+    const coachProfile = await deleteCoachProfileServices(req.user._id)
+    console.log(coachProfile)
+    if (!coachProfile) {
+        return sendResponse(res, null, 404, false, "Coach profile not found");
+    }
+    sendResponse(res, null, 200, true, "Coach profile deleted successfully",'Deletion Successful');
+        return
+    
+
+}
 
 module.exports = {
     createCoachInfoController,
