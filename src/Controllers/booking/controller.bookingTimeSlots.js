@@ -3,8 +3,9 @@ const { getCoachBookingsByDateServices } = require("../../Services/services.book
 const { sendResponse } = require("../../Helpers/helpers.commonFunc");
 const { createCoachAvailabilityDto, validateCoachAvailability, getCoachAvailabilityDto, validateGetCoachAvailabilityDto, updateCoachAvailabilityDto, vaildateUpdateCoachAvailability } = require('../../DTOs/coachAvailability.dto');
 
-const addCoachAvailabilityController = async (req, res) => {
-    // supports both adding new and updating old
+const CoachWeekAvailableSlotController = async (req, res) => {
+    // get coach available slots for booking
+    // time here is in utc only in front end will the time be in timezone
     try {
         if (! Array.isArray(req.body.availability)){
             sendResponse(res, null, 400, false, 'Invalid data');
