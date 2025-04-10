@@ -1,4 +1,6 @@
+const CoachInfoModel = require("../Models/models.coachInfo");
 const bookingModel = require("../Models/models.booking");
+const CoachAvailabilityModel = require('../Models/models.coachAvailability');
 
 const createBookingServices = async (booking) => {
 	return await bookingModel(booking).save();
@@ -60,6 +62,34 @@ const updateBookingServices = async (updateData) =>{
 	return await booking.save();
 }
 
+
+const coachWeeklyAvailableSlotServices = async ({ coachId, startDate, endDate }) => {
+	try{
+		const start =  new Date(startDate);
+		const end = new Date(endDate);
+
+		const bookedQuery = bookingModel.findAll({
+			coachId,
+			startDate: { $gte: start },
+			endDate: { $lte: end },
+			status: { $in: ['pending', 'confirmed', 'rescheduled', 'reschedule-request']}
+		}).exec();
+		const availableQuery = CoachAvailabilityModel.findAll({ coachId, isAvailable: true }).exec();
+		const coachInfo = CoachInfoModel.findOne({ _id: coachId }).select('timezone', 'sessionTime').exec(); 
+		const [bookedSlots, availability] = await Promise.all([bookedQuery, coachInfo, availableQuery]);
+
+		return { bookedSlots, coachInfo, availability };
+	}catch (err){
+		console.error(`Error in coachWeeklyAvailableSlotService`);
+		throw err;
+	}
+};
+
+
+const updateBookingServices = async ({bookingId, paymentId}) =>{
+	return await bookingModel.updateOne({_id: bookingId}, { $set: { paymentStatus: paymentId }});
+}
+
 module.exports = {
 	createBookingServices,
 	getBookingByIdService,
@@ -67,5 +97,6 @@ module.exports = {
 	getUserBookingHistoryServices,
 	getCoachBookingsByDateServices,
 	updateBookingServices,
-	updatePaymentStatusBookingServices
+	updatePaymentStatusBookingServices,
+	coachWeeklyAvailableSlotServices
 }

@@ -296,6 +296,34 @@ const ValidateStatusDto = (data) => {
 };
 
 
+const getCoachWeeklyAvailableSlotDto = (data) =>{
+	const {
+		startDate,
+		endDate,
+		coachId,
+	} = data
+
+	return { startDate, endDate, coachId }; 
+};
+
+const validateCoachWeeklyAvailableSlot = (data) =>{
+	const { startDate, endDate, coachId } = data;
+	const errors = {}
+	if (!isValidObjectId(coachId)){
+		errors.coachId = "Valid coachId is needed !";
+	}
+
+	if (!startDate.endswith('Z')){
+		errors.startDate = "Invalide Date sent needs(UTC - zulu , iso format)"
+	}
+
+	if (!endDate.endswith('Z')){
+		errors.endDate = "Invalid Date Expected (UTC - zulu , iso format)"
+	}
+
+	return errors;
+}
+
 
 module.exports = {
 	createBookingDto,
@@ -307,6 +335,8 @@ module.exports = {
     	validateGetUserAppointmentsDto,
     	getAppointmentsByUserIdDto,
 	updateStatusDto,
-	ValidateStatusDto
+	ValidateStatusDto,
+	getCoachWeeklyAvailableSlotDto,
+	validateCoachWeeklyAvailableSlot
 };
 

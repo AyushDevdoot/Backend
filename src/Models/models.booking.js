@@ -60,8 +60,8 @@ const bookingSchema = new mongoose.Schema(
 		},
 
 		paymentStatus: {
-			type: Boolean,
-			default: false,
+			type: String,
+			default: 'pending',
 		},
 		updatedBy: {
 			type: String,

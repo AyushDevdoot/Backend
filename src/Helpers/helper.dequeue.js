@@ -14,6 +14,9 @@ class Dequeue{
 		*/
 	constructor(arr){
 		/** @private*/
+		if (typeof arr != 'object'){
+			throw "Expected an array Object";
+		}
 		this.root = null
 		this.end = this.root
 		let temp = null;
@@ -48,8 +51,14 @@ class Dequeue{
 		*/
 
 	pop(){
+		if (this.root == null){
+			return 
+		}
 		let val = this.end.val;
 		this.end = this.end.prev;
+		if (this.root == null){
+			return val;
+		}
 		this.end.next = null;
 		return val;
 
@@ -61,8 +70,14 @@ class Dequeue{
 		*/
 
 	popleft(){
-		let val = this.root.val
-		this.root = this.root.next
+		if (this.root == null){
+			return
+		}
+		let val = this.root.val;
+		this.root = this.root.next;
+		if (this.root == null){
+			return val;
+		}
 		this.root.prev = null;
 		return val;
 	}
@@ -76,20 +91,27 @@ class Dequeue{
 		return this.end.val;
 	}
 
-
 	/**
 		* Remove from the Front O(1)
 		* @returns {Object|number|string|boolean}
 		*/
 	peekleft(){
-		return this.start.val;
+		return this.root.val;
+	}
+
+	valueOf(){
+		return this.root == null? false : true;
 	}
 
 	toString(){
 		let tmp = this.root
-		let str = ''
+		if (tmp == null){
+			return '[]';
+		}
+		let str = `${tmp.val}`
+		tmp = tmp.next;
 		while (tmp){
-			str+=tmp.val+' ,'
+			str+=', '+tmp.val
 			tmp = tmp.next;
 		}
 		return `[ ${str} ]`
@@ -97,6 +119,5 @@ class Dequeue{
 	}
 
 }
-
 
 module.exports = Dequeue;

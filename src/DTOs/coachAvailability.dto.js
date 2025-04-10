@@ -2,33 +2,9 @@ const { parse, isValid, format } = require('date-fns');
 const { isValidObjectId } = require('../Helpers/helpers.commonFunc');
 
 
-function hour_24_format(time) {
-
-    // Try to parse the time string in the format 'h:mm a' (e.g. '9:00 AM')
-    const parsedTime = parse(time, 'h:mm a', new Date());
-	if (isNaN(parsedTime)){
-		return '';
-	}
-    // Check if the parsed time is valid
-	return format(parsedTime, 'HH:mm');
-}
 
 function isValidTime(time) {
-	const time24 = parse(time, 'HH:mm', new Date());
-    
-    if (isValid(time24)) {
-        return true; // Valid 24-hour time
-    }
-
-    // Try parsing the time for 12-hour format 'h:mm a' (e.g., '9:00 AM')
-    const time12 = parse(time, 'h:mm a', new Date());
-
-    if (isValid(time12)) {
-        return true; // Valid 12-hour time
-    }
-
-    // If neither format is valid, return false
-    return false;
+	return !isNaN(new Date(time)) ;
 }
 
 
@@ -44,8 +20,8 @@ const createCoachAvailabilityDto = (data) => {
 	return {
 		coachId,
 		day,
-		startTime: hour_24_format(startTime),
-		endTime: hour_24_format(endTime),
+		startTime,
+		endTime,
 		isAvailable: isAvailable === undefined || isAvailable? true : false,
 	};
 };
@@ -70,7 +46,6 @@ function validateCoachAvailability(data) {
 	// time validation (new format: "HH:MM AM/PM - HH:MM AM/PM")
 	if (
 		!data.startTime ||
-		typeof data.startTime !== 'string' ||
 		!isValidTime(data.startTime)
 	) {
 		errors.startTime = "startTime must be in the format 'HH:MM AM/PM - HH:MM AM/PM'.";
@@ -79,7 +54,6 @@ function validateCoachAvailability(data) {
 
 	if (
 		!data.endTime ||
-		typeof data.endTime !== 'string' ||
 		!isValidTime(data.endTime)
 
 	) {
@@ -160,16 +134,15 @@ const vaildateUpdateCoachAvailabilityDto = (data) =>{
 		typeof data.startTime !== 'string' ||
 		!isValidTime(data.startTime)
 	) {
-		errors.startTime = "startTime must be in the format 'HH:MM AM/PM - HH:MM AM/PM'.";
+		errors.startTime = "startTime must be in the format ISO UTC .";
 	}
-
 
 	if (
 		!data.endTime ||
 		typeof data.endTime !== 'string' ||
 		!isValidTime(data.endTime)
 	) {
-		errors.endTime = "endtime must be in the format 'HH:MM AM/PM - HH:MM AM/PM'.";
+		errors.endTime = "endtime must be in the format ISO UTC.";
 	}
 
 	if (! typeof data.isAvailable === 'boolean'){

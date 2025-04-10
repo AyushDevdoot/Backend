@@ -11,8 +11,8 @@ const createCoachAvailabilityServices = async (availability) => {
 			update: {
 				$set: { 
 					isAvailable: data.isAvailable,
-					startTime: data.startTime,
-					endTime: data.endTime,
+					startTime: new Date(data.startTime),
+					endTime: new Date(data.endTime),
 				}  // Set the fields to update
 			},
 			upsert: true // If the document doesn't exist, insert a new one
