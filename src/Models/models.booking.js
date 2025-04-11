@@ -23,7 +23,7 @@ const bookingSchema = new mongoose.Schema(
 		},
 		status: {
 			type: String,
-			enum: ['pending', 'confirmed', 'rescheduled', 'rejected', 'canceled', 'completed', 'timed-out', 'reschedule-request'], 
+			enum: ['pending', 'confirm', 'reject', 'cancel', 'complete', 'timed-out', 'reschedule-request'], 
 			default: 'pending', 
 		},
 		auditHistory: [
@@ -77,13 +77,13 @@ const bookingSchema = new mongoose.Schema(
 // Indexing for performance improvement
 bookingSchema.index({ userId: 1 });
 bookingSchema.index({ coachId: 1 });
-bookingSchema.index({ time: 1 });
+bookingSchema.index({ startTime: 1 });
 
 // Adding pre-save validation to prevent double-booking for the same coach at the same time
 bookingSchema.pre('save', async function (next) {
 	const existingBooking = await mongoose.model('Booking').findOne({
 		coachId: this.coachId,
-		time: this.time,
+		startTime: this.startTime,
 		status: { $in: ['confirmed', 'pending'] }, // Check only for confirmed or pending bookings
 	});
 
@@ -97,4 +97,4 @@ bookingSchema.pre('save', async function (next) {
 
 // Creating the Booking model
 const Booking = mongoose.model('Booking', bookingSchema);
-module.exports = Booking;
+module.exports = BookingModel;

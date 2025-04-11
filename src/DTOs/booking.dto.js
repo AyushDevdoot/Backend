@@ -325,6 +325,101 @@ const validateCoachWeeklyAvailableSlot = (data) =>{
 }
 
 
+const initializeBookingDto = (data) =>{
+	const { coachId, userId, startDate, endDate } = data;
+	return { coachId, userId, startDate, endDate } 
+};
+
+const validateInitializeBooking = (data) =>{
+	const { coachId, userId, startDate, endDate } = data;
+	const errors = {}
+	if (!isValidObjectId(coachId)){
+		errors.coachId = "InValid coachId !";
+	}
+	
+	if (!isValidObjectId(userId)){
+		errors.userId = "Invalide userId!";
+	} 
+
+	if (!startDate.endswith('Z')){
+		errors.startDate = "Invalide Date sent needs(UTC - zulu , iso format)"
+	}
+
+	if (!endDate.endswith('Z')){
+		errors.endDate = "Invalid Date Expected (UTC - zulu , iso format)"
+	}
+
+	return errors;
+}
+
+
+const resolveBookingDto = (data) => {
+	const { bookingId, 
+		paymentStatus, 
+		coachId, 
+		userId, 
+		startDate, 
+		endDate 
+	} = data;
+	return { bookingId, paymentStatus, coachId, userId, startDate, endDate };
+}
+
+const validateResolveBooking = (data) => {
+	const { bookingId, coachId, userId, startDate, endDate } = data;
+	const errors = {};
+
+	if (!isValidObjectId(bookingId)){
+		errors.bookingId = "invalide bookingId";
+	}
+
+	if (!paymentStatus || typeof paymentStatus != 'string'){
+		errors.paymentStatus = "invalid paymentStatus either rejected || paymentID";
+	}
+
+	if (!isValidObjectId(coachId)){
+		errors.coachId = "Invalid coachId !";
+	}
+	
+	if (!isValidObjectId(userId)){
+		errors.userId = "Invalide userId!";
+	} 
+
+	if (startDate && !startDate.endswith('Z')){
+		errors.startDate = "Invalide Date sent needs(UTC - zulu , iso format)"
+	}
+
+	if (endDate && !endDate.endswith('Z')){
+		errors.endDate = "Invalid Date Expected (UTC - zulu , iso format)"
+	}
+
+	return errors;
+
+
+}
+
+const updateBookingRequestDto = (data) => {
+	const { bookingId, status } = data
+
+	return { bookingId, status };
+}
+
+const validateBookingRequestDto = (data) => {
+	const { bookingId, status } = data;
+	const errors = {};
+	const statusObj = new Set([ 'confirm', 'reschedule-request', 'rejected' ]);
+
+	if (!isValidObjectId(bookingId)){
+		errors.bookingId = "invalid bookingId";
+	}
+
+	if (!statusObj.has(status.toLowerCase())){
+		errors.status = "invalid status";
+	}
+
+	return errors;
+}
+
+
 module.exports = {
 	createBookingDto,
 	validateCreateBookingDto,
@@ -337,6 +432,10 @@ module.exports = {
 	updateStatusDto,
 	ValidateStatusDto,
 	getCoachWeeklyAvailableSlotDto,
-	validateCoachWeeklyAvailableSlot
+	validateCoachWeeklyAvailableSlot,
+	initializeBookingDto,
+	validateInitializeBooking,
+	validateBookingRequestDto,
+	updateBookingRequestDto
 };
 

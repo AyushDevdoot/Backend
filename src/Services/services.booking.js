@@ -13,12 +13,30 @@ const getBookingByIdService = async ( _id ) => {
 
 const getCoachBookingHistoryServices = async (coachId) => {
 	// get all bookings of the coach, will be used for history
-	return await CoachAvailabilityModel.find(coachId);
+	return await bookingModel.find(coachId);
 }
+
+const getCoachBookingRequestServices = async (coachId) => {
+	// get all bookings of the coach, that need action 
+	return await bookingModel.find({
+  		coachId: coachId,
+  		status: 'pending',
+  		paymentStatus: { $nin: ['failed', 'pending'] }
+	});
+}
+
+const updateBookingStatusService = async (bookingId, status) => {
+  // Update booking by _id and set a new status
+	return await bookingModel.findByIdAndUpdate(
+		bookingId,
+    		{ status: status },
+    		{ new: true } // Return the updated document
+  	);
+};
 
 
 const getCoachBookingsByDateServices = async (coachId, startTime, endTime) => {
-	return await CoachAvailabilityModel.find({ 
+	return await bookingModel.find({ 
 		coachId,
 		startTime: {$gte: startTime},
 		endTime: {$lte: endTime},
@@ -26,7 +44,7 @@ const getCoachBookingsByDateServices = async (coachId, startTime, endTime) => {
 }
 
 const getUserBookingHistoryServices = async (userId) => {
-	return await CoachAvailabilityModel.findOne(userId)
+	return await bookingModel.findOne(userId)
 }
 
 const updatePaymentStatusBookingServices = async (_id, paymentStatus) => {
@@ -98,5 +116,7 @@ module.exports = {
 	getCoachBookingsByDateServices,
 	updateBookingServices,
 	updatePaymentStatusBookingServices,
-	coachWeeklyAvailableSlotServices
+	coachWeeklyAvailableSlotServices,
+	getCoachBookingRequestServices,
+	updateBookingStatusService
 }
