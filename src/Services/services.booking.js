@@ -3,7 +3,7 @@ const bookingModel = require("../Models/models.booking");
 const CoachAvailabilityModel = require('../Models/models.coachAvailability');
 
 const createBookingServices = async (booking) => {
-	return await bookingModel(booking).save();
+	return await bookingModel({ coachId: booking.coachId, userId: booking.userId, startTime: booking.startDate, endTime: booking.endDate, updatedBy: booking.updatedBy }).save();
 };
 
 const getBookingByIdService = async ( _id ) => {
@@ -28,8 +28,8 @@ const getCoachBookingRequestServices = async (coachId) => {
 const updateBookingStatusService = async (bookingId, status) => {
   // Update booking by _id and set a new status
 	return await bookingModel.findByIdAndUpdate(
-		bookingId,
-    		{ status: status },
+		{_id: bookingId},
+    		{ status: status, updatedBy: 'coach' },
     		{ new: true } // Return the updated document
   	);
 };
@@ -46,20 +46,6 @@ const getCoachBookingsByDateServices = async (coachId, startTime, endTime) => {
 const getUserBookingHistoryServices = async (userId) => {
 	return await bookingModel.findOne(userId)
 }
-
-const updatePaymentStatusBookingServices = async (_id, paymentStatus) => {
-	const updateObj = {
-		$set: {
-			paymentStatus: paymentStatus === 'rejected'? 'rejected': paymentStatus,
-			updatedBy: 'user',
-		},
-	}
-
-	if (paymentStatus === 'failed'){
-		updateObj = 'canceled';
-	}
-	return await bookingModel.updateOne({ _id: _id }, updateObj);
-};
 
 const updateBookingServices = async (updateData) =>{
 	const booking = await bookingModel.findOne(_id);
@@ -86,15 +72,15 @@ const coachWeeklyAvailableSlotServices = async ({ coachId, startDate, endDate })
 		const start =  new Date(startDate);
 		const end = new Date(endDate);
 
-		const bookedQuery = bookingModel.findAll({
+		const bookedQuery = bookingModel.find({
 			coachId,
-			startDate: { $gte: start },
-			endDate: { $lte: end },
+			startDate: { $gte: startDate },
+			endDate: { $lte: endDate },
 			status: { $in: ['pending', 'confirmed', 'rescheduled', 'reschedule-request']}
 		}).exec();
-		const availableQuery = CoachAvailabilityModel.findAll({ coachId, isAvailable: true }).exec();
-		const coachInfo = CoachInfoModel.findOne({ _id: coachId }).select('timezone', 'sessionTime').exec(); 
-		const [bookedSlots, availability] = await Promise.all([bookedQuery, coachInfo, availableQuery]);
+		const availableQuery = CoachAvailabilityModel.find({ coachId, isAvailable: true }).exec();
+		const coachInfoQuery = CoachInfoModel.findOne({ _id: coachId }).select('timeZone sessionTime').exec(); 
+		const [bookedSlots, coachInfo, availability] = await Promise.all([bookedQuery, coachInfoQuery, availableQuery]);
 
 		return { bookedSlots, coachInfo, availability };
 	}catch (err){
@@ -104,9 +90,18 @@ const coachWeeklyAvailableSlotServices = async ({ coachId, startDate, endDate })
 };
 
 
-const updateBookingServices = async ({bookingId, paymentId}) =>{
-	return await bookingModel.updateOne({_id: bookingId}, { $set: { paymentStatus: paymentId }});
-}
+const resolveBookingServices = async ({ bookingId, paymentStatus }) => {
+	const status = paymentStatus === "rejected" ? "cancel" : "pending"; // or "confirmed", depending on your logic
+	return await bookingModel.updateOne(
+		{ _id: bookingId },
+		{
+			$set: {
+				paymentStatus: paymentStatus,
+				status: status
+			}
+		}
+	);
+};
 
 module.exports = {
 	createBookingServices,
@@ -115,7 +110,7 @@ module.exports = {
 	getUserBookingHistoryServices,
 	getCoachBookingsByDateServices,
 	updateBookingServices,
-	updatePaymentStatusBookingServices,
+	resolveBookingServices,
 	coachWeeklyAvailableSlotServices,
 	getCoachBookingRequestServices,
 	updateBookingStatusService

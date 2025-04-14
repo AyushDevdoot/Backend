@@ -308,16 +308,17 @@ const getCoachWeeklyAvailableSlotDto = (data) =>{
 
 const validateCoachWeeklyAvailableSlot = (data) =>{
 	const { startDate, endDate, coachId } = data;
+	console.log(startDate, endDate)
 	const errors = {}
 	if (!isValidObjectId(coachId)){
 		errors.coachId = "Valid coachId is needed !";
 	}
 
-	if (!startDate.endswith('Z')){
+	if (!startDate || !startDate.endsWith('Z')){
 		errors.startDate = "Invalide Date sent needs(UTC - zulu , iso format)"
 	}
 
-	if (!endDate.endswith('Z')){
+	if (!endDate || !endDate.endsWith('Z')){
 		errors.endDate = "Invalid Date Expected (UTC - zulu , iso format)"
 	}
 
@@ -327,7 +328,7 @@ const validateCoachWeeklyAvailableSlot = (data) =>{
 
 const initializeBookingDto = (data) =>{
 	const { coachId, userId, startDate, endDate } = data;
-	return { coachId, userId, startDate, endDate } 
+	return { coachId, userId, startDate, endDate, updatedBy: "user" }; 
 };
 
 const validateInitializeBooking = (data) =>{
@@ -341,11 +342,11 @@ const validateInitializeBooking = (data) =>{
 		errors.userId = "Invalide userId!";
 	} 
 
-	if (!startDate.endswith('Z')){
+	if (!startDate.endsWith('Z')){
 		errors.startDate = "Invalide Date sent needs(UTC - zulu , iso format)"
 	}
 
-	if (!endDate.endswith('Z')){
+	if (!endDate.endsWith('Z')){
 		errors.endDate = "Invalid Date Expected (UTC - zulu , iso format)"
 	}
 
@@ -365,7 +366,7 @@ const resolveBookingDto = (data) => {
 }
 
 const validateResolveBooking = (data) => {
-	const { bookingId, coachId, userId, startDate, endDate } = data;
+	const { bookingId, coachId, userId, startDate, endDate, paymentStatus } = data;
 	const errors = {};
 
 	if (!isValidObjectId(bookingId)){
@@ -436,6 +437,8 @@ module.exports = {
 	initializeBookingDto,
 	validateInitializeBooking,
 	validateBookingRequestDto,
-	updateBookingRequestDto
+	updateBookingRequestDto,
+	resolveBookingDto,
+	validateResolveBooking,
 };
 

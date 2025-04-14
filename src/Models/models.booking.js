@@ -84,6 +84,7 @@ bookingSchema.pre('save', async function (next) {
 	const existingBooking = await mongoose.model('Booking').findOne({
 		coachId: this.coachId,
 		startTime: this.startTime,
+		endTime: this.endTime,
 		status: { $in: ['confirmed', 'pending'] }, // Check only for confirmed or pending bookings
 	});
 
@@ -96,5 +97,5 @@ bookingSchema.pre('save', async function (next) {
 });
 
 // Creating the Booking model
-const Booking = mongoose.model('Booking', bookingSchema);
+const BookingModel = mongoose.model('Booking', bookingSchema);
 module.exports = BookingModel;

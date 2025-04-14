@@ -7,8 +7,9 @@ const getBookingRequestController = async (req, res) => {
 	// get all user bookings for action 
 	// coachId,  filtered with all the open for action bookings
 	try {
-		const { coachId } = getAppointmentsByCoachIdDto({ coachId: req.user });
-		const result = await getCoachBookingRequestServices() 
+		const { coachId } = getAppointmentsByCoachIdDto({ 'coachId': req.query.id });
+		console.log(coachId);
+		const result = await getCoachBookingRequestServices(coachId) 
 		sendResponse(res, null, 201, true, 'successful',result);
 	}catch (err) {
 		console.error(err);
@@ -16,7 +17,6 @@ const getBookingRequestController = async (req, res) => {
 	}
 
 };
-
 
 
 const updateBookingRequestController = async (req, res) => {

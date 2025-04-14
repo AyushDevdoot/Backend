@@ -7,6 +7,6 @@ coachAvailabilityRouter.post('/', addCoachAvailabilityController);
 
 coachAvailabilityRouter.get('/', getCoachAllAvailabilityController);
 
-coachAvailabilityRouter.patch('/', verifyUserMiddleware, updateCoachAvailabilityController);
+//coachAvailabilityRouter.patch('/', verifyUserMiddleware, updateCoachAvailabilityController);
 
 module.exports = coachAvailabilityRouter;    

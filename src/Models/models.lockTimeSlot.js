@@ -18,18 +18,18 @@ const LockSlotSchema = new mongoose.Schema(
 		},
 		lockedUntil: {
 			type: Date,
-			require: true.
+			require: true,
 			default: () => new Date(Date.now() + 10 * 60 * 1000)
 		}
 	}
 
 );
 
-LockSlotSchema.index({ lockedUntil: 1 }, { expireAfterSeconds: 0 }});
+LockSlotSchema.index({ lockedUntil: 1 }, { expireAfterSeconds: 0 });
 LockSlotSchema.index({ coachId: 1, startTime: 1, endTime: 1 })
 //update expireAfterSeconds to modify when this will be deleted
 
 
 
-const LockSlot = mongoose.model('LockSlot', LockSlotSchema);
+const LockSlotModel = mongoose.model('LockSlot', LockSlotSchema);
 module.exports = LockSlotModel;

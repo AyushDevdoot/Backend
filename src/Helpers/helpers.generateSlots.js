@@ -1,11 +1,16 @@
+//const { expose } = require('worker');
+
 const generateTimeSlots = (start, end, coachInfo, availability, bookedSlots) => {
 	//bookedSlots removing
 	const slots = {};
-	CONST BUFFER_TIME_SELECTION = 60; // minute
+	const BUFFER_TIME_SELECTION = 60; // minute
 	//this time will be used to move the time so that we dont give anyone ability to select current 
 	//time for booking
 	let availability_map = {}
 	//create a map to fetch details using day.
+	if (!Array.isArray(availability)){
+		throw new TypeError(`Expected availability to be an array, got: ${typeof availability}`);
+	}
 	for (let av of availability){
 		if (!av.isAvailable){
 			continue;
@@ -19,15 +24,21 @@ const generateTimeSlots = (start, end, coachInfo, availability, bookedSlots) => 
 			continue;
 		}
 		[start, end] = availability_map[day];
+		console.log(start,end);
 		//start and end are in iso format so dont need conversion
 		//but will need to get hr and min 
 		let daySlots = [];
-		let [startHour, startMinute] = convertTo24Hour(startTime);
-		const [endHour, endMinute] = convertTo24Hour(endTime);
+		console.log(new Date(start).getTime().toString())
+		start = new Date(start);
+		end = new Date(end);
+		let [startHour, startMinute] = [start.getHours(), start.getMinutes()]//convertTo24Hour(new Date(start).getTime());
+
+		const [endHour, endMinute] = [end.getHours(), end.getMinutes()] //convertTo24Hour(end);
 		let totalStartMinutes = startHour * 60 + parseInt(startMinute);
 		let totalEndMinutes = endHour * 60 + parseInt(endMinute);
-
+		console.log(totalStartMinutes, sessionTime)
 		while (totalStartMinutes + sessionTime <= totalEndMinutes) {
+			console.log('workin?')
 			let slotStartHour = Math.floor(totalStartMinutes / 60);
 			let slotStartMinute = totalStartMinutes % 60;
 			let slotEndMinutes = totalStartMinutes + sessionTime;
@@ -41,7 +52,7 @@ const generateTimeSlots = (start, end, coachInfo, availability, bookedSlots) => 
 
 			totalStartMinutes += sessionTime;
 		}
-		if (totalEndMinutes - totalStartMinutes - sessionTime < 0){
+		if (totalEndMinutes - totalStartMinutes > 0){
 			let slotStartHour = Math.floor(totalStartMinutes / 60);
 			let slotStartMinute = totalStartMinutes % 60;
 			let slotEndMinutes = totalStartMinutes + (totalEndMinutes - totalStartMinutes);
@@ -62,13 +73,15 @@ const generateTimeSlots = (start, end, coachInfo, availability, bookedSlots) => 
 }
 
 const getWeekDaysInRange = (start,end, timeZone) => {
+	console.log(start, end);
 	let weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-	start = new Date(start.toLocaleString("en-US", {timeZone}));
-	end = new Date(end.toLocaleString("en-US", {timeZone}));
+	start = new Date(new Date(start).toLocaleString("en-US", timeZone));
+	end = new Date(new Date(end).toLocaleString("en-US", timeZone));
 
 	let day_date = []
 	for (let currentDate = new Date(start); currentDate <= end; currentDate.setDate(currentDate.getDate() + 1)){
 		day_date.push([weekDays[currentDate.getDay()],currentDate.toISOString()]);
+		console.log(currentDate)
 
 	}
 	return day_date;
@@ -145,8 +158,11 @@ let availability = [
 	}
 ]
 
-
-console.log(JSON.stringify(generateTimeSlots(availability, '60', {})));
+//expose({
+//	generateTimeSlots,
+//});
+//
+//console.log(JSON.stringify(generateTimeSlots(availability, '60', {})));
 
 module.exports = { generateTimeSlots };
 

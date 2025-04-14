@@ -1,23 +1,25 @@
-const { coachWeeklyAvailableSlotServices } = require("../../Services/services.booking");
+const { coachWeeklyAvailableSlotServices, resolveBookingServices, createBookingServices } = require("../../Services/services.booking");
 const { createLockServices, isLockedService } = require("../../Services/servcies.lockSlot");
 const { sendResponse } = require("../../Helpers/helpers.commonFunc");
 const { generateTimeSlots } = require("../../Helpers/helpers.generateSlots");
-const { getCoachWeeklyAvailableSlotDto, validateCoachWeeklyAvailableSlot, initializeBookingDto, validateInitializeBooking } = require('../../DTOs/coachAvailability.dto');
+const { getCoachWeeklyAvailableSlotDto, validateCoachWeeklyAvailableSlot, initializeBookingDto, validateInitializeBooking, resolveBookingDto, validateResolveBooking } = require('../../DTOs/booking.dto');
 
 const getCoachWeeklyAvailableSlotController = async (req, res) => {
 	// get coach available slots for booking
 	// time here is in utc only in front end will the time be in timezone
 	try {
+		console.log(req.query)
 		// req -> coachId, startDate (utc), endDate (utc).
-		const data = getCoachWeeklyAvailableSlotDto(req.body);
-		const error = validateCoachWeeklyAvailableSlot(data);
+		const data = getCoachWeeklyAvailableSlotDto(req.query);
+		const errors = validateCoachWeeklyAvailableSlot(data);
 		if (Object.keys(errors).length > 0){
 			sendResponse(res, null, 400, false, errors);
 			return
 		}
+		console.log(data);
 		const { bookedSlots, coachInfo, availability } = await coachWeeklyAvailableSlotServices(data);
-			
-		const result = generateTimeSlots(data.start, data.end, coachInfo, availability, bookedSlots);
+		console.log(bookedSlots, coachInfo, availability);	
+		const result = generateTimeSlots(data.startDate, data.endDate, coachInfo, availability, bookedSlots);
 		sendResponse(res, null, 201, true, 'successful',result);
 	}catch (err) {
 		console.error(err);
@@ -42,22 +44,23 @@ const initializeBookingController = async (req, res) => {
 		}
 		
 		const islocked = await isLockedService({ 'coachId': data.coachId, 'startDate': data.startDate, 'endDate': data.endDate });
-		if (locked){
-			sendResponse(res, null, 400, false, "Already booked");
+		console.log(islocked);
+		if (islocked){
+			sendResponse(res, null, 400, false, "Slot not Available!");
 			return
 		}
 
 		const [lock, booking] = await Promise.all([
 			createLockServices(data),
-			createBookingServices(data);
+			createBookingServices(data)
 		]);
 
 		sendResponse(res, null, 201, true, 'successful',{lock, booking});
 	}catch (err) {
+
 		console.error(err);
-		sendResponse(res, err, 500);
+		sendResponse(res, err, 500, false, err.message);
 	}
-	return
 };
 
 
@@ -73,7 +76,7 @@ const resolveBookingController = async (req, res) =>{
 			sendResponse(res, null, 400, false, errors);
 			return
 		}
-		const result = await updatePaymentStatusBookingServices(data.bookingId, data.paymentStatus);
+		const result = await resolveBookingServices(data);
 		sendResponse(res, null, 201, true, 'successfully Booked, waiting for response', result);
 		return 
 	}catch (err){
@@ -83,7 +86,7 @@ const resolveBookingController = async (req, res) =>{
 }
 
 module.exports = {
-	addCoachAvailabilityController,
-	getCoachAllAvailabilityController,
-	updateCoachAvailabilityController,
+	getCoachWeeklyAvailableSlotController,
+	initializeBookingController,
+	resolveBookingController,
 };

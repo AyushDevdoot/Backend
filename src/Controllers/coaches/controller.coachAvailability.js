@@ -57,36 +57,36 @@ const getCoachAllAvailabilityController = async (req, res) => {
 };
 
 
-const updateCoachAvailabilityController = async (req, res) =>{
-    // can update start time, end time not available  
-    try {
-        const availability_data = updateCoachAvailabilityDto(req.body);
-        const errors = vaildateUpdateCoachAvailability(availability_data);
-        if (Object.keys(errors).length > 0){
-            sendResponse(res, null, 400, false, errors);
-            return
-        }
-
-        let result = await updateCoachAvailabilityOfDayServices({ 
-            _id: availability_data.id,
-            coachId: availability_data.coachId,
-            day: availability_data.day
-        },
-        {
-                startTime: availability_data.startTime,
-                endTime: availability_data.endTime,
-                isAvailable: availability_data.isAvailable
-        });
-        sendResponse(res, null, 201, true, 'success',result);
-    }catch (err) {
-        sendResponse(res, err, 500, false, 'server Internal error');
-    }
-
-};
-
+//const updateCoachAvailabilityController = async (req, res) =>{
+//    // can update start time, end time not available  
+//    try {
+//        const availability_data = updateCoachAvailabilityDto(req.body);
+//        const errors = vaildateUpdateCoachAvailability(availability_data);
+//        if (Object.keys(errors).length > 0){
+//            sendResponse(res, null, 400, false, errors);
+//            return
+//        }
+//
+//        let result = await updateCoachAvailabilityOfDayServices({ 
+//            _id: availability_data.id,
+//            coachId: availability_data.coachId,
+//            day: availability_data.day
+//        },
+//        {
+//                startTime: availability_data.startTime,
+//                endTime: availability_data.endTime,
+//                isAvailable: availability_data.isAvailable
+//        });
+//        sendResponse(res, null, 201, true, 'success',result);
+//    }catch (err) {
+//        sendResponse(res, err, 500, false, 'server Internal error');
+//    }
+//
+//};
+//
 
 module.exports = {
     addCoachAvailabilityController,
     getCoachAllAvailabilityController,
-    updateCoachAvailabilityController,
+    //updateCoachAvailabilityController,
 };

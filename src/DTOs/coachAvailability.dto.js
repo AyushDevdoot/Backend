@@ -1,9 +1,9 @@
-const { parse, isValid, format } = require('date-fns');
 const { isValidObjectId } = require('../Helpers/helpers.commonFunc');
 
 
 
 function isValidTime(time) {
+	//need zulu iso time zone utc
 	return !isNaN(new Date(time)) ;
 }
 
@@ -43,9 +43,9 @@ function validateCoachAvailability(data) {
 	}
 	
 	console.log(data.startTime, isValidTime(data.startTime));
-	// time validation (new format: "HH:MM AM/PM - HH:MM AM/PM")
 	if (
 		!data.startTime ||
+		!data.startTime.endsWith('Z') ||
 		!isValidTime(data.startTime)
 	) {
 		errors.startTime = "startTime must be in the format 'HH:MM AM/PM - HH:MM AM/PM'.";
