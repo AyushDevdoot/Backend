@@ -20,7 +20,8 @@ const getCoachWeeklyAvailableSlotController = async (req, res) => {
 		console.log(data);
 		const { bookedSlots, coachInfo, availability } = await coachWeeklyAvailableSlotServices(data);
 		console.log(bookedSlots, coachInfo, availability);	
-		const result = generateTimeSlots(data.startDate, data.endDate, coachInfo, availability, bookedSlots);
+		const result = generateTimeSlots(new Date(data.startDate), new Date(data.endDate), coachInfo, availability, bookedSlots);
+		console.log(result)
 		sendResponse(res, null, 201, true, 'successful',result);
 	}catch (err) {
 		console.error(err);

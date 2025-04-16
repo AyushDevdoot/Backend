@@ -269,33 +269,57 @@ function generateTimeSlots(start, end, coachInfo, availability, bookedSlots) {
 //  }
 //];
 //
-//const bookedSlots = [
+	//
+//const availability = [
 //  {
-//    coachId: "coach-1",
-//    userId: "user-1",
-//    startTime: "2025-04-07T11:00:00.000Z", // Monday
-//    endTime: "2025-04-07T12:00:00.000Z",
-//    status: "confirmed"
+//    _id: new ObjectId('67fa4372c023dccbf887bb94'),
+//    coachId: new ObjectId('67d13a30fcd11867c068354c'),
+//    day: 'Monday',
+//    __v: 0,
+//    createdAt: 2025-04-12T10:41:31.021Z,
+//    endTime: 'Mon Apr 14 2025 16:30:00 GMT+0530 (India Standard Time)',
+//    isAvailable: true,
+//    startTime: 'Mon Apr 14 2025 14:30:00 GMT+0530 (India Standard Time)',
+//    updatedAt: 2025-04-12T10:41:31.021Z
 //  },
 //  {
-//    coachId: "coach-1",
-//    userId: "user-2",
-//    startTime: "2025-04-09T09:00:00.000Z", // Wednesday
-//    endTime: "2025-04-09T10:00:00.000Z",
-//    status: "confirmed"
+//    _id: new ObjectId('67fa47ccc023dccbf887bb98'),
+//    coachId: new ObjectId('67d13a30fcd11867c068354c'),
+//    day: 'Thursday',
+//    __v: 0,
+//    createdAt: 2025-04-12T11:00:05.825Z,
+//    endTime: 'Wed Apr 16 2025 21:30:00 GMT+0530 (India Standard Time)',
+//    isAvailable: true,
+//    startTime: 'Wed Apr 16 2025 19:30:00 GMT+0530 (India Standard Time)',
+//    updatedAt: 2025-04-12T11:00:05.825Z
 //  },
 //  {
-//    coachId: "coach-1",
-//    userId: "user-3",
-//    startTime: "2025-04-11T14:00:00.000Z", // Friday
-//    endTime: "2025-04-11T15:00:00.000Z",
-//    status: "confirmed"
+//    _id: new ObjectId('67fa47ccc023dccbf887bb97'),
+//    coachId: new ObjectId('67d13a30fcd11867c068354c'),
+//    day: 'Tuesday',
+//    __v: 0,
+//    createdAt: 2025-04-12T11:00:05.825Z,
+//    endTime: 'Mon Apr 14 2025 16:30:00 GMT+0530 (India Standard Time)',
+//    isAvailable: true,
+//    startTime: 'Mon Apr 14 2025 14:30:00 GMT+0530 (India Standard Time)',
+//    updatedAt: 2025-04-12T11:00:05.825Z
+//  },
+//  {
+//    _id: new ObjectId('67fa4372c023dccbf887bb95'),
+//    day: 'Wednesday',
+//    coachId: new ObjectId('67d13a30fcd11867c068354c'),
+//    __v: 0,
+//    createdAt: 2025-04-12T10:41:31.021Z,
+//    endTime: 'Wed Apr 16 2025 21:30:00 GMT+0530 (India Standard Time)',
+//    isAvailable: true,
+//    startTime: 'Wed Apr 16 2025 19:30:00 GMT+0530 (India Standard Time)',
+//    updatedAt: 2025-04-12T10:41:31.021Z
 //  }
-//];
-//
+//]
+//const bookedSlots = [];
 //const coachInfo = {
-//  sessionTime: 120,
-//  timeZone: "Asia/Kolkata"
+//  sessionTime: 60,
+//  timeZone: "utc"
 //};
 //
 //const start = new Date("2025-04-07T09:00:00.000Z");
