@@ -80,7 +80,7 @@ const resolveBookingController = async (req, res) =>{
 			return
 		}
 		const result = await resolveBookingServices(data);
-		if (data.paymentStatus == "rejected"){
+		if (data.paymentStatus == "reject"){
 			message = " Booking Closed"
 		}
 
