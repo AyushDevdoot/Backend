@@ -45,9 +45,9 @@ const initializeBookingController = async (req, res) => {
 			return
 		}
 		//move this for worker thread..	
-		const islock = await isLocked({ 'coachId': data.coachId, 'startDate': data.startDate, 'endDate': data.endDate, 'start': startDate, 'end': endDate });
-		console.log(islocked);
-		if (islocked){
+		console.log(data.startDate)
+		const islock = await isLocked({ 'coachId': data.coachId, 'startDate': data.startDate, 'endDate': data.endDate, 'start': data.startDate, 'end': data.endDate });
+		if (islock){
 			sendResponse(res, null, 400, false, "Slot not Available!");
 			return
 		}
@@ -73,13 +73,18 @@ const resolveBookingController = async (req, res) =>{
 	try {
 		const data = resolveBookingDto(req.body);
 		const errors = validateResolveBooking(data);
+		let message = "Booking Successfull wait for response"
 
 		if (Object.keys(errors).length > 0){
 			sendResponse(res, null, 400, false, errors);
 			return
 		}
 		const result = await resolveBookingServices(data);
-		sendResponse(res, null, 201, true, 'successfully Booked, waiting for response', result);
+		if (data.paymentStatus == "rejected"){
+			message = " Booking Closed"
+		}
+
+		sendResponse(res, null, 201, true, message, result)
 		return 
 	}catch (err){
 		console.error(err);

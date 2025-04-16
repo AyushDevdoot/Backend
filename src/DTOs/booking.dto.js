@@ -3,7 +3,7 @@ const { isValidObjectId } = require('../Helpers/helpers.commonFunc');
 const moment = require('moment-timezone');
 
 
-const validStatus = new Set(['pending', 'confirmed', 'rescheduled', 'rejected', 'canceled', 'completed', 'timed-out', 'reschedule-request'])
+const validStatus = new Set(['pending', 'confirm', 'reschedule', 'reject', 'cancel', 'complete', 'timed-out', 'reschedule-request'])
 const valideUser = new Set(['user', 'coach', 'system'])
 
 
@@ -280,7 +280,7 @@ const ValidateStatusDto = (data) => {
 
 	}
 
-	if (data.status || !typeof data.status !== 'string' || data.status in validStatus){
+	if (data.status || !typeof data.status !== 'string' || validStatus.has(data.status)){
 		errors.status = 'invalid Status';
 
 	}
@@ -373,8 +373,8 @@ const validateResolveBooking = (data) => {
 		errors.bookingId = "invalide bookingId";
 	}
 
-	if (!paymentStatus || typeof paymentStatus != 'string'){
-		errors.paymentStatus = "invalid paymentStatus either rejected || paymentID";
+	if (!paymentStatus || typeof paymentStatus != 'string'|| !validStatus.has(paymentStatus)){
+		errors.paymentStatus = "invalid paymentStatus either reject || paymentID";
 	}
 
 	if (!isValidObjectId(coachId)){
@@ -407,7 +407,7 @@ const updateBookingRequestDto = (data) => {
 const validateBookingRequestDto = (data) => {
 	const { bookingId, status } = data;
 	const errors = {};
-	const statusObj = new Set([ 'confirm', 'reschedule-request', 'rejected' ]);
+	const statusObj = new Set([ 'confirm', 'reschedule-request', 'reject' ]);
 
 	if (!isValidObjectId(bookingId)){
 		errors.bookingId = "invalid bookingId";
