@@ -5,6 +5,18 @@ const createLockServices = async (lock) => {
 	return await LockSlotModel({coachId: lock.coachId, startTime: lock.startDate, endTime: lock.endDate}).save();
 };
 
+const getLockService = async ( {coachId, startTime, endTime} ) =>{
+	const start = new Date(startTime);
+	const end = new Date(endTime);
+
+	if (isNaN(start) || isNaN(end)){
+		throw new Error('Invalid StartTime or EndTime');
+	}
+	let locks = await LockSlotModel.find({coachId: coachId, startTime: start, endTime: end}).sort({endTime: 1});
+
+	return locks;
+};
+
 const isLockedService = async ( {coachId, startTime, endTime} ) => {
   	const start = new Date(startTime);
   	const end = new Date(endTime);
@@ -26,6 +38,7 @@ const isLockedService = async ( {coachId, startTime, endTime} ) => {
 
 module.exports = {
 	createLockServices,
+	getLockService,
 	isLockedService
 }
 

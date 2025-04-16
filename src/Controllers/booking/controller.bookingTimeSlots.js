@@ -1,6 +1,7 @@
 const { coachWeeklyAvailableSlotServices, resolveBookingServices, createBookingServices } = require("../../Services/services.booking");
 const { createLockServices, isLockedService } = require("../../Services/servcies.lockSlot");
 const { sendResponse } = require("../../Helpers/helpers.commonFunc");
+const { isLocked } = require("../../Helpers/helper.overlap")
 const { generateTimeSlots } = require("../../Helpers/helpers.generateSlots");
 const { getCoachWeeklyAvailableSlotDto, validateCoachWeeklyAvailableSlot, initializeBookingDto, validateInitializeBooking, resolveBookingDto, validateResolveBooking } = require('../../DTOs/booking.dto');
 
@@ -42,8 +43,8 @@ const initializeBookingController = async (req, res) => {
 			sendResponse(res, null, 400, false, errors);
 			return
 		}
-		
-		const islocked = await isLockedService({ 'coachId': data.coachId, 'startDate': data.startDate, 'endDate': data.endDate });
+		//move this for worker thread..	
+		const islock = await isLocked({ 'coachId': data.coachId, 'startDate': data.startDate, 'endDate': data.endDate, 'start': startDate, 'end': endDate });
 		console.log(islocked);
 		if (islocked){
 			sendResponse(res, null, 400, false, "Slot not Available!");

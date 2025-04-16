@@ -74,9 +74,9 @@ const coachWeeklyAvailableSlotServices = async ({ coachId, startDate, endDate })
 
 		const bookedQuery = bookingModel.find({
 			coachId,
-			startDate: { $gte: startDate },
-			endDate: { $lte: endDate },
-			status: { $in: ['pending', 'confirmed', 'rescheduled', 'reschedule-request']}
+			startTime: { $gte: startDate },
+			endTime: { $lte: endDate },
+			status: { $in: ['pending', 'confirm', 'reschedule', 'reschedule-request']}
 		}).exec();
 		const availableQuery = CoachAvailabilityModel.find({ coachId, isAvailable: true }).exec();
 		const coachInfoQuery = CoachInfoModel.findOne({ _id: coachId }).select('timeZone sessionTime').exec(); 
